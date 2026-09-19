@@ -1,0 +1,153 @@
+// app/api/auth/[...nextauth]/route.ts
+import NextAuth from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { prisma } from "@/libs/prisma";
+import bcrypt from "bcrypt";
+
+export const authOptions = {
+  adapter: PrismaAdapter(prisma),
+  secret: process.env.SECRET,
+  session: {
+    strategy: "jwt",
+    maxAge: 24 * 60 * 60,
+  },
+
+  providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      allowDangerousEmailAccountLinking: true,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+        },
+      },
+    }),
+
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        username: { label: "Username", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+
+      async authorize(credentials) {
+        const { username, password } = credentials ?? {};
+
+        if (!username || !password) return null;
+
+        // Fetch user from Prisma
+        const user = await prisma.user.findUnique({
+          where: { name: username },
+        });
+
+        if (!user || !user.password) return null;
+
+        const isValid = await bcrypt.compare(password, user.password);
+        if (!isValid) return null;
+
+        if (
+          !user.isVerified &&
+          ((user.verificationTokenExpiresAt &&
+            user.verificationTokenExpiresAt < new Date()) ||
+            !user.verificationTokenExpiresAt)
+        ) {
+          const verificationToken = Math.floor(
+            100000 + Math.random() * 900000,
+          ).toString();
+          const verificationTokenExpiresAt = new Date(
+            Date.now() + 24 * 60 * 60 * 1000,
+          );
+
+          await prisma.user.update({
+            where: { id: user.id },
+            data: {
+              verificationToken: verificationToken,
+              verificationTokenExpiresAt: verificationTokenExpiresAt,
+            },
+          });
+
+          throw new Error(
+            "Verification code expired and new code has been sent",
+          );
+        } else if (!user.isVerified) {
+          throw new Error("User not verified");
+        }
+
+        return {
+          id: user?.id,
+          email: user?.email,
+          username: user?.name,
+          createdAt: user?.createdAt,
+        };
+      },
+    }),
+  ],
+
+  pages: {
+    signIn: "/login",
+    error: "/auth/error",
+    verifyRequest: "/verify",
+  },
+
+  callbacks: {
+    async session({ session, token }) {
+      if (token) {
+        session.user = {
+          id: token.id,
+          email: token.email,
+          username: token.name,
+          createdAt: token?.createdAt,
+        };
+      }
+      return session;
+    },
+
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+        token.name = user.username || user.name;
+        token.createdAt = user?.createdAt;
+      }
+      return token;
+    },
+
+    async signIn({ user, account }) {
+      if (account?.provider === "google") {
+        const existingUser = await prisma.user.findUnique({
+          where: { email: user.email },
+        });
+
+        if (existingUser) {
+          // If email exists but not a Google account
+          if (!existingUser.isGoogleUser) {
+            throw new Error("account_link_conflict");
+          }
+        } else {
+          // Create new Google user
+          await prisma.user.create({
+            data: {
+              name: user.username || user.email.split("@")[0],
+              email: user.email,
+              isVerified: true,
+              isGoogleUser: true,
+            },
+          });
+        }
+      }
+      return true;
+    },
+
+    async redirect({ baseUrl, url }) {
+      return url.startsWith("/") ? `${baseUrl}${url}` : baseUrl;
+    },
+  },
+};
+
+const handler = NextAuth(authOptions);
+export { handler as GET, handler as POST };

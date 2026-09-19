@@ -1,0 +1,162 @@
+[
+  {
+    "username": "User0",
+    "mediaId": 238,
+    "mediaType": "movies",
+    "rating": 5,
+    "spoilers": false,
+    "text": "One of the greatest crime dramas I've ever watched. Every scene has a purpose."
+  },
+  {
+    "username": "User1",
+    "mediaId": 238,
+    "mediaType": "movies",
+    "rating": 5,
+    "spoilers": false,
+    "text": "The performances are phenomenal, especially from Brando and Pacino."
+  },
+  {
+    "username": "User2",
+    "mediaId": 238,
+    "mediaType": "movies",
+    "rating": 4,
+    "spoilers": false,
+    "text": "Amazing storytelling and unforgettable characters. It deserves its legendary status."
+  },
+  {
+    "username": "User3",
+    "mediaId": 238,
+    "mediaType": "movies",
+    "rating": 4,
+    "spoilers": false,
+    "text": "The pacing is slow, but the payoff is worth it. A fantastic film overall."
+  },
+  {
+    "username": "User4",
+    "mediaId": 238,
+    "mediaType": "movies",
+    "rating": 5,
+    "spoilers": false,
+    "text": "Beautiful cinematography, incredible dialogue, and a timeless soundtrack."
+  },
+  {
+    "username": "User5",
+    "mediaId": 238,
+    "mediaType": "movies",
+    "rating": 5,
+    "spoilers": true,
+    "text": "Michael's transformation into the family's ruthless leader is one of the best character arcs in film history."
+  },
+  {
+    "username": "User6",
+    "mediaId": 238,
+    "mediaType": "movies",
+    "rating": 4,
+    "spoilers": false,
+    "text": "A classic that still holds up today. Every rewatch reveals something new."
+  },
+  {
+    "username": "User7",
+    "mediaId": 238,
+    "mediaType": "movies",
+    "rating": 3,
+    "spoilers": false,
+    "text": "Good movie, but I personally found parts of it a little too slow."
+  },
+  {
+    "username": "User8",
+    "mediaId": 238,
+    "mediaType": "movies",
+    "rating": 5,
+    "spoilers": false,
+    "text": "An absolute masterpiece. The writing and directing are nearly flawless."
+  },
+  {
+    "username": "User9",
+    "mediaId": 238,
+    "mediaType": "movies",
+    "rating": 4,
+    "spoilers": false,
+    "text": "The family dynamics make the story much more compelling than a typical gangster film."
+  },
+  {
+    "username": "User10",
+    "mediaId": 238,
+    "mediaType": "movies",
+    "rating": 5,
+    "spoilers": true,
+    "text": "The final scene with Michael denying everything to Kay before the door closes is unforgettable."
+  },
+  {
+    "username": "User11",
+    "mediaId": 238,
+    "mediaType": "movies",
+    "rating": 4,
+    "spoilers": false,
+    "text": "One of those rare movie that completely lives up to the hype."
+  },
+  {
+    "username": "User12",
+    "mediaId": 238,
+    "mediaType": "movies",
+    "rating": 3,
+    "spoilers": false,
+    "text": "Very well made, although I think it's a bit overrated compared to modern crime dramas."
+  },
+  {
+    "username": "User13",
+    "mediaId": 238,
+    "mediaType": "movies",
+    "rating": 5,
+    "spoilers": false,
+    "text": "The cast is perfect. I can't imagine anyone else playing these roles."
+  },
+  {
+    "username": "User14",
+    "mediaId": 238,
+    "mediaType": "movies",
+    "rating": 2,
+    "spoilers": false,
+    "text": "I appreciated the craftsmanship, but it wasn't really my type of movies."
+  },
+  {
+    "username": "User15",
+    "mediaId": 238,
+    "mediaType": "movies",
+    "rating": 5,
+    "spoilers": true,
+    "text": "Sonny's death completely changed the direction of the story and raised the stakes dramatically."
+  },
+  {
+    "username": "User16",
+    "mediaId": 238,
+    "mediaType": "movies",
+    "rating": 4,
+    "spoilers": false,
+    "text": "Excellent character development and some of the best dialogue ever written."
+  },
+  {
+    "username": "User17",
+    "mediaId": 238,
+    "mediaType": "movies",
+    "rating": 1,
+    "spoilers": false,
+    "text": "I know it's considered a classic, but I just couldn't get invested in it."
+  },
+  {
+    "username": "User18",
+    "mediaId": 238,
+    "mediaType": "movies",
+    "rating": 5,
+    "spoilers": false,
+    "text": "A movie that earns every minute of its runtime. Absolutely incredible."
+  },
+  {
+    "username": "User19",
+    "mediaId": 238,
+    "mediaType": "movies",
+    "rating": 4,
+    "spoilers": false,
+    "text": "Even decades later, this remains one of the defining films of the crime genre."
+  }
+]
