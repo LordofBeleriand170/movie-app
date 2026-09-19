@@ -1,56 +1,42 @@
 import { Comment } from "@/types/comment";
 import handleAddLike from "./handleAddLike";
+import { Reply } from "@/features/content/contentStore";
 
-const toggleLike = (comment: Comment, id: string, isReply: boolean) => {
-  if (!id) return;
+const toggleLike = (
+  item: Reply | Comment,
+  id: string | undefined,
+  isReply: boolean,
+) => {
+  if (!id || !item) return;
 
   const userIdStr = id.toString();
 
-  let hasLiked;
+  const likesList = isReply
+    ? (item as Reply).replyLikes || []
+    : (item as Comment).commentLikes || [];
 
-  if (isReply) {
-    hasLiked = comment?.replyLikes?.some((like) => {
-      return like.userId === userIdStr;
-    });
-  } else {
-    hasLiked = comment?.comment?.commentLikes?.some((like) => {
-      return like.userId === userIdStr;
-    });
-  }
+  const hasLiked = likesList.some((like) => like.userId === userIdStr);
 
-  let updatedLikes: string[];
+  // 3. Keep the type consistent with the likes array structure
+  let updatedLikes: [];
 
   if (hasLiked) {
-    if (isReply) {
-      updatedLikes = (comment?.replyLikes || []).filter(
-        (like) => like.userId !== userIdStr,
-      );
-    } else {
-      updatedLikes = (comment?.comment?.commentLikes || []).filter(
-        (like) => like.userId !== userIdStr,
-      );
-    }
+    updatedLikes = likesList.filter((like) => like.userId !== userIdStr);
   } else {
-    if (isReply) {
-      updatedLikes = [
-        ...(comment?.replyLikes || []),
-        { userId: userIdStr, replyId: comment?.id },
-      ];
-    } else {
-      updatedLikes = [
-        ...(comment?.comment?.commentLikes || []),
-        { userId: userIdStr, commentId: comment?.comment?.id },
-      ];
-    }
+    const newLike = isReply
+      ? { userId: userIdStr, replyId: item.id }
+      : { userId: userIdStr, commentId: item.id };
+
+    updatedLikes = [...likesList, newLike];
   }
 
-  if (comment?.comment) {
-    comment.comment.commentLikes = updatedLikes;
+  if (isReply) {
+    (item as Reply).replyLikes = updatedLikes;
   } else {
-    comment.replyLikes = updatedLikes;
+    (item as Comment).commentLikes = updatedLikes;
   }
 
-  handleAddLike(comment?.comment?.id || comment?.id, isReply, mediaId);
+  handleAddLike(item.id, isReply);
 };
 
 export default toggleLike;

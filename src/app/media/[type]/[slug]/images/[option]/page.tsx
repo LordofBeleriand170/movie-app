@@ -1,10 +1,11 @@
 "use client";
 
-import { Backdrops, Posters } from "@/components/InfoComponent";
 import Navbar from "@/components/Navbar";
 import { useMovieStore } from "@/features/movie/movieStore";
 import { useParams } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { Backdrops, Posters } from "@/features/content/contentStore";
 
 interface Media {
   backdrops: Backdrops[];
@@ -19,10 +20,10 @@ const Page = () => {
   const [media, setMedia] = useState<Media | null>(null);
   const { fetchInfo } = useMovieStore();
 
-  const [openMedia, setOpenMedia] = useState<boolean | null>(false);
+  const [openMedia, setOpenMedia] = useState<boolean>(false);
   const [openedMedia, setOpenedMedia] = useState<string | null>(null);
 
-  const mediaRef = useRef<HTMLImageElement>(null);
+  const mediaRef = useRef<HTMLDivElement>(null);
 
   const mediaOpen = (image: string) => {
     setOpenMedia(true);
@@ -32,6 +33,7 @@ const Page = () => {
   useEffect(() => {
     const fetchMedia = async () => {
       try {
+        if (!id) return;
         const response = await fetchInfo(id, type);
         setMedia(response?.media);
       } catch (err) {
@@ -39,7 +41,7 @@ const Page = () => {
       }
     };
     fetchMedia();
-  }, [id, type]);
+  }, [id, type, fetchInfo]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -58,42 +60,66 @@ const Page = () => {
   return (
     <>
       <Navbar />
-      {openMedia && (
-        <div className="fixed top-0 flex h-full w-full justify-center items-center z-100">
-          <img src={`${openedMedia}`} className="max-h-full" ref={mediaRef} />
+      {openMedia && openedMedia && (
+        <div className="fixed inset-0 flex h-full w-full justify-center items-center z-50 bg-black/80">
+          <div
+            ref={mediaRef}
+            className="relative max-h-[90vh] max-w-[90vw] h-full w-full"
+          >
+            <Image
+              src={openedMedia}
+              alt="Expanded media view"
+              fill
+              className="object-contain"
+              sizes="90vw"
+              priority
+            />
+          </div>
         </div>
       )}
       <main
-        className={`${openMedia && " bg-black opacity-30"} flex flex-wrap gap-5 px-30 py-4`}
+        className={`${openMedia ? "bg-black opacity-30" : ""} flex flex-wrap gap-5 px-8 py-4`}
       >
-        {(params.option === "popular" || params.option === "backdrops") &&
+        {(params?.option === "popular" || params?.option === "backdrops") &&
           media?.backdrops?.map((backdrop, index) => (
-            <img
-              key={index}
-              src={`https://image.tmdb.org/t/p/original/${backdrop.file_path}`}
-              alt="Backdrop"
-              className="w-100"
+            <div
+              key={backdrop.file_path || index}
+              className="relative w-96 h-54 cursor-pointer overflow-hidden rounded"
               onClick={() =>
                 mediaOpen(
                   `https://image.tmdb.org/t/p/original/${backdrop.file_path}`,
                 )
               }
-            />
+            >
+              <Image
+                src={`https://image.tmdb.org/t/p/w780/${backdrop.file_path}`}
+                alt={`Backdrop ${index + 1}`}
+                fill
+                className="object-cover hover:scale-105 transition-transform duration-200"
+                sizes="(max-width: 768px) 100vw, 384px"
+              />
+            </div>
           ))}
 
-        {(params.option === "popular" || params.option === "posters") &&
+        {(params?.option === "popular" || params?.option === "posters") &&
           media?.posters?.map((poster, index) => (
-            <img
-              key={index}
-              src={`https://image.tmdb.org/t/p/original/${poster.file_path}`}
-              alt="Poster"
-              className="w-100"
+            <div
+              key={poster.file_path || index}
+              className="relative w-64 h-96 cursor-pointer overflow-hidden rounded"
               onClick={() =>
                 mediaOpen(
                   `https://image.tmdb.org/t/p/original/${poster.file_path}`,
                 )
               }
-            />
+            >
+              <Image
+                src={`https://image.tmdb.org/t/p/w500/${poster.file_path}`}
+                alt={`Poster ${index + 1}`}
+                fill
+                className="object-cover hover:scale-105 transition-transform duration-200"
+                sizes="(max-width: 768px) 100vw, 256px"
+              />
+            </div>
           ))}
       </main>
     </>

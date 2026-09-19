@@ -18,16 +18,10 @@ import CommentsOptions from "./CommentsOptions";
 
 interface CommentSectionComponentProps {
   movieId: number;
-  /*user: {
-    email: string | null | undefined;
-    userId: string | undefined;
-    username: string | null | undefined;
-  };*/
   type: string;
   newRate: number;
   setNewRate: React.Dispatch<React.SetStateAction<number>>;
-  avg: number | null;
-  voters: number | null;
+  avg: number;
 }
 
 const CommentSectionComponent: React.FC<CommentSectionComponentProps> = ({
@@ -36,8 +30,6 @@ const CommentSectionComponent: React.FC<CommentSectionComponentProps> = ({
   newRate,
   setNewRate,
   avg,
-  voters,
-  contentTitle,
 }) => {
   const { likes } = useMovieStore();
 
@@ -45,11 +37,9 @@ const CommentSectionComponent: React.FC<CommentSectionComponentProps> = ({
   const ratings = useContentStore((state) => state.ratings);
   const fetchComments = useContentStore((state) => state.fetchComments);
   const fetchRating = useContentStore((state) => state.fetchRating);
-  const addComment = useContentStore((state) => state.addComment);
 
   const error = useContentStore((state) => state.error);
   const user = useCollectionStore((state) => state.user);
-  const sentimentScore = useContentStore((state) => state.sentimentScore);
 
   const [commentOptions, setCommentOptions] = useState<string>("");
 
@@ -79,7 +69,7 @@ const CommentSectionComponent: React.FC<CommentSectionComponentProps> = ({
     undefined,
   );
 
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
 
   useEffect(() => {
     if (session?.user?.email) {
@@ -119,199 +109,14 @@ const CommentSectionComponent: React.FC<CommentSectionComponentProps> = ({
 
   const maxCount = Math.max(...ratingCounts.map((r) => r.count));
 
-  let isBanned = new Date(user?.bannedUntil) > new Date();
-
-  /*useEffect(() => {
-    let data = [
-      {
-        user: { id: "cmn66jngp0001has6czm63tv4", username: "User0" },
-        mediaId: 238,
-        mediaType: "movies",
-        rating: 5,
-        spoilers: false,
-        text: "One of the greatest crime dramas I've ever watched. Every scene has a purpose.",
-      },
-      {
-        user: { id: "cmn66jnr30003has61btlrq2o", username: "User1" },
-        mediaId: 238,
-        mediaType: "movies",
-        rating: 5,
-        spoilers: false,
-        text: "The performances are phenomenal, especially from Brando and Pacino.",
-      },
-      {
-        user: { id: "cmn66jo1e0005has63cwvcnnz", username: "User2" },
-        mediaId: 238,
-        mediaType: "movies",
-        rating: 4,
-        spoilers: false,
-        text: "Amazing storytelling and unforgettable characters. It deserves its legendary status.",
-      },
-      {
-        user: { id: "cmn66jo990007has6srpkkh2v", username: "User3" },
-        mediaId: 238,
-        mediaType: "movies",
-        rating: 4,
-        spoilers: false,
-        text: "The pacing is slow, but the payoff is worth it. A fantastic film overall.",
-      },
-      {
-        user: { id: "cmn66joh20009has62ii49uf9", username: "User4" },
-        mediaId: 238,
-        mediaType: "movies",
-        rating: 5,
-        spoilers: false,
-        text: "Beautiful cinematography, incredible dialogue, and a timeless soundtrack.",
-      },
-      {
-        user: { id: "cmn66jood000bhas6oiyfnfhk", username: "User5" },
-        mediaId: 238,
-        mediaType: "movies",
-        rating: 5,
-        spoilers: true,
-        text: "Michael's transformation into the family's ruthless leader is one of the best character arcs in film history.",
-      },
-      {
-        user: { id: "cmn66jowu000dhas6160yxzlw", username: "User6" },
-        mediaId: 238,
-        mediaType: "movies",
-        rating: 4,
-        spoilers: false,
-        text: "A classic that still holds up today. Every rewatch reveals something new.",
-      },
-      {
-        user: { id: "cmn66jp5a000fhas6qcni2ltc", username: "User7" },
-        mediaId: 238,
-        mediaType: "movies",
-        rating: 3,
-        spoilers: false,
-        text: "Good movie, but I personally found parts of it a little too slow.",
-      },
-      {
-        user: { id: "cmn66jpdl000ghas6t0od442l", username: "User8" },
-        mediaId: 238,
-        mediaType: "movie",
-        rating: 5,
-        spoilers: false,
-        text: "An absolute masterpiece. The writing and directing are nearly flawless.",
-      },
-      {
-        user: { id: "cmn66jpp6000ihas67kxs9mjx", username: "User9" },
-        mediaId: 238,
-        mediaType: "movies",
-        rating: 4,
-        spoilers: false,
-        text: "The family dynamics make the story much more compelling than a typical gangster film.",
-      },
-      {
-        user: { id: "cmn66jq1z000khas61rvxyvai", username: "User10" },
-        mediaId: 238,
-        mediaType: "movies",
-        rating: 5,
-        spoilers: true,
-        text: "The final scene with Michael denying everything to Kay before the door closes is unforgettable.",
-      },
-      {
-        user: { id: "cmn66jqbx000mhas6jyo8lnj1", username: "User11" },
-        mediaId: 238,
-        mediaType: "movies",
-        rating: 4,
-        spoilers: false,
-        text: "One of those rare movies that completely lives up to the hype.",
-      },
-      {
-        user: { id: "cmn66jqm3000ohas6wuji1jr3", username: "User12" },
-        mediaId: 238,
-        mediaType: "movies",
-        rating: 3,
-        spoilers: false,
-        text: "Very well made, although I think it's a bit overrated compared to modern crime dramas.",
-      },
-      {
-        user: { id: "cmn66jqtj000qhas6i1nk7bc4", username: "User13" },
-        mediaId: 238,
-        mediaType: "movies",
-        rating: 5,
-        spoilers: false,
-        text: "The cast is perfect. I can't imagine anyone else playing these roles.",
-      },
-      {
-        user: { id: "cmn66jr38000shas63aztujwx", username: "User14" },
-        mediaId: 238,
-        mediaType: "movies",
-        rating: 2,
-        spoilers: false,
-        text: "I appreciated the craftsmanship, but it wasn't really my type of movie.",
-      },
-      {
-        user: { id: "cmn66jrb5000uhas6m14dr646", username: "User15" },
-        mediaId: 238,
-        mediaType: "movies",
-        rating: 5,
-        spoilers: true,
-        text: "Sonny's death completely changed the direction of the story and raised the stakes dramatically.",
-      },
-      {
-        user: { id: "cmn66jrij000whas65vgf2w9b", username: "User16" },
-        mediaId: 238,
-        mediaType: "movies",
-        rating: 4,
-        spoilers: false,
-        text: "Excellent character development and some of the best dialogue ever written.",
-      },
-      {
-        user: { id: "cmn66jrqq000yhas6yvr5tokj", username: "User17" },
-        mediaId: 238,
-        mediaType: "movies",
-        rating: 1,
-        spoilers: false,
-        text: "I know it's considered a classic, but I just couldn't get invested in it.",
-      },
-      {
-        user: { id: "cmn66jrz20010has6eqa6mvd5", username: "User18" },
-        mediaId: 238,
-        mediaType: "movies",
-        rating: 5,
-        spoilers: false,
-        text: "A movie that earns every minute of its runtime. Absolutely incredible.",
-      },
-      {
-        user: { id: "cmn66js7n0012has64un547uo", username: "User19" },
-        mediaId: 238,
-        mediaType: "movies",
-        rating: 4,
-        spoilers: false,
-        text: "Even decades later, this remains one of the defining films of the crime genre.",
-      },
-    ];
-    const addCommentd = async () => {
-      for (let i = 0; i < data.length; i++) {
-        await addComment(
-          data[i].user,
-          data[i].mediaId,
-          data[i].text,
-          data[i].rating,
-          data[i].mediaType,
-          data[i].spoilers,
-        );
-
-        // ✅ Success toast
-        toast.success(`Comment ${data[i].user.username} added successfully!`);
-      }
-    };
-
-    addCommentd();
-  }, []);*/
-
+  const isBanned = Boolean(
+    user?.bannedUntil && new Date(user.bannedUntil) > new Date(),
+  );
   return (
     <div className="flex flex-col m-auto gap-10 w-[90%] px-8 pb-20">
       {comments.length > 3 && (
         <>
-          <ReviewHighlights
-            movieId={movieId}
-            type={type}
-            contentTitle={contentTitle}
-          />
+          <ReviewHighlights movieId={movieId} type={type} />
         </>
       )}
 
@@ -328,7 +133,7 @@ const CommentSectionComponent: React.FC<CommentSectionComponentProps> = ({
             <div className="bg-red-500/10 border border-red-500 text-red-400 p-3 rounded-lg text-sm">
               You are banned from commenting until{" "}
               <span className="font-semibold">
-                {new Date(user?.bannedUntil).toLocaleString()}
+                {new Date(user?.bannedUntil ?? 0).toLocaleString()}{" "}
               </span>
             </div>
           ) : (
@@ -417,9 +222,15 @@ const CommentSectionComponent: React.FC<CommentSectionComponentProps> = ({
                   .sort((a, b) => {
                     switch (commentOptions) {
                       case "Newest":
-                        return new Date(a?.createdAt) - new Date(b?.createdAt);
+                        return (
+                          new Date(b?.createdAt ?? 0).getTime() -
+                          new Date(a?.createdAt ?? 0).getTime()
+                        );
                       case "Oldest":
-                        return new Date(b?.createdAt) - new Date(a?.createdAt);
+                        return (
+                          new Date(a?.createdAt ?? 0).getTime() -
+                          new Date(b?.createdAt ?? 0).getTime()
+                        );
                       case "Highest Rated":
                         return b.rating - a.rating;
                       case "Lowest Rated":

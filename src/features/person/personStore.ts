@@ -1,11 +1,16 @@
 import { Movie } from "../movie/movieStore";
 import { create } from "zustand";
 
+type PersonContent = {
+  weight: number;
+};
+
 export type Person = {
-  personContent: any;
-  person: any;
   name: string | null;
-  id: number | null;
+  title: string | null;
+  id: number;
+  mediaId: number;
+  contentId: number;
   biography: string | null;
   birthday: string | null;
   deathday: string | null;
@@ -14,13 +19,15 @@ export type Person = {
   known_for_department: string | null;
   profile_path: string | null;
   homepage: string | null;
+
+  personContent: PersonContent;
 };
 
 export type PersonState = {
   person: Person | null;
   movies: Movie[];
   tvShows: Movie[];
-  error: any;
+  error: Error | null;
   fetchPerson: (id: string) => Promise<void>;
 };
 
@@ -51,12 +58,11 @@ export const usePersonStore = create<PersonState>((set, get) => ({
       console.log(data);
 
       set({
-        person: data || null,
+        person: data?.person || null,
         error: null,
       });
-    } catch (error: any) {
-      console.log("Error fetching person:", error);
-      set({ error: error.message || "Unexpected error" });
+    } catch (err) {
+      console.error("Error fetching movie info:", err);
     }
   },
 }));

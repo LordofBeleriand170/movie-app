@@ -9,13 +9,13 @@ type Props = {
   type: string;
 };
 
-export const ReviewHighlights = ({ movieId, type, contentTitle }: Props) => {
+export const ReviewHighlights = ({ movieId, type }: Props) => {
   const { aiSummary, aiLoading, aiError, comments } = useContentStore();
 
   useEffect(() => {
     // Proveravamo uslov i pozivamo funkciju direktno iz store-a
     if (comments && comments.length >= 3 && movieId) {
-      useContentStore.getState().fetchAiSummary(movieId, type, contentTitle);
+      useContentStore.getState().fetchAiSummary(movieId, type);
     }
     // Dependency niz ima stabilnu dužinu (tačno 3 elementa)
   }, [movieId, type, comments.length]);

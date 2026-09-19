@@ -123,10 +123,10 @@ const Trending: React.FC<TrendingProps> = ({ setErrorComponent }) => {
           adult: movie?.adult,
           overview: movie?.overview,
           original_language: movie?.original_language,
-          rating: movie?.rating || null,
+          rating: movie?.rating ?? 0,
           genre_ids: movie?.genre_ids,
           trailerKey: movie?.trailerKey,
-          video: movie?.video || null,
+          video: Boolean(movie?.video),
         }));
 
         setTrendingShow(mappedData as Movie[]);
@@ -281,7 +281,7 @@ const Trending: React.FC<TrendingProps> = ({ setErrorComponent }) => {
             </div>
           </div>
           {trendingLoading ? (
-            <TrendingLoading rows={20} cols={1} />
+            <TrendingLoading />
           ) : trendingError ? (
             <div className="flex items-center justify-center py-8 text-xs text-red-400 bg-red-950/20 rounded-xl border border-red-900/50">
               Something went wrong loading trending data.
@@ -293,9 +293,7 @@ const Trending: React.FC<TrendingProps> = ({ setErrorComponent }) => {
                   const titleOrName = result.name || result.title || "untitled";
                   const slug = slugify(result.id, titleOrName);
                   const contentId =
-                    result.id ||
-                    (result as any).mediaId ||
-                    (result as any).contentId;
+                    result.id || result.mediaId || result.contentId;
 
                   return (
                     <div

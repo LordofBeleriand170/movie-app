@@ -1,17 +1,70 @@
 import { create } from "zustand";
 import { Comment } from "@/types/comment";
 import Sentiment from "sentiment";
+import { User } from "../collection/collectionStore";
 const sentimentAnalyzer = new Sentiment();
-
-/*const API_URL =
-  import.meta.env.MODE === "development"
-    ? "http://localhost:5000/api/auth"
-    : "/api/auth";*/
 
 export interface Backdrops {
   file_path: string | null;
   vote_count: number;
 }
+
+export type ReplyLike = {
+  id?: string;
+  replyId?: string;
+  userId?: string;
+  like?: {
+    userId: string;
+  };
+};
+
+export type Recent = {
+  id: string;
+  title: string;
+  name: string;
+};
+
+export type Watchlist = {
+  id: string;
+  userId: string;
+  mediaId: number;
+  title: string;
+  name: string;
+  poster: string;
+  mediaType: string;
+  releaseDate: string;
+  user: User;
+};
+
+export type Favorite = {
+  id: string;
+  userId: string;
+  mediaId: number;
+  title: string;
+  name: string;
+  poster: string;
+  mediaType: string;
+  releaseDate: string;
+  user: User;
+};
+
+export type Reply = {
+  id: string;
+  text: string;
+  userId: string;
+  username?: string;
+  image?: string | null;
+  createdAt: string | Date;
+  commentId?: string;
+  replyLikes?: ReplyLike[];
+  user?: {
+    id: string;
+    username?: string;
+    image?: string | null;
+    role?: "USER" | "ADMIN";
+    bannedUntil?: string | Date | null;
+  };
+};
 
 export type AiSummary = {
   text?: string;
@@ -71,6 +124,9 @@ export interface Networks {
 }
 
 export interface Posters {
+  title: string | null;
+  name: string | null;
+  poster_path: string | null;
   file_path: string | null;
   vote_count: number;
 }
@@ -113,6 +169,8 @@ export interface TvShow {
 
 export interface Movie {
   runtime: number;
+  mediaId: number;
+  contentId: number;
   adult: boolean | null;
   backdrop_path: string;
   first_air_date: string;
@@ -144,6 +202,26 @@ export interface SearchResult {
   total_results?: number;
 }
 
+export type CastMember = {
+  id: number | string;
+  name: string;
+  character?: string;
+  profile_path?: string | null;
+  gender: number | null;
+  roles: {
+    character: string;
+  }[];
+  total_episode_count: number | null;
+};
+
+export type Content = {
+  id: string;
+  info: { id: string };
+  credits: {
+    cast: CastMember[];
+  };
+};
+
 export interface Genre {
   id: number;
   name: string;
@@ -162,12 +240,7 @@ export interface Episode {
 
 export type ContentState = {
   addComment: (
-    user: {
-      email: string | null | undefined;
-      id: string | undefined;
-      image: string | null | undefined;
-      username: string | null | undefined;
-    },
+    user: User | null,
     movieId: number,
     commentText: string,
     rating: number,
@@ -184,7 +257,7 @@ export type ContentState = {
   sentimentScore: number;
   episodes: Episode[] | null;
   rating: Rating[] | null;
-  content: any[];
+  content: Content | null;
   error: string | null;
   fetchComments: (movieId: number, mediaType: string) => Promise<void>;
   fetchRating: (movieId: number, mediaType: string) => Promise<void>;
@@ -193,14 +266,14 @@ export type ContentState = {
     tvId: number,
     seasonNumber: number,
   ) => Promise<Episode[] | null>;
-  fetchInfo: (id: string, type: string, user: any) => Promise<any>;
+  fetchInfo: (id: string, type: string, user: User) => Promise<any>;
   fetchSeason: (id: string, season: number | null) => Promise<Season[] | []>;
   input: string | null;
   loading: boolean;
   movie: Movie | null;
   movies: Movie[];
-  optionFetch: (filter: any) => Promise<ContentState[]>;
-  similar: (id: string, type: string, info: any) => Promise<any[]>;
+  optionFetch: (filter: []) => Promise<ContentState[]>;
+  similar: (id: string, type: string, info: []) => Promise<any[]>;
   results: Movie[];
   season: Season | null;
   total_pages: number;
@@ -209,7 +282,7 @@ export type ContentState = {
   tvShows: TvShow[];
   getCommentInfo: (commentId: string) => Promise<any[]>;
   fetchAiSummary: (movieId: number, mediaType: string) => Promise<any>;
-  recommendations: (watchlist: any, favorite: any) => Promise<any[]>;
+  recommendations: (watchlist: Watchlist, favorite: Favorite) => Promise<any[]>;
 };
 
 export interface Voter {
@@ -241,7 +314,7 @@ export const useContentStore = create<ContentState>((set, get) => ({
   movies: [],
   tvShows: [],
   category: [],
-  content: [],
+  content: null,
   tvShow: null,
   season: null,
   episodes: null,
@@ -260,18 +333,18 @@ export const useContentStore = create<ContentState>((set, get) => ({
   rating: [],
 
   addComment: async (
-    user: {
-      id: string | undefined;
-      username: string | null | undefined;
-      email: string | null | undefined;
-      image: string | null | undefined;
-    },
+    user: User | null,
     movieId: number,
     commentText: string,
     rating: number,
     type: string,
     spoiler: boolean,
   ) => {
+    if (!user) {
+      set({ error: "You must be logged in to post a comment." });
+      return;
+    }
+
     set({ error: null });
     try {
       const res = await fetch(`/api/comments`, {
@@ -280,7 +353,7 @@ export const useContentStore = create<ContentState>((set, get) => ({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          id: user.id,
+          id: user?.id,
           username: user.username,
           movieId,
           text: commentText,
@@ -308,12 +381,7 @@ export const useContentStore = create<ContentState>((set, get) => ({
   },
 
   addLike: async (
-    user: {
-      id: string | undefined;
-      username: string | null | undefined;
-      email: string | null | undefined;
-      image: string | null | undefined;
-    },
+    user: User,
     commentId: string | undefined,
     isReply: boolean,
     mediaId: string,
@@ -349,7 +417,7 @@ export const useContentStore = create<ContentState>((set, get) => ({
             return {
               ...c,
               replies: c.replies.map((r) =>
-                r._id === data.reply._id
+                r?.id === data?.reply?.id
                   ? { ...r, likes: data.reply.likes }
                   : r,
               ),
@@ -504,13 +572,15 @@ export const useContentStore = create<ContentState>((set, get) => ({
       });
 
       return data.episodes || [];
-    } catch (error: any) {
-      set({ error: error.message || "Failed to fetch episode data" });
-      return []; // Return empty array on error
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Unexpected error";
+      set({ error: message });
+      return [];
     }
   },
 
-  fetchInfo: async (id: string, type: string, user: any): Promise<any[]> => {
+  fetchInfo: async (id: string, type: string, user: User): Promise<any[]> => {
     set({ error: null });
 
     try {
@@ -535,9 +605,11 @@ export const useContentStore = create<ContentState>((set, get) => ({
       });
 
       return data?.results || data || [];
-    } catch (error: any) {
-      set({ error: error.message || "Unexpected error" });
-      throw error;
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Unexpected error";
+      set({ error: message });
+      return [];
     }
   },
 
@@ -577,9 +649,11 @@ export const useContentStore = create<ContentState>((set, get) => ({
       });
 
       return data || null;
-    } catch (error: any) {
-      set({ error: error.message || "Failed to fetch season data" });
-      return null;
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Unexpected error";
+      set({ error: message });
+      return [];
     }
   },
 
@@ -608,13 +682,15 @@ export const useContentStore = create<ContentState>((set, get) => ({
       });
 
       return data || [];
-    } catch (error: any) {
-      set({ error: error.message || "Unexpected error" });
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Unexpected error";
+      set({ error: message });
       return [];
     }
   },
 
-  optionFetch: async (filter: any): Promise<ContentState[]> => {
+  optionFetch: async (filter: []): Promise<ContentState[]> => {
     set({ error: null });
     let type = filter.mediaType;
     try {
@@ -640,8 +716,10 @@ export const useContentStore = create<ContentState>((set, get) => ({
       });
 
       return data?.result?.results || [];
-    } catch (error: any) {
-      set({ error: error.message || "Unexpected error" });
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Unexpected error";
+      set({ error: message });
       return [];
     }
   },
@@ -674,14 +752,16 @@ export const useContentStore = create<ContentState>((set, get) => ({
       });
 
       return data?.results || [];
-    } catch (error: any) {
-      set({ error: error.message || "Unexpected error", loading: false });
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Unexpected error";
+      set({ error: message });
       return [];
     }
   },
 
   getCommentInfo: async (commentId: string): Promise<any[]> => {
-    set({ content: [], loading: true, error: null });
+    set({ content: null, loading: true, error: null });
 
     try {
       const res = await fetch(`/api/getComment`, {
@@ -706,8 +786,10 @@ export const useContentStore = create<ContentState>((set, get) => ({
       });
 
       return data || [];
-    } catch (error: any) {
-      set({ error: error.message || "Unexpected error", loading: false });
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Unexpected error";
+      set({ error: message });
       return [];
     }
   },
@@ -746,8 +828,8 @@ export const useContentStore = create<ContentState>((set, get) => ({
   },
 
   recommendations: async (
-    watchlist: any[],
-    favorite: any[],
+    watchlist: Watchlist[],
+    favorite: Favorite[],
   ): Promise<any[]> => {
     set({ movies: [], error: null, loading: true });
 
@@ -766,8 +848,10 @@ export const useContentStore = create<ContentState>((set, get) => ({
       const data = res.json();
 
       return data;
-    } catch (error: any) {
-      set({ error: error.message || "Unexpected error", loading: false });
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Unexpected error";
+      set({ error: message });
       return [];
     }
   },

@@ -3,7 +3,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Comment } from "@/types/comment";
 import { formatDate } from "@/app/utils/formatDate";
-import { useCollectionStore } from "@/features/collection/collectionStore";
+import {
+  useCollectionStore,
+  User,
+} from "@/features/collection/collectionStore";
 import toggleLike from "@/app/utils/toggleLike";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Ban, Flag, Heart, Trash2 } from "lucide-react";
@@ -13,8 +16,13 @@ import Image from "next/image";
 import { toast } from "react-toastify";
 import BannedModal from "./BannedModal";
 import { MoreVertical } from "lucide-react";
+import { Reply } from "@/features/content/contentStore";
 
-const CommentComponent = (comment: Comment) => {
+interface CommentComponentProps {
+  comment: Comment;
+}
+
+const CommentComponent: React.FC<CommentComponentProps> = ({ comment }) => {
   const [openSpoilers, setOpenSpoilers] = useState<string | null>(null);
   const [openResponds, setOpenResponds] = useState<string | undefined>("");
   const router = useRouter();
@@ -30,11 +38,14 @@ const CommentComponent = (comment: Comment) => {
   const fullUrl = `${pathname}?${searchParams.toString()}`;
 
   const user = useCollectionStore((state) => state.user);
+  const isBanned = Boolean(
+    user?.bannedUntil && new Date(user.bannedUntil) > new Date(),
+  );
   const report = useCollectionStore((state) => state.report);
   const deleteComment = useCollectionStore((store) => store.deleteComment);
 
   const hasLiked = comment?.comment?.commentLikes?.some(
-    (like) => like.userId === user?.id,
+    (item) => item.like?.userId === user?.id,
   );
 
   const [liked, setLiked] = useState(hasLiked);
@@ -58,10 +69,9 @@ const CommentComponent = (comment: Comment) => {
     setLiked(hasLiked);
   }, [hasLiked]);
 
-  const handleReport = async (id, user) => {
+  const handleReport = async (id: string, user: User | null) => {
     try {
       const res = await report(id, user);
-      console.log(res);
 
       if (res?.notification) {
         toast.success("Report has been sent!");
@@ -90,8 +100,6 @@ const CommentComponent = (comment: Comment) => {
       toast.error("Error occured!");
     }
   };
-
-  let isBanned = new Date(user?.bannedUntil) > new Date();
 
   return (
     <div
@@ -260,7 +268,7 @@ const CommentComponent = (comment: Comment) => {
           <div className="ml-6 pl-6 border-l border-white/10 flex flex-col gap-4 mt-3">
             {comment?.comment?.replies &&
             comment?.comment?.replies?.length > 0 ? (
-              comment?.comment?.replies.map((reply: Comment) => (
+              comment?.comment?.replies.map((reply: Reply) => (
                 <ReplyComponent key={reply.id} reply={reply} />
               ))
             ) : (
@@ -270,7 +278,9 @@ const CommentComponent = (comment: Comment) => {
               <div className="bg-red-500/10 border border-red-500 text-red-400 p-3 rounded-lg text-sm">
                 You are banned from commenting until{" "}
                 <span className="font-semibold">
-                  {new Date(user?.bannedUntil).toLocaleString()}
+                  {user?.bannedUntil
+                    ? new Date(user.bannedUntil).toLocaleString()
+                    : "N/A"}{" "}
                 </span>
               </div>
             ) : !comment?.comment?.isDeleted ? (

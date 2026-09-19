@@ -2,11 +2,11 @@
 
 import { Comment } from "@/types/comment";
 import { Check, ChevronDown } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 interface CommentOptionsProps {
   comments: Comment[];
-  currentRating: any;
+  currentRating: number;
   commentOptions: string;
   setCommentOptions: React.Dispatch<React.SetStateAction<string>>;
 }
@@ -19,7 +19,7 @@ const CommentsOptions: React.FC<CommentOptionsProps> = ({
 }) => {
   const [openSort, setOpenSort] = useState<boolean>(false);
 
-  let length = comments?.filter(
+  const length = comments?.filter(
     (comment) => comment.rating === currentRating,
   )?.length;
   return (

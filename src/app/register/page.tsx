@@ -90,11 +90,14 @@ const RegisterForm: React.FC = () => {
       if (!res.ok) {
         throw new Error(data.error || "Registration failed");
       } else {
-        toast.success("User created successfully");
         router.push("/verify");
       }
-    } catch (err: any) {
-      toast.error(err.message || "Error occurred during registration");
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Error occurred during registration";
+      toast.error(message);
     } finally {
       setLoading(false);
     }

@@ -1,30 +1,58 @@
 import { create } from "zustand";
 
+export type Review = {
+  title: string;
+  name: string;
+  rating: number;
+  content: string;
+};
+
+export type User = {
+  id: string;
+  username: string;
+  createdAt: string | undefined;
+  bannedUntil?: Date | string | null;
+  email: string;
+  reviews: Review[];
+  role: string;
+};
+
+export type Recent = {
+  title: string;
+  name: string;
+  id: number;
+};
+
 interface CollectionState {
-  user: any | null;
-  likes: any[];
-  favorite: any[];
-  watchlist: any[];
+  user: User | null;
+  likes: [];
+  favorite: [];
+  watchlist: [];
   watched: boolean;
-  ratings: any[];
-  notifications: any[];
+  ratings: [];
+  notifications: [];
   banReason: string | null;
   bannedUntil: string | null;
-  recently: any[];
-  comments: any[];
+  recently: [];
+  comments: Comment[];
   loading: boolean;
-  countries: any[];
-  fetchUserCollections: (email: any) => Promise<void>;
-  addFavorite: (id: string, result: any, media: string) => Promise<void>;
-  addWatchlist: (id: string, result: any) => Promise<void>;
+  countries: [];
+  fetchUserCollections: (email: string | null | undefined) => Promise<void>;
+  addFavorite: (id: string, result: [], media: string) => Promise<void>;
+  addWatchlist: (id: string, result: []) => Promise<void>;
   addRating: (
     id: string,
-    result: any,
+    result: {
+      id: string;
+      info: {
+        id: string;
+      };
+    },
     media: string,
     rating?: number,
   ) => Promise<void>;
   getCountries: () => Promise<void>;
-  report: (id: string, user: any) => Promise<void>;
+  report: (id: string, user: User | null) => Promise<void>;
   ban: (
     receiverId: string,
     senderId: string,
@@ -32,8 +60,8 @@ interface CollectionState {
     bannedUntil: string | null,
   ) => Promise<void>;
   deleteComment: (id: string) => Promise<void>;
-  clearRecentlyVisited: (user: any) => Promise<void>;
-  clearNotifications: (userId: any) => Promise<void>;
+  clearRecentlyVisited: (user: User) => Promise<void>;
+  clearNotifications: (userId: string) => Promise<void>;
   isWatchedBatch: (
     userId: string,
     contentIds: (string | number)[],
@@ -163,7 +191,7 @@ export const useCollectionStore = create<CollectionState>((set) => ({
     }
   },
 
-  report: async (id: string, user: any) => {
+  report: async (id: string, user: User | null) => {
     try {
       const res = await fetch(`/api/report`, {
         method: "POST",
@@ -216,7 +244,7 @@ export const useCollectionStore = create<CollectionState>((set) => ({
     }
   },
 
-  clearRecentlyVisited: async (user: any) => {
+  clearRecentlyVisited: async (user: User) => {
     try {
       const res = await fetch(`/api/clearRecentlyVisited`, {
         method: "POST",
@@ -250,7 +278,6 @@ export const useCollectionStore = create<CollectionState>((set) => ({
     }
   },
 
-  // Inside collectionStore.ts
   isWatchedBatch: async (userId: string, contentIds: (string | number)[]) => {
     if (!userId || !contentIds.length) return {};
 
@@ -262,7 +289,7 @@ export const useCollectionStore = create<CollectionState>((set) => ({
       if (!res.ok) return {};
 
       const data = await res.json();
-      return data.watchedStatuses || {}; // Returns { "550": true, "680": false }
+      return data.watchedStatuses || {};
     } catch (err) {
       console.error("isWatchedBatch error:", err);
       return {};

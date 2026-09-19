@@ -3,8 +3,8 @@ import { TvShow, Season } from "@/features/tv/tvStore";
 import Image from "next/image";
 
 interface SeasonInfoProps {
-  tvShow: TvShow;
-  currentSeason: Season[] | null;
+  tvShow: TvShow | null;
+  currentSeason: Season | null;
 }
 
 const SeasonInfo: React.FC<SeasonInfoProps> = ({ tvShow, currentSeason }) => {
@@ -53,7 +53,7 @@ const SeasonInfo: React.FC<SeasonInfoProps> = ({ tvShow, currentSeason }) => {
             src={`https://image.tmdb.org/t/p/original${currentSeason?.poster_path}`}
             fill
             className="object-cover"
-            alt={currentSeason?.name}
+            alt={currentSeason?.name ?? "Season image"}
           />
         </div>
 

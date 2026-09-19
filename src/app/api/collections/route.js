@@ -97,7 +97,7 @@ export async function POST(req) {
               user: { connect: { id: user.id } }, // ✅ connect to existing user
               voters: {
                 create: [{ user: { connect: { id: user.id } }, rating }],
-              }, // ✅ nested relation
+              },
             },
           });
         } else if (ratingRecord) {

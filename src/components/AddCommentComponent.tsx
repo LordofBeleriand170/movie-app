@@ -28,7 +28,6 @@ const AddCommentComponent: React.FC<AddCommentComponentProps> = ({
   const [text, setText] = useState("");
   const [openComment, setOpenComment] = useState(false);
   const [hoverRating, setHoverRating] = useState<number>(0);
-  const [showRating, setShowRating] = useState(false);
   const [spoiler, setSpoiler] = useState(false);
   const [rating, setRating] = useState<number>(0);
 
@@ -39,12 +38,12 @@ const AddCommentComponent: React.FC<AddCommentComponentProps> = ({
 
   const router = useRouter();
 
-  let currentRating: any;
+  let current;
 
   useEffect(() => {
-    currentRating = ratings.find((rating: any) => {
+    currentRating = ratings.find((rating: []) => {
       return (
-        rating?.userId === user.id &&
+        rating?.userId === user?.id &&
         rating?.movieId === movieId &&
         rating?.type === "mediaType"
       );

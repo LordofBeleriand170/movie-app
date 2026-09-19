@@ -1,5 +1,7 @@
+import { Comment } from "@/types/comment";
+
 // libs/getReviewSummary.ts
-export const getReviewSummary = (comments: any[]) => {
+export const getReviewSummary = (comments: Comment[]) => {
   if (!comments || comments.length === 0) {
     return { positive: 0, mixed: 0, negative: 0, topKeywords: [] };
   }

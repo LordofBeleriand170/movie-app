@@ -1,13 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
-import { useAuthStore } from "@/features/auth/authStore";
+import { useSession } from "next-auth/react";
 import { Menu, Search, X } from "lucide-react";
 import { useCollectionStore } from "@/features/collection/collectionStore";
-import { FaRegBell } from "react-icons/fa";
 import NotificationModal from "./NotificationModal";
 import SideMenu from "./SideMenu";
 import UserModal from "./UserModal";
@@ -25,7 +23,7 @@ export interface SearchResult {
   first_air_date?: string;
 }
 
-const Navbar = ({ background }) => {
+const Navbar = () => {
   const [searchValue, setSearchValue] = useState<string>("");
   const [openMenu, setOpenMenu] = useState(false);
   const [openSettings, setOpenSettings] = useState<boolean>(false);

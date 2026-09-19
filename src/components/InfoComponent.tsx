@@ -1,39 +1,37 @@
 "use client";
 
-import { Creator, useContentStore } from "@/features/content/contentStore";
-import {
-  InfoComponentProps,
-  Movie,
-  TvShow,
-  Cast,
-  Crew,
-} from "@/features/content/contentStore";
-import React, { useEffect, useRef, useState } from "react";
-import { Rating } from "@/features/movie/movieStore";
+import { useContentStore } from "@/features/content/contentStore";
+import { InfoComponentProps } from "@/features/content/contentStore";
+import React, { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import LoadingPage from "@/app/LoadingPage";
 import Similar from "./Similar";
 import ContentInfoComponent from "./ContentInfoComponent";
 import { useSession } from "next-auth/react";
-import "../app/nprogress.css";
 import ActorComponent from "./ActorComponent";
 import CommentSectionComponent from "./CommentSectionComponent";
 import ErrorPage from "@/libs/ErrorPage";
+
+import "../app/nprogress.css";
+import { Error } from "@/features/tv/tvStore";
+import { User } from "@/features/collection/collectionStore";
+
+/*${
+                openMedia && "bg-black opacity-30"
+              }*/
 
 const InfoComponent: React.FC<InfoComponentProps> = ({ option, type }) => {
   const [id, setId] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [newRate, setNewRate] = useState<number>(0);
-  const [error, setError] = useState<any | null>(null);
+  const [error, setError] = useState<Error | null>(null);
 
-  const [info, setInfo] = useState<any | null>();
-
-  const [openMedia, setOpenMedia] = useState<boolean | null>(false);
-  const [currentUser, setCurrentUser] = useState<any | null>(null);
+  const [info, setInfo] = useState<[] | null>();
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   const fetchInfo = useContentStore((state) => state.fetchInfo);
 
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const user = session?.user;
 
   useEffect(() => {
@@ -55,11 +53,10 @@ const InfoComponent: React.FC<InfoComponentProps> = ({ option, type }) => {
       setLoading(true);
 
       try {
-        // Only include user if it exists
         const infoData = await fetchInfo(mediaId, type, currentUser);
 
         setInfo(infoData);
-      } catch (err) {
+      } catch (err: unknown) {
         console.error("Error fetching movie data:", err);
         setError(err);
       } finally {
@@ -80,47 +77,18 @@ const InfoComponent: React.FC<InfoComponentProps> = ({ option, type }) => {
     return <LoadingPage />;
   }
 
-  /* 2xl:px-82 xl:px-60 lg:px-40 md:px-20 sm:px-10*/
-
-  /* <div className=" bg-black ">
-            <div className="relative">
-              <div
-                className="absolute inset-0 z-0"
-                style={{
-                  backgroundImage: `
-            linear-gradient(to top, rgba(0,0,0,10) 0%, rgba(0,0,0,0) 20%), 
-        linear-gradient(to left, rgba(0,0,0,10) 0%, rgba(0,0,0,0) 20%),
-        linear-gradient(to right, rgba(0,0,0,10) 0%, rgba(0,0,0,0) 20%),
-            url(https://image.tmdb.org/t/p/original/${info?.info?.backdrop_path})`,
-                  backgroundRepeat: "no-repeat",
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                  filter: "brightness(50%)",
-                }}
-              />
-              <Navbar background={"no"} />
-
-              <section className="flex flex-col mx-auto gap-5 overflow-hidden text-white w-[90%]">
-                <ContentInfoComponent
-                  type={type}
-                  newRate={newRate}
-                  setNewRate={setNewRate}
-                />
-              </section>
-            </div>
-          </div>*/
   return (
     <>
       {error ? (
         <>
-          <Navbar background={"yes"} />
+          <Navbar />
           <main className="px-82 bg-black">
             <ErrorPage error={error} />
           </main>
         </>
       ) : (
         <div>
-          <Navbar background={"no"} />
+          <Navbar />
 
           <div className="relative">
             <section className="relative w-full bg-[#09090b] min-h-[60vh] border-b border-zinc-900">
@@ -159,9 +127,7 @@ const InfoComponent: React.FC<InfoComponentProps> = ({ option, type }) => {
             <div className="relative w-full h-24 -mt-12 -mb-12 z-20 pointer-events-none bg-gradient-to-b from-transparent via-black/90 to-black backdrop-blur-xl shadow-2xl" />
 
             <main
-              className={`${
-                openMedia && "bg-black opacity-30"
-              } bg-gradient-to-b from-black to-gray-950 flex flex-col gap-10 relative z-10`}
+              className={` bg-gradient-to-b from-black to-gray-950 flex flex-col gap-10 relative z-10`}
             >
               <section className="flex flex-col m-auto gap-10 pt-10 w-[90%]">
                 <ActorComponent />
@@ -175,10 +141,6 @@ const InfoComponent: React.FC<InfoComponentProps> = ({ option, type }) => {
                   newRate={newRate}
                   setNewRate={setNewRate}
                   avg={info?.ratingAvg?._avg?.rating || 0}
-                  voters={info?.ratingAvg?._count?.rating || 0}
-                  contentTitle={
-                    info?.info?.original_title || info?.info?.original_name
-                  }
                 />
               </section>
             </main>

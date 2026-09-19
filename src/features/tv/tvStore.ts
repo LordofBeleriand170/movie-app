@@ -24,7 +24,11 @@ export type TvShow = {
   original_language: string;
   video: boolean;
   genre_ids: number[];
-  seasons: Season | null; // Add seasons to the TvShow type
+  seasons: Season[] | null;
+};
+
+export type Error = {
+  message: string;
 };
 
 export type Season = {
@@ -33,17 +37,19 @@ export type Season = {
   season_number: number;
   overview: string;
   episode_count: number;
-  episodes: Episode | null; // Array of Episode objects (not a single Episode)
+  episodes: Episode | null;
+  air_date: string | null;
+  poster_path: string | null;
 };
 
 export type TvShowState = {
-  tvShows: TvShow[]; // To store multiple TV shows (trending, search, etc.)
-  tvShow: TvShow | null; // Optional: single selected TV show
-  season: Season | null; // Selected season details
-  episodes: Episode | null; // Selected episode details
+  tvShows: TvShow[];
+  tvShow: TvShow | null;
+  season: Season | null;
+  episodes: Episode | null;
   error: string | null;
 
-  fetchSeason: (id: string, season: number | null) => Promise<Season[] | []>; // Fetch season by id
+  fetchSeason: (id: string, season: number | null) => Promise<Season[] | []>;
   fetchEpisodes: (
     tvId: number,
     seasonNumber: number,
@@ -58,12 +64,10 @@ export const useTvShowStore = create<TvShowState>((set) => ({
   episodes: null,
   error: null,
 
-  // Fetch seasons and episodes for a specific TV show
-  // Fetch season data
   fetchSeason: async (id: string, season: number | null) => {
     set({ error: null });
 
-    let type = "tv";
+    const type = "tv";
 
     try {
       const res = await fetch(`/api/${type}/fetchSeason`, {
@@ -88,15 +92,21 @@ export const useTvShowStore = create<TvShowState>((set) => ({
           overview: data.overview,
           season_number: data.season_number,
           episode_count: data.episode_count,
-          episodes: data.episodes, // should be an array of episodes
+          episodes: data.episodes,
+          air_date: data.air_date,
+          poster_path: data.poster_path,
         },
         error: null,
       });
 
       return data || null;
-    } catch (error: any) {
-      set({ error: error.message || "Failed to fetch season data" });
-      return null;
+    } catch (error: unknown) {
+      const errorMessage =
+        (error as { message?: string })?.message ||
+        "Failed to fetch episode data";
+
+      set({ error: errorMessage });
+      return []; // Return empty array on error
     }
   },
 
@@ -104,7 +114,7 @@ export const useTvShowStore = create<TvShowState>((set) => ({
   fetchEpisodes: async (tvId: number, seasonNumber: number) => {
     set({ error: null });
 
-    let type = "tv";
+    const type = "tv";
 
     try {
       const res = await fetch(
@@ -127,14 +137,20 @@ export const useTvShowStore = create<TvShowState>((set) => ({
           overview: data.overview,
           season_number: data.season_number,
           episode_count: data.episode_count,
-          episodes: data.episodes, // This should be an array of episodes
+          episodes: data.episodes,
+          air_date: data.air_date,
+          poster_path: data.poster_path,
         },
         error: null,
       });
 
       return data.episodes || [];
-    } catch (error: any) {
-      set({ error: error.message || "Failed to fetch episode data" });
+    } catch (error: unknown) {
+      const errorMessage =
+        (error as { message?: string })?.message ||
+        "Failed to fetch episode data";
+
+      set({ error: errorMessage });
       return []; // Return empty array on error
     }
   },

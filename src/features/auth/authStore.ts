@@ -1,20 +1,22 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { Movie } from "@/components/InfoComponent";
 import { Comment } from "@/types/comment";
+import { Movie } from "../content/contentStore";
 
 export type AuthState = {
   user: {
     id: string;
     username: string | null;
     email: string | null;
+    moviesUserId: string | null;
+    password: string | null;
     isVerified: boolean;
     favorite: Movie[];
     watchlist: Movie[];
     likes: Comment[];
-    ratings: any[];
-    reviews: any[];
-    notifications: any[];
+    ratings: [];
+    reviews: [];
+    notifications: [];
   } | null;
   isAuthenticated: boolean;
   error: string | null;
@@ -55,12 +57,13 @@ export const useAuthStore = create<AuthState>()(
 
           const data = await res.json();
 
-          // Prisma API: map relacije
           set({
             user: {
               id: data.user.id,
               username: data.user.username,
               email: data.user.email,
+              moviesUserId: data.user.moviesUserId || null,
+              password: null,
               isVerified: data.user.isVerified,
               favorite: data.user.favorite || [],
               watchlist: data.user.watchlist || [],
@@ -75,12 +78,11 @@ export const useAuthStore = create<AuthState>()(
           });
 
           return data;
-        } catch (error: any) {
-          set({
-            error: error.message || "Error verifying email",
-            isLoading: false,
-          });
-          throw error;
+        } catch (error: unknown) {
+          const message =
+            error instanceof Error ? error.message : "Unexpected error";
+          set({ error: message });
+          return [];
         }
       },
 
@@ -105,12 +107,11 @@ export const useAuthStore = create<AuthState>()(
           const data = await res.json();
 
           return data.user;
-        } catch (error: any) {
-          set({
-            error: error.message || "Error verifying email",
-            isLoading: false,
-          });
-          throw error;
+        } catch (error: unknown) {
+          const message =
+            error instanceof Error ? error.message : "Unexpected error";
+          set({ error: message });
+          return [];
         }
       },
 

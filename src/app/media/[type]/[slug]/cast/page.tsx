@@ -1,8 +1,8 @@
 "use client";
 
 import CastComponent from "@/components/CastComponent";
-import { Cast, Crew } from "@/components/InfoComponent";
 import Navbar from "@/components/Navbar";
+import { Cast, Crew } from "@/features/content/contentStore";
 import { useMovieStore } from "@/features/movie/movieStore";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";

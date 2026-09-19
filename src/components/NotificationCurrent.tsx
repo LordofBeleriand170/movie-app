@@ -4,8 +4,9 @@ import React, { useEffect } from "react";
 import formattedDate from "@/libs/formattedDate";
 import { useContentStore } from "@/features/content/contentStore";
 import { useRouter } from "next/navigation";
+import { Notification } from "./NotificationsComponent";
 
-const NotificationCurrent = ({ selectedNotifications }: any) => {
+const NotificationCurrent = (selectedNotifications: Notification) => {
   const getCommentInfo = useContentStore((state) => state.getCommentInfo);
   const content = useContentStore((state) => state.content);
   const router = useRouter();
@@ -52,7 +53,7 @@ const NotificationCurrent = ({ selectedNotifications }: any) => {
             className="bg-gradient-to-br from-blue-500 to-indigo-600
           text-white rounded-full w-12 h-12 flex items-center justify-center font-bold shadow-lg"
           >
-            {selectedNotifications?.sender?.name?.[0] || "U"}
+            {selectedNotifications?.sender?.name || "U"}
           </div>
 
           <div className="flex flex-col">

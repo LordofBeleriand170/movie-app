@@ -14,7 +14,6 @@ import { toast } from "react-toastify";
 
 interface RateComponentProps {
   rate: number;
-  info: Movie | TvShow | null;
   media: string;
   newRate: number;
   setNewRate: React.Dispatch<React.SetStateAction<number>>;

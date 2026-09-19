@@ -11,7 +11,7 @@ import { Season } from "@/features/tv/tvStore";
 
 const SeasonPage = () => {
   const [tvShow, setTvShow] = useState<TvShow | null>(null);
-  const [currentSeason, setCurrentSeason] = useState<Season[] | null>(null);
+  const [currentSeason, setCurrentSeason] = useState<Season | null>(null);
 
   const { slug } = useParams<{ slug: string }>();
   const slugParts = slug?.split("-") || [];
@@ -36,7 +36,7 @@ const SeasonPage = () => {
   return (
     <>
       <div className="bg-black">
-        <Navbar background={"no"} />
+        <Navbar />
         <SeasonInfo tvShow={tvShow} currentSeason={currentSeason} />
       </div>
       <SeasonComponent

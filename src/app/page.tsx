@@ -41,12 +41,10 @@ export default function Home() {
   }
 
   if (errorComponent) {
-    return <ErrorPage />;
+    return <ErrorPage error={{ message: "Error occured" }} />;
   }
 
   const isUserAuthenticated = status === "authenticated" && !!session?.user;
-
-  console.log("isUserAuthenticated", isUserAuthenticated);
 
   return (
     <div className="relative min-h-screen bg-[#070709] text-white overflow-x-hidden">
@@ -70,7 +68,7 @@ export default function Home() {
               <Trending setErrorComponent={setErrorComponent} />
             </section>
 
-            {(isAuthenticated || isUserAuthenticated) && (
+            {isUserAuthenticated && (
               <section className="transition-all duration-300">
                 <RecommendedComponent />
               </section>

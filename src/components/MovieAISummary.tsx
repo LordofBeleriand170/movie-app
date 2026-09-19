@@ -1,8 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Sparkles } from "lucide-react";
+import { Comment } from "@/types/comment";
 
-const MovieAISummary = ({ comments }: { comments: any[] }) => {
+const MovieAISummary = ({ comments }: { comments: Comment[] }) => {
   const [summary, setSummary] = useState("");
   const [loading, setLoading] = useState(false);
 

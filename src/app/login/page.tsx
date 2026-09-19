@@ -63,8 +63,10 @@ const LoginForm: React.FC = () => {
           isVerified: false,
           favorite: [],
           watchlist: [],
+          likes: [],
           ratings: [],
           reviews: [],
+          notifications: [],
         });
 
         toast.success("Logged in successfully");
@@ -168,7 +170,7 @@ const LoginForm: React.FC = () => {
 
         {/* Lighter Red Link */}
         <p className="mt-6 text-xs text-zinc-400 text-center">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link
             href="/register"
             className="text-red-500 hover:text-red-400 hover:underline font-medium ml-1 cursor-pointer"

@@ -6,10 +6,9 @@ import ContentLoading from "@/app/ContentLoading";
 import IconComponent from "./IconComponent";
 import slugify from "@/libs/slugify";
 import { useBatchWatched } from "@/app/utils/useBatchWatched";
-import { useCollectionStore } from "@/features/collection/collectionStore";
 
 export interface Categories {
-  id: any;
+  id: string;
   name: string;
 }
 
@@ -24,8 +23,6 @@ interface PaginatedItemsProps {
   setPage: React.Dispatch<React.SetStateAction<number>>;
   mediaType: string;
   categories: Categories[] | null;
-  titleSort?: string | null;
-  sortDate?: string | null;
   trendings: boolean;
   year: number | null;
   decade: string | null;
@@ -43,8 +40,6 @@ const PaginatedItems: React.FC<PaginatedItemsProps> = ({
   page,
   setPage,
   mediaType,
-  titleSort,
-  sortDate,
   trendings,
   year,
   decade,
@@ -184,14 +179,11 @@ const PaginatedItems: React.FC<PaginatedItemsProps> = ({
       try {
         setTrendingLoading(true);
 
-        let data: any[] = [];
+        let data: [] = [];
 
         if (useFilters) {
           data = await optionFetch(filter);
-        } else if (
-          (option === undefined && !titleSort && !sortDate) ||
-          trendings
-        ) {
+        } else if (option === undefined || trendings) {
           data = await trending(mediaType, page, { signal });
         }
 
@@ -201,10 +193,8 @@ const PaginatedItems: React.FC<PaginatedItemsProps> = ({
           (data ?? []).forEach((item) => baseMap.set(item.id, item));
           return Array.from(baseMap.values());
         });
-      } catch (err: any) {
-        if (err.name !== "AbortError") {
-          console.error("Fetch error:", err);
-        }
+      } catch (err: unknown) {
+        console.error("Error fetching person:", err);
       } finally {
         if (!signal.aborted) {
           setTrendingLoading(false);
@@ -243,9 +233,7 @@ const PaginatedItems: React.FC<PaginatedItemsProps> = ({
                   const titleOrName = result.title || result.name || "untitled";
                   const slug = slugify(result.id, titleOrName);
                   const contentId =
-                    result.id ||
-                    (result as any).mediaId ||
-                    (result as any).contentId;
+                    result.id || result.mediaId || result.contentId;
 
                   return (
                     <div

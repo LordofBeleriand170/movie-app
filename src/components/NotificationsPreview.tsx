@@ -2,11 +2,12 @@
 
 import React from "react";
 import formattedDate from "@/libs/formattedDate";
+import { Notification } from "./NotificationsComponent";
 
 interface NotificationsPreviewProps {
-  notification: any;
-  setSelectedNotifications: React.Dispatch<React.SetStateAction<any>>;
-  selectedNotifications: any;
+  notification: Notification;
+  setSelectedNotifications: React.Dispatch<React.SetStateAction<Notification>>;
+  selectedNotifications: Notification;
 }
 
 const NotificationsPreview: React.FC<NotificationsPreviewProps> = ({

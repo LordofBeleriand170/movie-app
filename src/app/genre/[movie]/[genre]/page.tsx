@@ -9,7 +9,7 @@ import SearchItemComponent from "@/components/SearchItemComponent";
 
 const Genre = () => {
   const [loading, setLoading] = useState<boolean | null>(true);
-  const [page, setPage] = useState(1);
+  const page = 1;
 
   const genre = useMovieStore((state) => state.genre);
   const movies = useMovieStore((state) => state.movies);

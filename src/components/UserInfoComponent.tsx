@@ -1,16 +1,24 @@
 "use client";
 
 import { useCollectionStore } from "@/features/collection/collectionStore";
-import { useSession } from "next-auth/react";
-import React, { useEffect, useState } from "react";
-import { Calendar, Heart, Eye, Bookmark } from "lucide-react";
+import React from "react";
+import { Calendar, Heart, Eye } from "lucide-react";
+
+/*const fetchUserCollections = useCollectionStore(
+    (state) => state.fetchUserCollections,
+  );
+
+  useEffect(() => {
+    if (!user?.email) return;
+
+    fetchUserCollections(user.email);
+    setLoading(false);
+  }, [user?.email]);*/
 
 const UserInfoComponent = () => {
-  const { data: session, status } = useSession();
+  const user = useCollectionStore((state) => state.user);
 
-  const user = session?.user;
-
-  let monthName = (monthNum: string) => {
+  const monthName = (monthNum: string | undefined) => {
     switch (monthNum) {
       case "01":
         return "January";
@@ -39,28 +47,16 @@ const UserInfoComponent = () => {
     }
   };
 
-  let dateJoined =
+  const dateJoined =
     monthName(user?.createdAt?.split("T")[0].split("-")[1]) +
     " " +
     user?.createdAt?.split("T")[0].split("-")[0];
 
-  const [loading, setLoading] = useState<boolean>(true);
   const watchlist = useCollectionStore((state) => state.watchlist);
   const favorite = useCollectionStore((state) => state.favorite);
-  const fetchUserCollections = useCollectionStore(
-    (state) => state.fetchUserCollections,
-  );
-
-  useEffect(() => {
-    if (!user?.email) return;
-
-    fetchUserCollections(user.email);
-    setLoading(false);
-  }, [user?.email]);
 
   return (
     <div className="relative overflow-hidden rounded-2xl">
-      {/* Background */}
       <div
         className="absolute inset-0"
         style={{
@@ -77,10 +73,8 @@ const UserInfoComponent = () => {
         }}
       />
 
-      {/* Optional dark overlay */}
       <div className="absolute inset-0 bg-black/30 -z-10" />
 
-      {/* Content */}
       <div className="relative flex justify-between items-center px-10 py-10">
         <div className="flex flex-col">
           <span className="text-3xl font-bold text-white">

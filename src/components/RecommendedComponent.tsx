@@ -1,6 +1,9 @@
 "use client";
 
-import { useCollectionStore } from "@/features/collection/collectionStore";
+import {
+  Recent,
+  useCollectionStore,
+} from "@/features/collection/collectionStore";
 import { useContentStore } from "@/features/content/contentStore";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
@@ -10,14 +13,12 @@ import TrendingLoading from "@/app/TrendingLoading";
 import { useBatchWatched } from "@/app/utils/useBatchWatched";
 
 const RecommendedComponent = () => {
-  const favorite = useCollectionStore((state) => state.favorite);
-  const watchlist = useCollectionStore((state) => state.watchlist);
   const fetchUserCollections = useCollectionStore(
     (state) => state.fetchUserCollections,
   );
   const recommendations = useContentStore((state) => state.recommendations);
 
-  const [recommended, setRecommended] = useState([]);
+  const [recommended, setRecommended] = useState<[]>([]);
   const [recommendedError, setRecommendedError] = useState(false);
 
   const { watchedStatuses, checkBatch } = useBatchWatched();
@@ -29,7 +30,6 @@ const RecommendedComponent = () => {
   const { data: session, status } = useSession();
   const user = session?.user;
 
-  // 1. Fetch user collections once email is available
   useEffect(() => {
     if (!user?.email) return;
 
@@ -44,7 +44,6 @@ const RecommendedComponent = () => {
     loadCollections();
   }, [user?.email, fetchUserCollections]);
 
-  // 2. Handle watched status loading state
   useEffect(() => {
     if (watchedStatuses && Object.keys(watchedStatuses).length === 0) {
       setIsWatchedLoading(true);
@@ -53,17 +52,13 @@ const RecommendedComponent = () => {
     }
   }, [watchedStatuses]);
 
-  // 3. Batch check watched items
   useEffect(() => {
     if (recommended && recommended.length > 0) {
       checkBatch(recommended);
     }
   }, [recommended, checkBatch]);
 
-  // 4. Fetch recommendations ONLY AFTER collections finish loading
-  // We explicitly trigger this once collectionsLoaded becomes true
   useEffect(() => {
-    // If user is logged in, wait for collections to load first
     if (status === "authenticated" && !collectionsLoaded) return;
     if (status === "loading") return;
 
@@ -71,12 +66,10 @@ const RecommendedComponent = () => {
       try {
         setRecommendedError(false);
         setIsLoading(true);
-        // Get snapshot of current watchlist/favorite without subscribing to future updates
         const currentWatchlist = useCollectionStore.getState().watchlist;
         const currentFavorite = useCollectionStore.getState().favorite;
 
         const data = await recommendations(currentWatchlist, currentFavorite);
-        console.log("DATA: ", data);
         setRecommended(data);
       } catch (err) {
         setRecommendedError(true);
@@ -87,9 +80,6 @@ const RecommendedComponent = () => {
     };
 
     handleRecommended();
-
-    // DO NOT include `watchlist` or `favorite` in dependencies.
-    // That is what prevented the component from re-fetching when clicking "+"!
   }, [status, collectionsLoaded, recommendations]);
 
   return (
@@ -115,13 +105,11 @@ const RecommendedComponent = () => {
         ) : recommended && recommended.length > 0 ? (
           <div className="relative">
             <div className="flex overflow-x-auto gap-3.5 py-3 scrollbar-thin scroll-smooth transition-all duration-300">
-              {[...recommended].reverse().map((recent) => {
+              {[...recommended].reverse().map((recent: Recent) => {
                 const titleOrName = recent.title || recent.name || "untitled";
                 const slug = slugify(recent.id, titleOrName);
                 const contentId =
-                  recent.id ||
-                  (recent as any).mediaId ||
-                  (recent as any).contentId;
+                  recent.id || recent.mediaId || recent.contentId;
 
                 return (
                   <div

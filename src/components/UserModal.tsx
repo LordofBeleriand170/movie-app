@@ -1,7 +1,8 @@
 "use client";
 
+import { useCollectionStore } from "@/features/collection/collectionStore";
 import { ChevronRight, LogOut, Settings } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import Link from "next/link";
 import React, { useEffect, useRef } from "react";
 
@@ -14,9 +15,7 @@ const UserModal: React.FC<UserModalProps> = ({
   openSettings,
   setOpenSettings,
 }) => {
-  const { data: session, status } = useSession();
-
-  const user = session?.user;
+  const user = useCollectionStore((state) => state?.user);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

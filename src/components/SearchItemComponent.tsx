@@ -5,14 +5,12 @@ import React from "react";
 import Link from "next/link";
 
 interface SearchItemProps {
-  result: any;
+  result: [];
 }
 
 const SearchItemComponent: React.FC<SearchItemProps> = ({ result }) => {
-  console.log(result);
-  let avgVote = result?.ratingAvg?._avg?.rating || result?.vote_average / 2;
+  const avgVote = result?.ratingAvg?._avg?.rating || result?.vote_average / 2;
 
-  console.log(result?.vote_average);
   const getImageUrl = (posterPath?: string, gender?: number) => {
     if (
       posterPath &&
@@ -28,7 +26,7 @@ const SearchItemComponent: React.FC<SearchItemProps> = ({ result }) => {
       : "/female-not-found.jpg";
   };
 
-  const getResultSlug = (item: any) => {
+  const getResultSlug = (item: []) => {
     const name = item.name || item.title || "unknown";
     return name.toLowerCase().replaceAll(" ", "-");
   };
@@ -152,7 +150,7 @@ const SearchItemComponent: React.FC<SearchItemProps> = ({ result }) => {
               </span>
               <span className="text-zinc-300 truncate">
                 {result.known_for
-                  .map((item: any) => item.title || item.name)
+                  .map((item: []) => item.title || item.name)
                   .join(", ")}
               </span>
             </div>

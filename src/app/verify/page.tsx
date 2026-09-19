@@ -11,7 +11,8 @@ const VerifyPage = () => {
   const router = useRouter();
   const verifyEmail = useAuthStore((state) => state.verifyEmail);
 
-  const handleSubmit = async (_e: { preventDefault: () => void }) => {
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
+    e.preventDefault();
     const verificationCode = code.join("");
 
     try {
@@ -22,7 +23,7 @@ const VerifyPage = () => {
       } else {
         toast.error(res?.error);
       }
-    } catch (err) {
+    } catch {
       const errorMessage = "Error occurred during registration.";
       toast.error(errorMessage);
     }

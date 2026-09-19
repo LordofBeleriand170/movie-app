@@ -7,6 +7,7 @@ import IconComponent from "./IconComponent";
 import slugify from "@/libs/slugify";
 import TrendingLoading from "@/app/TrendingLoading";
 import { useBatchWatched } from "@/app/utils/useBatchWatched";
+import { Recent } from "@/features/content/contentStore";
 
 const RecentlyVisited = () => {
   const { data: session, status } = useSession();
@@ -16,7 +17,6 @@ const RecentlyVisited = () => {
   const [recentlyError, setRecentlyError] = useState(false);
   const watchlist = useCollectionStore((state) => state.watchlist);
 
-  // Start with loading as true by default so there's no delay before skeleton shows
   const [recentlyLoading, setRecentlyLoading] = useState(true);
   const [isWatchedLoading, setIsWatchedLoading] = useState(true);
 
@@ -105,13 +105,10 @@ const RecentlyVisited = () => {
       ) : recently && recently.length > 0 ? (
         <div className="relative">
           <div className="flex overflow-x-auto gap-3.5 py-3 scrollbar-thin scroll-smooth transition-all duration-300">
-            {[...recently]?.map((recent) => {
+            {[...recently]?.map((recent: Recent) => {
               const titleOrName = recent.title || recent.name || "untitled";
               const slug = slugify(recent.id, titleOrName);
-              const contentId =
-                recent.id ||
-                (recent as any).mediaId ||
-                (recent as any).contentId;
+              const contentId = recent.id || recent.mediaId || recent.contentId;
 
               return (
                 <div

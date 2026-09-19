@@ -1,12 +1,11 @@
 "use client";
 
-import { useCollectionStore } from "@/features/collection/collectionStore";
 import { MovieState, useMovieStore } from "@/features/movie/movieStore";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 
 export interface Categories {
-  id: any;
+  id: string;
   name: string;
 }
 
@@ -31,8 +30,8 @@ interface FilterComponentProps {
   setYear: React.Dispatch<React.SetStateAction<number | null>>;
   decade: string | null;
   setDecade: React.Dispatch<React.SetStateAction<string | null>>;
-  countries?: any | null;
-  setCountries?: React.Dispatch<React.SetStateAction<any | null>>;
+  countries?: [] | null;
+  setCountries?: React.Dispatch<React.SetStateAction<[] | null>>;
   rating: string | null;
   setRating: React.Dispatch<React.SetStateAction<string | null>>;
   isUser: boolean | null;

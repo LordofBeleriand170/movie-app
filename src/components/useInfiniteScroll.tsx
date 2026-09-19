@@ -1,10 +1,11 @@
+import { MovieState } from "@/features/movie/movieStore";
 import { useEffect, useRef } from "react";
 
 interface InfiniteScrollProps {
-  trendingResult: any[]; // your movie data array
-  loadMore: () => void; // function to fetch next page
-  threshold?: number; // optional observer threshold
-  rootMargin?: string; // optional root margin
+  trendingResult: MovieState[] | null;
+  loadMore: () => void;
+  threshold?: number;
+  rootMargin?: string;
 }
 
 export const useInfiniteScroll = ({
@@ -27,7 +28,6 @@ export const useInfiniteScroll = ({
       });
     };
 
-    // Disconnect old observer if exists
     if (observerRef.current) observerRef.current.disconnect();
 
     observerRef.current = new IntersectionObserver(observerCallback, {

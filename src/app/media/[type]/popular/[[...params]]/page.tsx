@@ -9,29 +9,25 @@ import PaginatedItems from "@/components/PaginatedItems";
 import FilterComponent from "@/components/FilterComponent";
 import { MovieState } from "@/features/movie/movieStore";
 import ErrorPage from "@/libs/ErrorPage";
-import LeftFilter from "@/components/LeftFilter";
 
-interface TypePageProps {
+interface PopularContentPageProps {
   option: string | undefined;
 }
 
 export interface Categories {
-  id: any;
+  id: string;
   name: string;
 }
 
-const TypePage: React.FC<TypePageProps> = ({ option }) => {
+const PopularContentPage: React.FC<PopularContentPageProps> = ({ option }) => {
   const params = useParams();
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState<string | null>(null);
-  const [sortDate, setSortDate] = useState<string | null>(null);
-  const [titleSort, setTitleSort] = useState<string | null>(null);
   const [trendingLoading, setTrendingLoading] = useState<boolean | null>(true);
   const [trendingResult, setTrendingResult] = useState<MovieState[] | null>(
     null,
   );
-  const [runtime, setRuntime] = useState<[number, number]>([0, 360]);
 
   const [categories, setCategories] = useState<Categories[] | null>([]);
   const [trendings, setTrendings] = useState<boolean>(false);
@@ -40,32 +36,34 @@ const TypePage: React.FC<TypePageProps> = ({ option }) => {
   const [mediaType, setMediaType] = useState("movie");
   const [year, setYear] = useState<number | null>(null);
   const [decade, setDecade] = useState<string | null>(null);
-  const [countries, setCountries] = useState<any | null>(null);
+  const [countries, setCountries] = useState<[] | null>(null);
   const [rating, setRating] = useState<string | null>(null);
   const [errorComponent, setErrorComponent] = useState<boolean>(false);
 
   useEffect(() => {
-    let indexDecade = params?.params?.indexOf("decade");
+    const indexDecade = params?.params?.indexOf("decade") ?? -1;
     if (indexDecade >= 0) {
-      setDecade(params?.params?.[indexDecade + 1]);
+      setDecade(params?.params?.[indexDecade + 1] ?? null);
     }
-    let indexCategory = params?.params?.indexOf("category");
+    const indexCategory = params?.params?.indexOf("category") ?? -1;
     if (indexCategory >= 0) {
-      setCategory(params?.params?.[indexCategory + 1]);
+      setCategory(params?.params?.[indexCategory + 1] ?? null);
     }
-    let indexYear = params?.params?.indexOf("year");
+    const indexYear = params?.params?.indexOf("year") ?? -1;
+    const rawYear = params?.params?.[indexYear + 1];
+    const parsedYear = rawYear ? parseInt(rawYear, 10) : NaN;
     if (indexYear >= 0) {
-      setYear(parseInt(params?.params?.[indexYear + 1]));
+      setYear(isNaN(parsedYear) ? null : parsedYear);
     }
     if (indexDecade < 0 && indexYear >= 0) {
-      let currentYear = params?.params?.[indexYear + 1];
-      let decade =
+      const currentYear = params?.params?.[indexYear + 1];
+      const decade =
         currentYear
           ?.toString()
           .substring(0, currentYear?.toString()?.length - 1) + `0s`;
       setDecade(decade);
     }
-    let indexRating = params?.params?.indexOf("by");
+    const indexRating = params?.params?.indexOf("by") ?? -1;
     if (indexRating >= 0) {
       console.log();
       if (params?.params?.[indexRating + 1] === "rating") {
@@ -90,8 +88,10 @@ const TypePage: React.FC<TypePageProps> = ({ option }) => {
   if (loading || status === "loading") return <LoadingPage />;
 
   if (errorComponent) {
-    return <ErrorPage />;
+    return <ErrorPage error={{ message: "Error occured" }} />;
   }
+
+  let isUser = true;
 
   return (
     <>
@@ -119,6 +119,7 @@ const TypePage: React.FC<TypePageProps> = ({ option }) => {
             setCountries={setCountries}
             rating={rating}
             setRating={setRating}
+            isUser={isUser}
           />
           <PaginatedItems
             category={category}
@@ -131,8 +132,6 @@ const TypePage: React.FC<TypePageProps> = ({ option }) => {
             setPage={setPage}
             mediaType={mediaType}
             categories={categories}
-            titleSort={titleSort}
-            sortDate={sortDate}
             trendings={trendings}
             year={year}
             decade={decade}
@@ -145,4 +144,4 @@ const TypePage: React.FC<TypePageProps> = ({ option }) => {
   );
 };
 
-export default TypePage;
+export default PopularContentPage;

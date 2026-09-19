@@ -154,7 +154,9 @@ const NotificationModal: React.FC<NotificationModalProps> = () => {
             ) : (
               <div className="flex flex-col items-center justify-center gap-2 py-10">
                 <Bell className="h-8 w-8 text-gray-600" />
-                <p className="text-xs text-gray-400">You're all caught up.</p>
+                <p className="text-xs text-gray-400">
+                  You&apos;re all caught up.
+                </p>{" "}
               </div>
             )}
           </div>

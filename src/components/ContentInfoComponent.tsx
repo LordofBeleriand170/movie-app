@@ -21,7 +21,7 @@ interface ContentInfoComponentProps {
   type: string;
   tvShow: TvShow | null;
   casts: Cast[];
-  info: any | null;
+  info: [] | null;
   director: Crew | null;
   writer: Crew | null;
   creator: Crew | null;
@@ -29,7 +29,7 @@ interface ContentInfoComponentProps {
   awards: string | null;
   newRate: number;
   setNewRate: React.Dispatch<React.SetStateAction<number>>;
-  video: any | null;
+  video: [] | null;
   avg: number | null;
   voters: number | null;
 }
@@ -81,12 +81,12 @@ const ContentInfoComponent: React.FC<ContentInfoComponentProps> = ({
     }
   }, [info?.info?.overview]);
 
-  let avgRating =
+  const avgRating =
     info?.ratingAvg?._avg?.rating !== false
       ? info?.ratingAvg?._avg?.rating
       : info?.info?.vote_average / 2;
 
-  let count =
+  const count =
     info?.ratingAvg?._count?.rating !== 0
       ? info?.ratingAvg?._count?.rating
       : info?.info?.vote_count;
@@ -268,7 +268,7 @@ const ContentInfoComponent: React.FC<ContentInfoComponentProps> = ({
 
                   {/* Genres */}
                   <div className="flex flex-wrap gap-1.5 ml-auto md:ml-0">
-                    {(info?.info?.genres || []).map((genre: any) => (
+                    {(info?.info?.genres || []).map((genre: []) => (
                       <Link
                         href={`/genre/${type}/${genre.name.toLowerCase()}`}
                         key={genre.id}

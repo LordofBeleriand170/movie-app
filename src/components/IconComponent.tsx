@@ -12,9 +12,10 @@ import {
   useSearchParams,
 } from "next/navigation";
 import { useToggleWatchlist } from "@/app/utils/handleToggleWatchlist";
+import { Movie } from "@/features/movie/movieStore";
 
 interface IconComponentProps {
-  result: any;
+  result: Movie;
   slug: string;
   watchDisplay: string;
   checked: boolean;

@@ -11,7 +11,7 @@ interface AddReplyComponentProps {
 }
 
 const AddReplyComponent: React.FC<AddReplyComponentProps> = ({ id }) => {
-  const { addRespond } = useMovieStore((state) => state.addRespond);
+  const addRespond = useMovieStore((state) => state.addRespond);
 
   const user = useCollectionStore((state) => state.user);
 
@@ -33,19 +33,12 @@ const AddReplyComponent: React.FC<AddReplyComponentProps> = ({ id }) => {
     if (!respond.trim()) return;
 
     try {
-      // Add the reply
       await addRespond(user, commentId, respond);
-
-      // ✅ Success toast
-      toast.success("Reply added successfully!");
-
-      // Clear form
       setRespond("");
       setOpenComment(false);
     } catch (error) {
       console.error(error);
 
-      // ❌ Error toast
       toast.error("Failed to add reply. Please try again.");
     }
   };

@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useContentStore } from "@/features/content/contentStore";
+import { CastMember, useContentStore } from "@/features/content/contentStore";
 
 const ActorComponent = () => {
   const content = useContentStore((state) => state.content);
@@ -22,7 +22,7 @@ const ActorComponent = () => {
       <div className="relative">
         {/* Scrollable Cast List */}
         <div className="flex gap-3 overflow-x-auto scrollbar-thin pb-3">
-          {casts.slice(0, 15).map((cast) => {
+          {casts.slice(0, 15).map((cast: CastMember) => {
             const hasProfile =
               cast?.profile_path && !cast.profile_path.includes("null");
             const fallbackImg =

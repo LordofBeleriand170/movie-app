@@ -1,7 +1,10 @@
 "use client";
 
 import LoadingPage from "@/app/LoadingPage";
-import { useCollectionStore } from "@/features/collection/collectionStore";
+import {
+  Review,
+  useCollectionStore,
+} from "@/features/collection/collectionStore";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import UserInfoComponent from "./UserInfoComponent";
@@ -17,46 +20,50 @@ import {
   Tv,
 } from "lucide-react";
 import Link from "next/link";
+import { Favorite, Watchlist } from "@/features/content/contentStore";
+
+/*   const user = session?.user;
+
+
+ useEffect(() => {
+    if (!user?.email) return;
+
+    fetchUserCollections(user.email);
+    setLoading(false);
+  }, [user?.email]);*/
 
 const UserPageComponent = () => {
-  const { data: session, status } = useSession();
-  const user = session?.user;
   const [loading, setLoading] = useState<boolean>(true);
   const [activeFavorite, setActiveFavorite] = useState<string>("movies");
   const [activeWatchlist, setActiveWatchlist] = useState<string>("movies");
 
   const watchlist = useCollectionStore((state) => state.watchlist);
   const favorite = useCollectionStore((state) => state.favorite);
-  const fetchUserCollections = useCollectionStore(
-    (state) => state.fetchUserCollections,
-  );
-
-  useEffect(() => {
-    if (!user?.email) return;
-
-    fetchUserCollections(user.email);
-    setLoading(false);
-  }, [user?.email]);
+  const user = useCollectionStore((state) => state.user);
 
   if (loading) {
     return <LoadingPage />;
   }
 
-  const movieFavorite = favorite?.filter((item) => item.mediaType === "movie");
-  const tvShowFavorite = favorite?.filter((item) => item.mediaType === "tv");
+  const movieFavorite = favorite?.filter(
+    (item: Favorite) => item.mediaType === "movie",
+  );
+  const tvShowFavorite = favorite?.filter(
+    (item: Favorite) => item.mediaType === "tv",
+  );
 
   const movieWatchlist = watchlist?.filter(
-    (item) => item.mediaType === "movie",
+    (item: Watchlist) => item.mediaType === "movie",
   );
-  const tvShowWatchlist = watchlist?.filter((item) => item.mediaType === "tv");
+  const tvShowWatchlist = watchlist?.filter(
+    (item: Watchlist) => item.mediaType === "tv",
+  );
 
-  let isActiveFavorite =
+  const isActiveFavorite =
     activeFavorite === "movies" ? movieFavorite : tvShowFavorite;
 
-  let isActiveWatchlist =
+  const isActiveWatchlist =
     activeWatchlist === "movies" ? movieWatchlist : tvShowWatchlist;
-
-  console.log("USER: ", user);
 
   return (
     <main className="min-h-screen text-slate-100 bg-black pb-16">
@@ -122,7 +129,7 @@ const UserPageComponent = () => {
             </div>
           ) : (
             <div className="flex flex-wrap gap-4">
-              {isActiveFavorite?.map((item, idx) => {
+              {isActiveFavorite?.map((item: Favorite, idx) => {
                 const titleOrName = item.title || item.name || "untitled";
                 const slug = slugify(item.mediaId, titleOrName);
 
@@ -137,6 +144,8 @@ const UserPageComponent = () => {
                         result={item}
                         slug={slug}
                         watchDisplay={"no"}
+                        checked={false}
+                        isWatchedLoading={false}
                       />
                     </div>
                     <div className="p-2.5 flex flex-col justify-between flex-1 bg-neutral-950">
@@ -210,34 +219,38 @@ const UserPageComponent = () => {
           ) : (
             <div className="relative">
               <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-neutral-700 scrollbar-track-transparent">
-                {isActiveWatchlist?.slice(0, 20)?.map((item, idx) => {
-                  const titleOrName = item.title || item.name || "untitled";
-                  const slug = slugify(item.mediaId, titleOrName);
+                {isActiveWatchlist
+                  ?.slice(0, 20)
+                  ?.map((item: Watchlist, idx) => {
+                    const titleOrName = item.title || item.name || "untitled";
+                    const slug = slugify(item.mediaId, titleOrName);
 
-                  return (
-                    <div
-                      key={idx}
-                      className="group relative w-[150px] min-w-[150px] flex flex-col bg-neutral-950 border border-white/10 hover:border-white/25 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-cyan-950/30"
-                    >
-                      {/* Fixed 2:3 aspect ratio container matching Favorites */}
-                      <div className="group">
-                        <IconComponent
-                          result={item}
-                          slug={slug}
-                          watchDisplay={"no"}
-                        />
+                    return (
+                      <div
+                        key={idx}
+                        className="group relative w-[150px] min-w-[150px] flex flex-col bg-neutral-950 border border-white/10 hover:border-white/25 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-cyan-950/30"
+                      >
+                        {/* Fixed 2:3 aspect ratio container matching Favorites */}
+                        <div className="group">
+                          <IconComponent
+                            result={item}
+                            slug={slug}
+                            watchDisplay={"no"}
+                            checked={false}
+                            isWatchedLoading={false}
+                          />
+                        </div>
+                        <div className="p-2.5 flex flex-col justify-between flex-1 bg-neutral-950">
+                          <span className="text-xs font-semibold text-neutral-200 group-hover:text-cyan-400 transition-colors line-clamp-1">
+                            {item?.name || item?.title}
+                          </span>
+                          <span className="text-[10px] text-neutral-500 font-medium mt-1">
+                            {item?.releaseDate?.split("-")[0] || "N/A"}
+                          </span>
+                        </div>
                       </div>
-                      <div className="p-2.5 flex flex-col justify-between flex-1 bg-neutral-950">
-                        <span className="text-xs font-semibold text-neutral-200 group-hover:text-cyan-400 transition-colors line-clamp-1">
-                          {item?.name || item?.title}
-                        </span>
-                        <span className="text-[10px] text-neutral-500 font-medium mt-1">
-                          {item?.releaseDate?.split("-")[0] || "N/A"}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
 
                 {isActiveWatchlist?.length > 20 && (
                   <Link
@@ -278,7 +291,7 @@ const UserPageComponent = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {user?.reviews?.map((item, idx) => (
+              {user?.reviews?.map((item: Review, idx: number) => (
                 <div
                   key={idx}
                   className="flex flex-col justify-between p-4 rounded-xl bg-neutral-950 border border-white/10 hover:border-white/20 transition duration-200"
@@ -294,7 +307,7 @@ const UserPageComponent = () => {
                   </div>
                   {item?.content && (
                     <p className="text-xs text-neutral-400 line-clamp-2 italic">
-                      "{item.content}"
+                      {`"${item.content}"`}
                     </p>
                   )}
                 </div>

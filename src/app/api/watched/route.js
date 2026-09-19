@@ -1,6 +1,5 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma";
-import { Console } from "console";
 
 // GET: Check if movies/shows are inside user's watchlist (supports single or batch check)
 export async function GET(req) {

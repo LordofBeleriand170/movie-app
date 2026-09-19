@@ -1,22 +1,20 @@
 "use client";
 
 import React, { useState } from "react";
-import { Comment } from "@/types/comment";
-import { useCollectionStore } from "@/features/collection/collectionStore";
 import {
-  useParams,
-  usePathname,
-  useRouter,
-  useSearchParams,
-} from "next/navigation";
+  useCollectionStore,
+  User,
+} from "@/features/collection/collectionStore";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FaHeart } from "react-icons/fa6";
 import { formatDate } from "@/app/utils/formatDate";
 import toggleLike from "@/app/utils/toggleLike";
 import Image from "next/image";
 import { toast } from "react-toastify";
+import { Reply } from "@/features/content/contentStore";
 
 interface ReplyComponentProps {
-  reply: Comment;
+  reply: Reply;
 }
 
 const ReplyComponent: React.FC<ReplyComponentProps> = ({ reply }) => {
@@ -26,20 +24,18 @@ const ReplyComponent: React.FC<ReplyComponentProps> = ({ reply }) => {
 
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  let params = useParams();
-
-  const mediaId = params?.slug;
 
   const fullUrl = `${pathname}?${searchParams.toString()}`;
 
   const router = useRouter();
 
-  const hasLiked = reply?.replyLikes?.some((like) => like?.userId === user?.id);
-
+  const hasLiked = reply?.replyLikes?.some(
+    (item) => item?.like?.userId === user?.id,
+  );
   const [liked, setLiked] = useState(hasLiked);
   const [bannedModal, setBannedModal] = useState<boolean>(false);
 
-  const handleReport = async (id, user) => {
+  const handleReport = async (id: string, user: User | null) => {
     try {
       const res = await report(id, user);
 
@@ -73,7 +69,6 @@ const ReplyComponent: React.FC<ReplyComponentProps> = ({ reply }) => {
 
   return (
     <div className="flex gap-3 items-start py-2">
-      {/* Avatar */}
       <Image
         src={reply?.image ?? "/user-not-found.jpg"}
         alt="Reply avatar"
@@ -82,9 +77,7 @@ const ReplyComponent: React.FC<ReplyComponentProps> = ({ reply }) => {
         height={8}
       />
 
-      {/* Reply Content */}
       <div className="flex flex-col gap-1 flex-1">
-        {/* Header */}
         <div className="flex items-center gap-2 text-xs">
           <span className="font-semibold text-gray-200">{reply?.username}</span>
 
@@ -93,7 +86,6 @@ const ReplyComponent: React.FC<ReplyComponentProps> = ({ reply }) => {
           )}
         </div>
 
-        {/* Reply Text */}
         <p className="text-sm text-gray-200 leading-relaxed">{reply?.text}</p>
 
         <div className="flex gap-2">

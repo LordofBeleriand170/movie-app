@@ -37,7 +37,6 @@ export async function POST(req) {
       );
     }
 
-    // Update user: postavljamo verified i brišemo token
     const updatedUser = await prisma.user.update({
       where: { id: user.id },
       data: {

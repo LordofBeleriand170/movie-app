@@ -6,9 +6,24 @@ import NotificationsPreview from "./NotificationsPreview";
 import NotificationCurrent from "./NotificationCurrent";
 import { useSearchParams } from "next/navigation";
 
+export interface NotificationSender {
+  name: string;
+  [key: string]: unknown;
+}
+
+export interface Notification {
+  id: string;
+  commentId: string;
+  sender: NotificationSender;
+  createdAt: Date | string;
+  text: string;
+  [key: string]: unknown;
+}
+
 const NotificationsComponent = () => {
   const notifications = useCollectionStore((state) => state.notifications);
-  const [selectedNotifications, setSelectedNotifications] = useState<any>();
+  const [selectedNotifications, setSelectedNotifications] =
+    useState<Notification>();
 
   const params = useSearchParams();
   const notificationId = params.get("notificationId");
@@ -16,7 +31,9 @@ const NotificationsComponent = () => {
   useEffect(() => {
     if (!notificationId) return;
 
-    let notification = notifications.filter((not) => not.id === notificationId);
+    const notification = notifications.filter(
+      (not: Notification) => not.id === notificationId,
+    );
 
     setSelectedNotifications(notification[0]);
   }, [notificationId]);
@@ -33,7 +50,7 @@ const NotificationsComponent = () => {
           {notifications
             .slice()
             .reverse()
-            .map((notification) => (
+            .map((notification: Notification) => (
               <NotificationsPreview
                 key={notification.id}
                 notification={notification}

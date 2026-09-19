@@ -7,9 +7,9 @@ import Image from "next/image";
 
 interface SeasonComponentProps {
   id: string;
-  tvShow: TvShow;
-  currentSeason: Season[] | null;
-  setCurrentSeason: React.Dispatch<React.SetStateAction<Season[] | null>>;
+  tvShow: TvShow | null;
+  currentSeason: Season | null;
+  setCurrentSeason: React.Dispatch<React.SetStateAction<Season | null>>;
 }
 
 const SeasonComponent: React.FC<SeasonComponentProps> = ({
@@ -26,7 +26,11 @@ const SeasonComponent: React.FC<SeasonComponentProps> = ({
     const getSeason = async () => {
       try {
         const response = await fetchSeason(id, season);
-        setCurrentSeason(response);
+        if (response && response.length > 0) {
+          setCurrentSeason(response[0]);
+        } else {
+          setCurrentSeason(null);
+        }
       } catch (err) {
         console.log(err);
       }
@@ -46,7 +50,7 @@ const SeasonComponent: React.FC<SeasonComponentProps> = ({
         <div className="flex flex-col gap-10">
           <div className="flex flex-col h-full mt-5 items-center justify-center">
             <div className="flex w-full overflow-x-auto scroll-smooth gap-5 pt-4 scrollbar-hide scrollbar-thin">
-              {tvShow?.seasons?.map((season, index) => (
+              {tvShow?.seasons?.map((season: Season, index: number) => (
                 <div
                   onClick={() => setSeason(season.season_number)} // Set the selected season number
                   key={index}
@@ -57,7 +61,7 @@ const SeasonComponent: React.FC<SeasonComponentProps> = ({
                       src={`https://image.tmdb.org/t/p/original${season.poster_path}`}
                       fill
                       className="rounded-lg object-cover"
-                      alt={season.name}
+                      alt={season.name ?? "Season name"}
                     />
                   </div>
                 </div>
@@ -88,7 +92,7 @@ shadow-2xl overflow-hidden flex gap-6 min-h-50 cursor-pointer"
                                 ? `https://image.tmdb.org/t/p/original${episode.still_path}`
                                 : "/image-not-found.jpg"
                             }
-                            alt={episode.name}
+                            alt={episode.name ?? "Episode name"}
                             fill
                             className="object-cover"
                           />

@@ -1,23 +1,30 @@
 import { create } from "zustand";
 import { Comment } from "@/types/comment";
+import { User } from "../collection/collectionStore";
 
-/*const API_URL =
-  import.meta.env.MODE === "development"
-    ? "http://localhost:5000/api/auth"
-    : "/api/auth";*/
+type Media = {
+  backdrops: {
+    file_path: string;
+  };
+};
 
 export type Movie = {
   media_type: string;
+  mediaType: string;
+  type: string;
   first_air_date: string;
   id: number;
   title: string;
   name: string;
   backdrop_path: string;
   poster_path: string;
+  posterPath: string;
+  poster: string;
   adult: boolean | null;
-  media: any[];
+  media: Media;
   overview: string;
   release_date: string;
+  releaseDate: string;
   original_language: string;
   video: boolean;
   rating: number;
@@ -44,12 +51,12 @@ interface SearchResult {
 }
 
 export type MovieState = {
-  [x: string]: any;
+  id?: number | string | null;
   results: Movie[];
-  loading: Boolean;
-  movies: Movie[]; // To store multiple movies (trending, search, etc.)
+  loading: boolean;
+  movies: Movie[];
   movie: Movie | null;
-  videos: any[]; // Optional: single selected movie
+  videos: [];
   input: string | null;
   error: string | null;
   total_pages: number;
@@ -67,8 +74,8 @@ export type MovieState = {
   ) => Promise<Movie[]>;
   similar: (id: string, type: string) => Promise<any[]>;
   search: (input: string, page: number) => Promise<SearchResult[]>;
-  optionFetch: ([filter]: any) => Promise<MovieState[]>;
-  genre: ([filter]: any) => Promise<MovieState[]>;
+  optionFetch: (filter: []) => Promise<MovieState[]>;
+  genre: (filter: []) => Promise<MovieState[]>;
   comments: Comment[];
   fetchComments: (movieId: number, mediaType: string) => Promise<void>;
   addComment: (
@@ -85,12 +92,7 @@ export type MovieState = {
     spoiler: boolean,
   ) => Promise<void>;
   addRespond: (
-    user: {
-      id: string | undefined;
-      username: string | null | undefined;
-      email: string | null | undefined;
-      image: string | null | undefined;
-    },
+    user: User,
     commentId: string | undefined,
     respond: string,
   ) => Promise<void>;
@@ -141,11 +143,10 @@ export const useMovieStore = create<MovieState>((set) => ({
       });
 
       return data.results || [];
-    } catch (err: any) {
-      if (err.name === "AbortError") return [];
-
-      console.error("Failed to fetch trending:", err);
-      set({ error: err?.message || "Unknown error" });
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Unexpected error";
+      set({ error: message });
       return [];
     }
   },
@@ -182,11 +183,10 @@ export const useMovieStore = create<MovieState>((set) => ({
       });
 
       return data.results || [];
-    } catch (err: any) {
-      if (err.name === "AbortError") return [];
-
-      console.error("Failed to fetch trending:", err);
-      set({ error: err?.message || "Unknown error" });
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Unexpected error";
+      set({ error: message });
       return [];
     }
   },
@@ -218,8 +218,10 @@ export const useMovieStore = create<MovieState>((set) => ({
       });
 
       return data?.result || [];
-    } catch (error: any) {
-      set({ error: error.message || "Unexpected error" });
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Unexpected error";
+      set({ error: message });
       return [];
     }
   },
@@ -250,13 +252,15 @@ export const useMovieStore = create<MovieState>((set) => ({
       });
 
       return data?.result?.results || [];
-    } catch (error: any) {
-      set({ error: error.message || "Unexpected error" });
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Unexpected error";
+      set({ error: message });
       return [];
     }
   },
 
-  genre: async (filter: any): Promise<MovieState[]> => {
+  genre: async (filter): Promise<MovieState[]> => {
     set({ error: null });
     try {
       const res = await fetch(`/api/genre`, {
@@ -281,8 +285,10 @@ export const useMovieStore = create<MovieState>((set) => ({
       });
 
       return data?.result?.results || [];
-    } catch (error: any) {
-      set({ error: error.message || "Unexpected error" });
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Unexpected error";
+      set({ error: message });
       return [];
     }
   },
@@ -312,8 +318,10 @@ export const useMovieStore = create<MovieState>((set) => ({
       });
 
       return data?.results || data || [];
-    } catch (error: any) {
-      set({ error: error.message || "Unexpected error" });
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Unexpected error";
+      set({ error: message });
       return [];
     }
   },
@@ -343,8 +351,10 @@ export const useMovieStore = create<MovieState>((set) => ({
       });
 
       return data || [];
-    } catch (error: any) {
-      set({ error: error.message || "Unexpected error" });
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Unexpected error";
+      set({ error: message });
       return [];
     }
   },
@@ -375,8 +385,10 @@ export const useMovieStore = create<MovieState>((set) => ({
       });
 
       return data?.results || [];
-    } catch (error: any) {
-      set({ error: error.message || "Unexpected error", loading: false });
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Unexpected error";
+      set({ error: message });
       return [];
     }
   },
@@ -443,12 +455,7 @@ export const useMovieStore = create<MovieState>((set) => ({
   },
 
   addRespond: async (
-    user: {
-      id: string | undefined;
-      username: string | null | undefined;
-      email: string | null | undefined;
-      image: string | null | undefined;
-    },
+    user: User,
     commentId: string | undefined,
     respond: string,
   ) => {
@@ -527,7 +534,7 @@ export const useMovieStore = create<MovieState>((set) => ({
             return {
               ...c,
               replies: c.replies.map((r) =>
-                r._id === data.reply._id
+                r?.id === data?.reply?.id
                   ? { ...r, likes: data.reply.likes }
                   : r,
               ),

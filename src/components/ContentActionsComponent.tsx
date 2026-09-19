@@ -4,13 +4,8 @@ import { useCollectionStore } from "@/features/collection/collectionStore";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { GoClock } from "react-icons/go";
-import { FaHeart } from "react-icons/fa6";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
-import {
-  Movie,
-  TvShow,
-  useContentStore,
-} from "@/features/content/contentStore";
+import { useContentStore } from "@/features/content/contentStore";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
 import { FaRegHeart } from "react-icons/fa";
@@ -29,7 +24,7 @@ const ContentActionsComponent: React.FC<ContentActionsComponentProps> = ({
   const content = useContentStore((state) => state.content);
   const { toggleWatchlist } = useToggleWatchlist();
 
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const isAuthenticated = status === "authenticated";
 
   const pathname = usePathname();
@@ -53,7 +48,7 @@ const ContentActionsComponent: React.FC<ContentActionsComponentProps> = ({
 
   const mediaType = media === "movies" ? "movie" : "tv";
 
-  let result = content
+  const result = content
     ? {
         id: content?.info?.id,
         name: content?.info?.title || content?.info?.name,
@@ -61,9 +56,7 @@ const ContentActionsComponent: React.FC<ContentActionsComponentProps> = ({
         type: content?.info?.release_date ? "movie" : "tv",
       }
     : null;
-  console.log("WATCHLIST: ", watchlist);
-  console.log("CONTENT: ", content);
-  console.log("MEDIATYPE", mediaType);
+
   const mediaInWatchlist = watchlist.some(
     (item) =>
       item.mediaId === content?.info?.id && item.mediaType === mediaType,

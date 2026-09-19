@@ -1,4 +1,4 @@
-export const formatVoteCount = (count: any) => {
+export const formatVoteCount = (count: number) => {
   if (count < 1000) return count;
   else if (count >= 1000 && count < 1000000)
     return `${(count / 1000).toFixed(1)}K`;

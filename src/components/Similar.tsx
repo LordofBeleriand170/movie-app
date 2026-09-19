@@ -1,6 +1,5 @@
 "use client";
 
-import SimilarSkeleton from "@/app/SimilarLoading";
 import { useContentStore } from "@/features/content/contentStore";
 import React, { useEffect } from "react";
 import slugify from "@/libs/slugify";
@@ -10,7 +9,7 @@ import { useBatchWatched } from "@/app/utils/useBatchWatched";
 interface SimilarProps {
   type: string;
   id: string;
-  info: any;
+  info: [];
 }
 
 const Similar: React.FC<SimilarProps> = ({ type, id, info }) => {
@@ -23,7 +22,6 @@ const Similar: React.FC<SimilarProps> = ({ type, id, info }) => {
     loading: isWatchedLoading,
   } = useBatchWatched();
 
-  // 1. Fetch similar items from content store
   useEffect(() => {
     const getSimilar = async () => {
       if (!id || !type) return;
@@ -36,7 +34,6 @@ const Similar: React.FC<SimilarProps> = ({ type, id, info }) => {
     getSimilar();
   }, [id, type, similar]);
 
-  // 2. Batch check watched status whenever `movies` changes
   useEffect(() => {
     if (Array.isArray(movies) && movies.length > 0) {
       checkBatch(movies);

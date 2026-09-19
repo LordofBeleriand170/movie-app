@@ -1,10 +1,10 @@
 import React from "react";
 
-import { Movie, TvShow } from "@/features/content/contentStore";
 import Image from "next/image";
+import { Posters } from "@/features/content/contentStore";
 
 interface ContentPosterComponentProps {
-  movie: Movie | TvShow | null;
+  info: Posters;
 }
 
 const ContentPosterComponent: React.FC<ContentPosterComponentProps> = ({

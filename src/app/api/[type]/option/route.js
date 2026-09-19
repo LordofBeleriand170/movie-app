@@ -70,18 +70,12 @@ ${
     );
   }
 
-  !rating && response?.results?.sort((a, b) => b.weight - a.weight);
-
+  if (!rating && response?.results) {
+    response.results.sort((a, b) => b.weight - a.weight);
+  }
   response.results = response?.results?.filter(
     (result) => result.poster_path !== null || result.backdrop_path !== null,
   );
-
-  /*if (filter.option === "upcoming") {
-      response.results = response.results.filter((result) => {
-        console.log(new Date(result.release_date));
-        new Date(result.release_date) < new Date();
-      });
-    }*/
 
   const finalResponse = {
     result: response,

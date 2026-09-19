@@ -19,10 +19,10 @@ export const useBatchWatched = () => {
   const isWatchedBatch = useCollectionStore((state) => state.isWatchedBatch);
   const { data: session, status } = useSession();
 
-  const lastItemsRef = useRef<any[]>([]);
+  const lastItemsRef = useRef<[]>([]);
 
   const checkBatch = useCallback(
-    async (items: any[], isBackgroundRefresh = false) => {
+    async (items: [], isBackgroundRefresh = false) => {
       const activeUserId = user?.id || session?.user?.id;
       if (status === "loading" || !activeUserId || !items?.length) {
         return {};

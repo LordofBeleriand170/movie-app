@@ -55,7 +55,6 @@ const SearchResults = () => {
     setPage(1);
   }, [name]);
 
-  // Fetch search results
   useEffect(() => {
     const fetchSearch = async () => {
       try {
@@ -71,11 +70,11 @@ const SearchResults = () => {
             const safeData = Array.isArray(response) ? response : [];
 
             const existing = new Set(
-              safePrev.map((item: any) => `${item.id}-${item.media_type}`),
+              safePrev.map((item) => `${item.id}-${item.media_type}`),
             );
 
             const filtered = safeData.filter(
-              (item: any) => !existing.has(`${item.id}-${item.media_type}`),
+              (item) => !existing.has(`${item.id}-${item.media_type}`),
             );
 
             return [...safePrev, ...filtered];
@@ -105,7 +104,6 @@ const SearchResults = () => {
         searchResult={searchResult}
       />
 
-      {/* Infinite scroll trigger */}
       <div
         ref={loadMoreRef}
         className="h-20 bg-black flex items-center justify-center"

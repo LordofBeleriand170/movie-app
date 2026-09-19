@@ -1,22 +1,15 @@
-import { useState } from "react";
-
 interface TrailerPlayerProps {
-  video: any;
+  video: {
+    key: string;
+  };
   setTrailer: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const TrailerPlayer: React.FC<TrailerPlayerProps> = ({ video, setTrailer }) => {
-  const [isOpen, setIsOpen] = useState(true); // trailer open by default
-
-  if (!isOpen) return null; // hide component when closed
-
   const key = video?.key;
-
-  console.log(video);
 
   return (
     <div className="inset-0 z-50 w-full flex items-center justify-center ">
-      {/* Modal box */}
       <div className="relative w-full max-w-3xl mx-4">
         <button
           onClick={() => setTrailer(false)}
@@ -25,10 +18,7 @@ const TrailerPlayer: React.FC<TrailerPlayerProps> = ({ video, setTrailer }) => {
           <span className="text-4xl">&times;</span>
           <span className="text-xl">Close</span>
         </button>
-        {/* Close button */}
-        <button></button>
 
-        {/* Trailer iframe */}
         <iframe
           width="100%"
           height="500"

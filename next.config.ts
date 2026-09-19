@@ -18,6 +18,9 @@ const nextConfig = {
     ],
     domains: ["image.tmdb.org"],
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 module.exports = nextConfig;

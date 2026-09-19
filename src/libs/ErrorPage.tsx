@@ -1,15 +1,21 @@
+import { Error } from "@/features/tv/tvStore";
 import Link from "next/link";
 import React from "react";
 
-const ErrorPage = (error: any) => {
-  console.log(error);
+interface ErrorPageProps {
+  error: Error | { message: string };
+}
+
+const ErrorPage = ({ error }: ErrorPageProps) => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-full bg-black text-white px-4">
       {/* Status code */}
       <h1 className="text-6xl font-bold mb-4">Error occured</h1>
 
       {/* Message */}
-      <p className="text-xl text-gray-300 mb-6 text-center max-w-xl"></p>
+      <p className="text-xl text-gray-300 mb-6 text-center max-w-xl">
+        {error?.message}
+      </p>
 
       {/* Actions */}
       <div className="flex gap-4">

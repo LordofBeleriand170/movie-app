@@ -1,9 +1,11 @@
+import { Reply } from "@/features/content/contentStore";
+
 export type Comment = {
   commentLikes: string[];
   replyLikes: string[];
   like: number;
   image: string;
-  replies: Comment[];
+  replies: Reply[];
   _id?: string;
   id: string;
   movieId: number;
@@ -14,6 +16,23 @@ export type Comment = {
   comments: number;
   text: string;
   mediaId: string;
-  createdAt?: string;
+  createdAt?: string | undefined;
   spoilers: boolean;
+  comment: {
+    commentLikes: {
+      like: {
+        userId: string;
+      };
+    }[];
+    id: string;
+    image: string;
+    isDeleted: boolean;
+    username: string;
+    userId: string;
+    rating: number;
+    updatedAt: string;
+    spoilers: boolean;
+    text: string;
+    replies: Reply[];
+  };
 };
