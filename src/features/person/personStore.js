@@ -7,7 +7,7 @@ export const usePersonStore = create((set, get) => ({
   error: null,
 
   fetchPerson: async (id) => {
-    set({ error: null }); // Clear previous errors
+    set({ error: null });
     console.log(id);
     try {
       const res = await fetch("/api/fetchPerson", {
