@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Menu, Search, X } from "lucide-react";
@@ -10,7 +10,7 @@ import NotificationModal from "./NotificationModal";
 import SideMenu from "./SideMenu";
 import UserModal from "./UserModal";
 
-const Navbar = () => {
+const NavbarContent = () => {
   const [searchValue, setSearchValue] = useState("");
   const [openMenu, setOpenMenu] = useState(false);
   const [openSettings, setOpenSettings] = useState(false);
@@ -141,4 +141,10 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default function Navbar() {
+  return (
+    <Suspense fallback={<div className="w-full h-16 bg-black" />}>
+      <NavbarContent />
+    </Suspense>
+  );
+}

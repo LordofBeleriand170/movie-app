@@ -1,12 +1,12 @@
 "use client";
 
 import { useCollectionStore } from "@/features/collection/collectionStore";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import NotificationsPreview from "./NotificationsPreview";
 import NotificationCurrent from "./NotificationCurrent";
 import { useSearchParams } from "next/navigation";
 
-const NotificationsComponent = () => {
+const NotificationsContent = () => {
   const notifications = useCollectionStore((state) => state.notifications);
   const [selectedNotifications, setSelectedNotifications] = useState();
 
@@ -19,7 +19,7 @@ const NotificationsComponent = () => {
     let notification = notifications.filter((not) => not.id === notificationId);
 
     setSelectedNotifications(notification[0]);
-  }, [notificationId]);
+  }, [notificationId, notifications]);
 
   return (
     <div className="h-screen flex flex-col bg-black text-white 2xl:px-82 xl:px-60 lg:px-40 md:px-20 sm:px-10">
@@ -62,4 +62,14 @@ const NotificationsComponent = () => {
   );
 };
 
-export default NotificationsComponent;
+export default function NotificationsComponent() {
+  return (
+    <Suspense
+      fallback={
+        <div className="h-screen bg-black text-white p-8">Loading...</div>
+      }
+    >
+      <NotificationsContent />
+    </Suspense>
+  );
+}
