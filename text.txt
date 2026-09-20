@@ -1,0 +1,18 @@
+/*MONGO = mongodb+srv://lordofbeleriand:ycjTP9KKhi2bAORF@cluster0.o4leess.mongodb.net/test?retryWrites=true&w=majority
+SECRET = 9b49c378ab122edc72e11541f65e6f4a7e0c5c5f9f9a1b78d071ec694fb76828
+TMDB_ACCESS_TOKEN = eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxNGJjMjBlYjg1MDIxZDFjNjhlNmQ3MGVhYmE3ZDgxNCIsIm5iZiI6MTc0NzQwMjY5NS40ODUsInN1YiI6IjY4MjczZmM3NTNmNjAxNTM2N2FkYTZkMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.mta4rdgemTLuCddtbZEqzXsckEmhmPsnpjpkmw0RMdI
+GOOGLE_CLIENT_ID = 667498646720-jk8cgvbg3dnstg9onhru1qujtu5vehb0.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET = 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
+NEXTAUTH_SECRET = 3DnjCWqiJiZEqgg9rcxyHWhe91a8CebtJV83KeoyTRU=
+NEXTAUTH_URL=http://localhost:3000
+DATABASE_URL="postgresql://postgres:Akivuk12%21@localhost:5432/movie_app"
+OMDB_KEY = b4ba95b9
+GOOGLE_GENERATION_AI_API_KEY=AIzaSyC7E5m6aMm5FEvuq0I9hcEAA8h1b7rWsfQ 
+HUGGINGFACE_API_KEY = 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
+OPENROUTER_API_KEY=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
+DATABASE_URL="postgresql://postgres.qcpnzseupiejqjjcyqbp:Akivuk12!!!@aws-1-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
+
+DIRECT_URL="postgresql://postgres.qcpnzseupiejqjjcyqbp:Akivuk12!!!@aws-1-eu-west-1.pooler.supabase.com:5432/postgres"
+
+SMTP_EMAIL=andrijavukovic37@gmail.com
+SMTP_PASSWORD=cmjxzzzeauftwyos*/
