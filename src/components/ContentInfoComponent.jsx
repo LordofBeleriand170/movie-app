@@ -21,6 +21,11 @@ const ContentInfoComponent = ({ type, newRate, setNewRate, info }) => {
   const { data: session } = useSession();
   const ratings = useCollectionStore((state) => state.ratings);
 
+  const releaseDate = new Date(info?.info?.release_date);
+  const now = new Date();
+
+  const checkDate = releaseDate <= now;
+
   const [rate, setRate] = useState(0);
   const [trailer, setTrailer] = useState(false);
   const [media, setMedia] = useState("movies");
@@ -213,7 +218,9 @@ const ContentInfoComponent = ({ type, newRate, setNewRate, info }) => {
                           }`}
                           className="hover:text-white transition-colors"
                         >
-                          {info?.info?.release_date?.split("-")[0]}
+                          {!checkDate
+                            ? "Coming soon"
+                            : info?.info?.release_date?.split("-")[0]}
                         </Link>
                         {info?.info?.runtime > 0 && (
                           <>
@@ -287,29 +294,28 @@ const ContentInfoComponent = ({ type, newRate, setNewRate, info }) => {
                 </div>
               </div>
 
-              {/* Bottom Cards Pinned to Bottom via mt-auto */}
-              <div className="flex flex-wrap justify-center items-stretch gap-4 max-w-3xl mt-auto pt-6">
-                {/* Awards */}
-                <div className="flex-1 min-w-[220px] max-w-xs flex items-center justify-center p-4 rounded-xl bg-[#0f1522]/90 border border-gray-800/80">
-                  <AwardsComponent />
-                </div>
+              {checkDate && (
+                <div className="flex flex-wrap justify-center items-stretch gap-4 max-w-3xl mt-auto pt-6">
+                  <div className="flex-1 min-w-[220px] max-w-xs flex items-center justify-center p-4 rounded-xl bg-[#0f1522]/90 border border-gray-800/80">
+                    <AwardsComponent />
+                  </div>
 
-                {/* User Actions & Rate */}
-                <div className="flex-1 min-w-[240px] max-w-xs flex flex-col justify-center items-center gap-3 p-4 rounded-xl bg-[#0f1522]/90 border border-gray-800/80">
-                  <ContentActionsComponent media={media} />
-                  <RateComponent
-                    rate={rate}
-                    media={media}
-                    newRate={newRate}
-                    setNewRate={setNewRate}
-                  />
-                </div>
+                  <div className="flex-1 min-w-[240px] max-w-xs flex flex-col justify-center items-center gap-3 p-4 rounded-xl bg-[#0f1522]/90 border border-gray-800/80">
+                    <ContentActionsComponent media={media} />
+                    <RateComponent
+                      rate={rate}
+                      media={media}
+                      newRate={newRate}
+                      setNewRate={setNewRate}
+                    />
+                  </div>
 
-                {/* Ratings */}
-                <div className="flex-1 min-w-[220px] max-w-xs flex flex-col justify-between p-4 rounded-xl bg-[#0f1522]/90 border border-gray-800/80">
-                  <RatingsComponents avg={avgRating} count={count || 0} />
+                  {/* Ratings */}
+                  <div className="flex-1 min-w-[220px] max-w-xs flex flex-col justify-between p-4 rounded-xl bg-[#0f1522]/90 border border-gray-800/80">
+                    <RatingsComponents avg={avgRating} count={count || 0} />
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         )}

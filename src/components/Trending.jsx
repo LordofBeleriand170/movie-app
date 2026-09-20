@@ -2,7 +2,7 @@
 
 import TrendingLoading from "@/app/TrendingLoading";
 import VideoLoadingSkeleton from "@/app/LoadingVideoSkeleton";
-import { Movie, useMovieStore } from "@/features/movie/movieStore";
+import { useMovieStore } from "@/features/movie/movieStore";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import IconComponent from "./IconComponent";
@@ -228,10 +228,8 @@ const Trending = ({ setErrorComponent }) => {
         )}
       </section>
 
-      {/* Trending Rows with Smaller Poster Icons */}
       <section className="flex flex-col gap-8">
         <div className="flex flex-col">
-          {/* Header with Title and Toggle Tabs */}
           <div className="flex items-center justify-between pb-3">
             <div className="flex items-center gap-2.5">
               <span className="h-5 w-1 bg-gradient-to-b from-red-500 to-rose-600 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
