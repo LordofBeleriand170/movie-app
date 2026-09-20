@@ -48,17 +48,14 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen bg-[#070709] text-white overflow-x-hidden">
-      {/* Background Ambient Glow Effects */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        {/* Top-left subtle red aura */}
         <div className="absolute -top-32 -left-32 w-[550px] h-[550px] bg-red-900/15 rounded-full blur-[140px]" />
-        {/* Mid-right dynamic dark purple aura */}
+
         <div className="absolute top-1/3 -right-32 w-[500px] h-[500px] bg-purple-950/20 rounded-full blur-[150px]" />
-        {/* Bottom deep ambient glow */}
+
         <div className="absolute -bottom-40 left-1/3 w-[650px] h-[450px] bg-neutral-900/40 rounded-full blur-[160px]" />
       </div>
 
-      {/* Main Page Layout */}
       <div className="relative z-10 flex flex-col">
         <Navbar />
 
@@ -74,7 +71,6 @@ export default function Home() {
               </section>
             )}
 
-            {/* Mounts only after authentication and session user are strictly confirmed */}
             {isUserAuthenticated && (
               <section className="transition-all duration-300">
                 <RecentlyVisited />

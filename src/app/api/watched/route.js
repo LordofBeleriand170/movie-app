@@ -2,17 +2,14 @@ import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/libs/prisma";
 import { Console } from "console";
 
-// GET: Check if movies/shows are inside user's watchlist (supports single or batch check)
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("userId");
 
-    // Support both `contentIds` (plural batch) or `contentId` (single)
     const rawContentIds =
       searchParams.get("contentIds") || searchParams.get("contentId");
 
-    // Guard against unauthenticated users or missing parameters
     if (
       !userId ||
       userId === "undefined" ||
@@ -26,7 +23,6 @@ export async function GET(req) {
       );
     }
 
-    // Parse comma-separated list and deduplicate IDs
     const numericMediaIds = Array.from(
       new Set(
         rawContentIds
@@ -43,7 +39,6 @@ export async function GET(req) {
       );
     }
 
-    // Fetch all matching records in a single indexed query
     const entries = await prisma.watchlist.findMany({
       where: {
         userId: userId,
@@ -56,7 +51,6 @@ export async function GET(req) {
       },
     });
 
-    // Create a Set for O(1) membership lookup
     const watchedSet = new Set(entries.map((entry) => entry.mediaId));
 
     const watchedStatuses = {};
@@ -66,9 +60,7 @@ export async function GET(req) {
 
     return NextResponse.json(
       {
-        // Backward-compatibility field for single checks
         isWatched: watchedSet.has(numericMediaIds[0]),
-        // Batch lookup dictionary: { "550": true, "680": false, ... }
         watchedStatuses,
       },
       { status: 200 },
@@ -82,7 +74,6 @@ export async function GET(req) {
   }
 }
 
-// POST: Toggle item in user's watchlist
 export async function POST(req) {
   try {
     const text = await req.text();

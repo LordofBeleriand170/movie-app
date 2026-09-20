@@ -66,9 +66,6 @@ const RateComponent = ({ rate, media, newRate, setNewRate }) => {
         <div className="flex flex-col gap-2 backdrop-blur-md py-2 rounded-xl">
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-3 w-fit h-6">
-              {/* Clear Button Container (Fixed size reserves space to prevent layout jump) */}
-
-              {/* Stars Row */}
               <div className="flex items-center gap-3">
                 {[1, 2, 3, 4, 5].map((star) => {
                   const active =

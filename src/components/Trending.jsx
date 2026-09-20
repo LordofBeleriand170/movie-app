@@ -238,7 +238,6 @@ const Trending = ({ setErrorComponent }) => {
               </h2>
             </div>
 
-            {/* Dynamic Tab Switcher */}
             <div className="flex items-center bg-neutral-900/80 p-1 rounded-full border border-white/10 backdrop-blur-md">
               <button
                 onClick={() => setActiveTab("movies")}
@@ -270,7 +269,7 @@ const Trending = ({ setErrorComponent }) => {
             </div>
           ) : (
             <div className="relative">
-              <div className="flex overflow-x-auto gap-4 py-3 scrollbar-thin scroll-smooth transition-all duration-300">
+              <div className="flex overflow-x-auto gap-4 py-3 scrollbar-thin scrollbar-thumb-neutral-700 scrollbar-track-transparent">
                 {currentList?.map((result, i) => {
                   const titleOrName = result.name || result.title || "untitled";
                   const slug = slugify(result.id, titleOrName);

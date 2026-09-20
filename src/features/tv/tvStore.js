@@ -7,7 +7,6 @@ export const useTvShowStore = create((set) => ({
   episodes: null,
   error: null,
 
-  // Fetch season data
   fetchSeason: async (id, season) => {
     set({ error: null });
 
@@ -48,7 +47,6 @@ export const useTvShowStore = create((set) => ({
     }
   },
 
-  // Fetch episodes for a specific season of a TV show
   fetchEpisodes: async (tvId, seasonNumber) => {
     set({ error: null });
 

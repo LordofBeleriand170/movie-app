@@ -3,7 +3,6 @@ import Image from "next/image";
 const SeasonInfo = ({ tvShow, currentSeason }) => {
   return (
     <div className="relative overflow-hidden min-h-[350px]">
-      {/* Background */}
       <div className="absolute inset-0 overflow-hidden">
         <div
           className="absolute inset-0 bg-no-repeat bg-top brightness-40"
@@ -12,8 +11,6 @@ const SeasonInfo = ({ tvShow, currentSeason }) => {
             backgroundSize: "86%",
           }}
         />
-
-        {/* Fade image to black on the right */}
       </div>
 
       <div
@@ -34,13 +31,9 @@ const SeasonInfo = ({ tvShow, currentSeason }) => {
         }}
       />
 
-      {/* Dark overlays */}
-
       <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black to-transparent" />
 
-      {/* Content */}
       <div className="relative z-10 flex min-h-[350px]  gap-8 px-16 2xl:px-82 xl:px-60 lg:px-40 md:px-20 sm:px-10 py-12">
-        {/* Poster */}
         <div className="relative h-[300px] w-[200px] shrink-0 overflow-hidden rounded-xl shadow-2xl ring-1 ring-white/10 brightness-90">
           <Image
             src={`https://image.tmdb.org/t/p/original${currentSeason?.poster_path}`}
@@ -50,7 +43,6 @@ const SeasonInfo = ({ tvShow, currentSeason }) => {
           />
         </div>
 
-        {/* Info */}
         <div className="pb-2">
           <h2 className="mt-3 text-4xl font-bold tracking-tight">
             {currentSeason?.name}

@@ -10,7 +10,6 @@ const FREE_MODEL = "meta-llama/llama-3.3-70b-instruct";
 
 export async function POST(request) {
   try {
-    // Prihvatamo i movieTitle
     const { comments, movieId, mediaType, contentTitle } = await request.json();
 
     if (!comments || !Array.isArray(comments) || comments.length === 0) {

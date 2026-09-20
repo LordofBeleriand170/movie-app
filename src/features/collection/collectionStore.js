@@ -155,12 +155,12 @@ export const useCollectionStore = create((set) => ({
     }
   },
 
-  deleteComment: async (id) => {
+  deleteComment: async (id, isComment) => {
     try {
       const res = await fetch(`/api/deleteComment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ id, isComment }),
       });
 
       const data = await res.json();

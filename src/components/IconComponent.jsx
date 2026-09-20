@@ -92,9 +92,8 @@ const IconComponent = ({
             }
           }}
           aria-label={watched ? "Remove from watched" : "Mark as watched"}
-          className="absolute top-0 -left-1 z-30 flex items-center cursor-pointer justify-center w-10 h-12 transition-all duration-200 active:scale-95 focus:outline-none disabled:cursor-wait"
+          className="absolute top-0 -left-1 z-10 flex items-center cursor-pointer justify-center w-10 h-12 transition-all duration-200 active:scale-95 focus:outline-none disabled:cursor-wait"
         >
-          {/* Bookmark Badge SVG */}
           <svg
             viewBox="0 0 34 46"
             className={`absolute inset-0 w-full h-full drop-shadow-md transition-colors duration-200 ${
@@ -108,7 +107,6 @@ const IconComponent = ({
             <path d="M0 0h34v46l-17-9.2L0 46V0z" />
           </svg>
 
-          {/* Inner Icon / Spinner */}
           <span className="relative z-10 -mt-1">
             {isWatchedLoading && isAuthenticated ? (
               <Loader2 className="w-4 h-4 text-white/70 animate-spin" />
@@ -121,7 +119,6 @@ const IconComponent = ({
         </button>
       )}
 
-      {/* Hover Gradient Overlay & Title */}
       <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
         <p className="text-sm font-semibold text-white truncate">{title}</p>
         {rawReleaseDate && (

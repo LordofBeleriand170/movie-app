@@ -8,7 +8,6 @@ const pendingIdsSet = new Set();
 export const useBatchWatched = () => {
   const [watchedStatuses, setWatchedStatuses] = useState({});
 
-  // Track initial fetch completion so UI knows when first check is done
   const [isInitialReady, setIsInitialReady] = useState(false);
 
   const user = useCollectionStore((state) => state.user);
@@ -31,7 +30,6 @@ export const useBatchWatched = () => {
         .map((item) => item?.id || item?.mediaId || item?.contentId)
         .filter(Boolean);
 
-      // On initial page loads or forced updates, bypass stale in-memory cache
       const idsToFetch = rawIds.filter(
         (id) =>
           isBackgroundRefresh ||
@@ -51,7 +49,6 @@ export const useBatchWatched = () => {
         const batchResult = await isWatchedBatch(activeUserId, idsToFetch);
 
         if (batchResult && typeof batchResult === "object") {
-          // Set accurate server status
           Object.entries(batchResult).forEach(([id, isWatched]) => {
             const numericId = !isNaN(Number(id)) ? Number(id) : id;
             globalWatchedCache[numericId] = Boolean(isWatched);
@@ -59,21 +56,18 @@ export const useBatchWatched = () => {
           });
         }
 
-        // Fill unreturned IDs as false
         idsToFetch.forEach((id) => {
           if (globalWatchedCache[id] === undefined) {
             globalWatchedCache[id] = false;
           }
         });
 
-        // Sync local component state with fresh server data
         setWatchedStatuses({ ...globalWatchedCache });
       } catch (err) {
         console.error("Batch check failed:", err);
       } finally {
         idsToFetch.forEach((id) => pendingIdsSet.delete(id));
 
-        // Mark initial loading complete
         setIsInitialReady(true);
       }
       return globalWatchedCache;

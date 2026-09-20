@@ -61,12 +61,10 @@ const UserPageComponent = () => {
   return (
     <main className="min-h-screen text-slate-100 bg-black pb-16">
       <div className="w-[90%] px-8 mx-auto space-y-10 pt-6">
-        {/* User Banner Header */}
         <div className="rounded-2xl bg-neutral-900/80 border border-white/10 p-6 shadow-2xl">
           <UserInfoComponent />
         </div>
 
-        {/* FAVORITES SECTION */}
         <section className="bg-neutral-900/50 border border-white/10 rounded-2xl p-6 shadow-xl space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
             <div className="flex items-center gap-3">
@@ -86,7 +84,6 @@ const UserPageComponent = () => {
               </div>
             </div>
 
-            {/* Filter Pill Tabs */}
             <div className="flex bg-neutral-950 p-1 rounded-xl border border-white/10 w-fit">
               <button
                 className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer ${
@@ -131,7 +128,6 @@ const UserPageComponent = () => {
                     key={idx}
                     className="group relative w-[150px] min-w-[150px] flex flex-col bg-neutral-950 border border-white/10 hover:border-white/25 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-red-950/30"
                   >
-                    {/* Fixed 2:3 aspect ratio container for icon */}
                     <div className="group relative">
                       <IconComponent
                         result={item}
@@ -154,7 +150,6 @@ const UserPageComponent = () => {
           )}
         </section>
 
-        {/* WATCHED SECTION */}
         <section className="bg-neutral-900/50 border border-white/10 rounded-2xl p-6 shadow-xl space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
             <div className="flex items-center gap-3">
@@ -219,7 +214,6 @@ const UserPageComponent = () => {
                       key={idx}
                       className="group relative w-[150px] min-w-[150px] flex flex-col bg-neutral-950 border border-white/10 hover:border-white/25 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-cyan-950/30"
                     >
-                      {/* Fixed 2:3 aspect ratio container matching Favorites */}
                       <div className="group">
                         <IconComponent
                           result={item}
@@ -253,7 +247,6 @@ const UserPageComponent = () => {
           )}
         </section>
 
-        {/* REVIEWS SECTION */}
         <section className="bg-neutral-900/50 border border-white/10 rounded-2xl p-6 shadow-xl space-y-6">
           <div className="flex items-center gap-3 border-b border-white/10 pb-4">
             <div className="p-2 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">

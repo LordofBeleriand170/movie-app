@@ -1,4 +1,3 @@
-// app/api/auth/login/route.ts
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { prisma } from "@/libs/prisma";
@@ -16,7 +15,6 @@ export async function POST(req) {
       );
     }
 
-    // Find user by username
     const user = await prisma.user.findUnique({
       where: { username },
       include: {
@@ -63,8 +61,7 @@ export async function POST(req) {
       return NextResponse.json({ error: "Invalid password" }, { status: 401 });
     }
 
-    // Create response
-    const res = NextResponse.json({
+    sponse.json({
       user: {
         id: user.id,
         username: user.username,
@@ -77,7 +74,6 @@ export async function POST(req) {
       },
     });
 
-    // Set JWT cookie
     generateTokenAndSetCookie(res, user.id);
 
     return res;

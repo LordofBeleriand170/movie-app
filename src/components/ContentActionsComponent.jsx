@@ -83,7 +83,6 @@ const ContentActionsComponent = ({ media }) => {
 
   return (
     <div className="flex items-center justify-around w-full max-w-xs gap-4 p-2">
-      {/* Watch Button */}
       <div className="flex flex-col items-center gap-1.5 group">
         <button
           onClick={() => {
@@ -108,7 +107,6 @@ const ContentActionsComponent = ({ media }) => {
         </span>
       </div>
 
-      {/* Like Button */}
       <div className="flex flex-col items-center gap-1.5 group">
         <button
           onClick={() => {
@@ -138,7 +136,6 @@ const ContentActionsComponent = ({ media }) => {
         </span>
       </div>
 
-      {/* Watchlist Button */}
       <div className="flex flex-col items-center gap-1.5 group">
         <button className="p-3 rounded-full bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white border border-white/10 transition-all duration-200 cursor-pointer">
           <GoClock className="w-5 h-5" />

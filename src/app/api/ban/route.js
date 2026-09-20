@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma";
+import { formatDate } from "@/app/utils/formatDate";
 
 export async function POST(req) {
   try {
@@ -21,7 +22,7 @@ export async function POST(req) {
         bannedUntil: bannedUntil ? new Date(bannedUntil) : null,
         receivedNotifications: {
           create: {
-            text: `You are banned because of ${bannedText}. You will not be able to comment until ${bannedUntil}`,
+            text: `You are banned because of ${bannedText}. You will not be able to comment until ${formatDate(bannedUntil)}`,
             senderId: senderId,
           },
         },

@@ -1,4 +1,3 @@
-// app/api/like-comment/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma";
 
@@ -6,6 +5,8 @@ export async function PATCH(req) {
   try {
     const body = await req.json();
     const { commentId, isReply, id } = body;
+
+    console.log("ID: ", id);
 
     if (!commentId || !id) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
@@ -29,7 +30,6 @@ export async function PATCH(req) {
       });
 
       if (existingLike) {
-        // Unlike
         await prisma.replyLike.delete({
           where: { userId_replyId: { userId: user.id, replyId: reply.id } },
         });
@@ -38,7 +38,6 @@ export async function PATCH(req) {
           data: { likes: { decrement: 1 } },
         });
       } else {
-        // Like
         await prisma.replyLike.create({
           data: { userId: user.id, replyId: reply.id },
         });
@@ -71,7 +70,6 @@ export async function PATCH(req) {
       });
 
       if (existingLike) {
-        // Unlike
         await prisma.commentLike.delete({
           where: {
             userId_commentId: { userId: id, commentId: comment.id },
@@ -82,7 +80,6 @@ export async function PATCH(req) {
           data: { likes: { decrement: 1 } },
         });
       } else {
-        // Like
         await prisma.commentLike.create({
           data: { userId: id, commentId: comment.id },
         });

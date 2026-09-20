@@ -1,4 +1,3 @@
-// app/api/replies/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma";
 
@@ -11,13 +10,11 @@ export async function POST(req) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
 
-    // Validate user exists
     const user = await prisma.user.findUnique({ where: { id } });
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Validate comment exists
     const comment = await prisma.comment.findUnique({
       where: { id: commentId },
     });
@@ -55,7 +52,6 @@ export async function GET(req) {
       );
     }
 
-    // Fetch comments with their replies and usernames
     const comments = await prisma.comment.findMany({
       where: { mediaId: mediaId, mediaType: mediaType },
       orderBy: { createdAt: "desc" },

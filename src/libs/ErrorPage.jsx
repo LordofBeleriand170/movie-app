@@ -5,13 +5,10 @@ const ErrorPage = (error) => {
   console.log(error);
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-full bg-black text-white px-4">
-      {/* Status code */}
       <h1 className="text-6xl font-bold mb-4">Error occured</h1>
 
-      {/* Message */}
       <p className="text-xl text-gray-300 mb-6 text-center max-w-xl"></p>
 
-      {/* Actions */}
       <div className="flex gap-4">
         <Link
           href="/"

@@ -4,7 +4,8 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 
@@ -125,6 +126,7 @@ deletedBy String?
 model Reply {
   id        String   @id @default(cuid())
   commentId String
+  isDeleted Boolean  @default(false)
   comment   Comment  @relation(fields: [commentId], references: [id])
   userId    String
   user      User     @relation(fields: [userId], references: [id])

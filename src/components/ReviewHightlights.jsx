@@ -8,11 +8,9 @@ export const ReviewHighlights = ({ movieId, type, contentTitle }) => {
   const { aiSummary, aiLoading, aiError, comments } = useContentStore();
 
   useEffect(() => {
-    // Proveravamo uslov i pozivamo funkciju direktno iz store-a
     if (comments && comments.length >= 3 && movieId) {
       useContentStore.getState().fetchAiSummary(movieId, type, contentTitle);
     }
-    // Dependency niz ima stabilnu dužinu (tačno 3 elementa)
   }, [movieId, type, comments.length]);
 
   if (aiLoading) {

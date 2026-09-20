@@ -1,55 +1,27 @@
 import handleAddLike from "./handleAddLike";
 
-const toggleLike = (comment, id, isReply) => {
-  if (!id) return;
-
-  const userIdStr = id.toString();
-
-  let hasLiked;
+const toggleLike = (target, userId, isReply) => {
+  if (!userId || !target) return;
+  const userIdStr = userId.toString();
+  const targetId = target?.id;
 
   if (isReply) {
-    hasLiked = comment?.replyLikes?.some((like) => {
-      return like.userId === userIdStr;
-    });
+    const likesList = target?.replyLikes || [];
+    const hasLiked = likesList.some((like) => like.userId === userIdStr);
+
+    target.replyLikes = hasLiked
+      ? likesList.filter((like) => like.userId !== userIdStr)
+      : [...likesList, { userId: userIdStr, replyId: targetId }];
   } else {
-    hasLiked = comment?.comment?.commentLikes?.some((like) => {
-      return like.userId === userIdStr;
-    });
+    const likesList = target?.commentLikes || [];
+    const hasLiked = likesList.some((like) => like.userId === userIdStr);
+
+    target.commentLikes = hasLiked
+      ? likesList.filter((like) => like.userId !== userIdStr)
+      : [...likesList, { userId: userIdStr, commentId: targetId }];
   }
 
-  let updatedLikes = [];
-
-  if (hasLiked) {
-    if (isReply) {
-      updatedLikes = (comment?.replyLikes || []).filter(
-        (like) => like.userId !== userIdStr,
-      );
-    } else {
-      updatedLikes = (comment?.comment?.commentLikes || []).filter(
-        (like) => like.userId !== userIdStr,
-      );
-    }
-  } else {
-    if (isReply) {
-      updatedLikes = [
-        ...(comment?.replyLikes || []),
-        { userId: userIdStr, replyId: comment?.id },
-      ];
-    } else {
-      updatedLikes = [
-        ...(comment?.comment?.commentLikes || []),
-        { userId: userIdStr, commentId: comment?.comment?.id },
-      ];
-    }
-  }
-
-  if (comment?.comment) {
-    comment.comment.commentLikes = updatedLikes;
-  } else {
-    comment.replyLikes = updatedLikes;
-  }
-
-  handleAddLike(comment?.comment?.id || comment?.id, isReply, mediaId);
+  handleAddLike(targetId, isReply, userId);
 };
 
 export default toggleLike;

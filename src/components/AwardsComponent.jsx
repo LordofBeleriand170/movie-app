@@ -8,7 +8,6 @@ const AwardsComponent = () => {
 
   if (!awards || awards === "N/A") return null;
 
-  // --- MATCHERS ---
   const oscarWin = awards.match(/Won\s+(\d+)\s+Oscars?/i);
   const oscarNom =
     !oscarWin && awards.match(/Nominated\s+for\s+(\d+)\s+Oscars?/i);
@@ -17,17 +16,15 @@ const AwardsComponent = () => {
     !emmyWin && awards.match(/Nominated\s+for\s+(\d+)\s+Primetime\s+Emmys?/i);
   const baftaNom = awards.match(/Nominated\s+for\s+(\d+)\s+BAFTA\s+Awards?/i);
 
-  // --- PRIMARY HIGHLIGHT ---
   const primaryAwardMatch =
     oscarWin || oscarNom || emmyWin || emmyNom || baftaNom;
   const primaryText = primaryAwardMatch ? primaryAwardMatch[0] : null;
 
-  // --- SECONDARY TEXT CLEANUP ---
   let secondaryText = awards;
   if (primaryText) {
     secondaryText = secondaryText
       .replace(primaryText, "")
-      // Clean leading/trailing punctuation (. , or spaces)
+
       .replace(/^[\s.,;]+|[\s.,;]+$/g, "")
       .trim();
   }
@@ -48,7 +45,6 @@ const AwardsComponent = () => {
         </div>
       )}
 
-      {/* Text Container */}
       <div className="flex items-center gap-2 flex-wrap">
         {primaryText && (
           <span className="font-semibold text-slate-100 tracking-wide">

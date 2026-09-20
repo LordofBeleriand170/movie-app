@@ -53,7 +53,6 @@ const PersonComponent = () => {
     }
   }, [person?.personContent, checkBatch]);
 
-  // Handle loading, error, and the fetched person data
   if (isLoading) {
     return (
       <main>

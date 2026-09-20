@@ -1,4 +1,3 @@
-// app/api/auth/[...nextauth]/route.ts
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -40,7 +39,6 @@ export const authOptions = {
 
         if (!username || !password) return null;
 
-        // Fetch user from Prisma
         const user = await prisma.user.findUnique({
           where: { name: username },
         });
@@ -123,21 +121,12 @@ export const authOptions = {
           where: { email: user.email },
         });
 
-        if (existingUser) {
-          // If email exists but not a Google account
-          if (!existingUser.isGoogleUser) {
-            throw new Error("account_link_conflict");
-          }
-        } else {
-          // Create new Google user
-          await prisma.user.create({
-            data: {
-              name: user.username || user.email.split("@")[0],
-              email: user.email,
-              isVerified: true,
-              isGoogleUser: true,
-            },
-          });
+        if (
+          existingUser &&
+          existingUser.password &&
+          !existingUser.isGoogleUser
+        ) {
+          throw new Error("account_link_conflict");
         }
       }
       return true;

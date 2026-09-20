@@ -30,7 +30,6 @@ const ContentInfoComponent = ({ type, newRate, setNewRate, info }) => {
   const [trailer, setTrailer] = useState(false);
   const [media, setMedia] = useState("movies");
 
-  // Overview expand/collapse state & overflow check
   const [isExpanded, setIsExpanded] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
   const overviewRef = useRef(null);
@@ -55,7 +54,6 @@ const ContentInfoComponent = ({ type, newRate, setNewRate, info }) => {
     setRate(rating?.rating ?? 0);
   }, [ratings, info?.info?.id]);
 
-  // Check if overview content exceeds fixed height limit
   useEffect(() => {
     if (overviewRef.current) {
       setIsOverflowing(
@@ -76,7 +74,6 @@ const ContentInfoComponent = ({ type, newRate, setNewRate, info }) => {
 
   return (
     <div className="relative w-full text-white pb-10">
-      {/* Dynamic Backdrop Background */}
       {info?.info?.backdrop_path && (
         <div
           style={{
@@ -100,7 +97,6 @@ const ContentInfoComponent = ({ type, newRate, setNewRate, info }) => {
           </div>
         ) : (
           <div className="flex flex-col md:flex-row items-stretch gap-8 lg:gap-12">
-            {/* Left Column: Poster, Trailer Button & Director/Writer */}
             <div
               className={`flex flex-col items-start gap-2 ${
                 type !== "tvshows" ? "pt-11" : "pt-2"
@@ -143,7 +139,6 @@ const ContentInfoComponent = ({ type, newRate, setNewRate, info }) => {
                   </button>
                 )}
 
-                {/* Director & Writer */}
                 <div className="bg-[#111623]/80 backdrop-blur-md rounded-xl p-3 border border-gray-800 flex flex-col gap-2 text-xs w-full">
                   {media === "movies" ? (
                     <>
@@ -199,15 +194,12 @@ const ContentInfoComponent = ({ type, newRate, setNewRate, info }) => {
               </div>
             </div>
 
-            {/* Main Content Column */}
             <div className="flex-1 flex flex-col pt-8 w-full">
-              {/* Title, Metadata & Overview Block */}
               <div className="flex flex-col items-start gap-4">
                 <h1 className="text-3xl md:text-4xl lg:text-4xl font-extrabold tracking-tight text-white leading-tight">
                   {info?.info?.title || info?.info?.name}
                 </h1>
 
-                {/* Metadata Badges */}
                 <div className="flex flex-wrap items-center gap-3 text-xs">
                   <div className="flex items-center gap-2 text-gray-300 font-medium bg-black/40 px-3 py-1 rounded-lg border border-white/5">
                     {media === "movies" ? (
@@ -251,7 +243,6 @@ const ContentInfoComponent = ({ type, newRate, setNewRate, info }) => {
                     )}
                   </div>
 
-                  {/* Genres */}
                   <div className="flex flex-wrap gap-1.5 ml-auto md:ml-0">
                     {(info?.info?.genres || []).map((genre) => (
                       <Link
@@ -265,7 +256,6 @@ const ContentInfoComponent = ({ type, newRate, setNewRate, info }) => {
                   </div>
                 </div>
 
-                {/* Overview Text */}
                 <div className="relative max-w-3xl w-full">
                   <p
                     ref={overviewRef}
@@ -310,7 +300,6 @@ const ContentInfoComponent = ({ type, newRate, setNewRate, info }) => {
                     />
                   </div>
 
-                  {/* Ratings */}
                   <div className="flex-1 min-w-[220px] max-w-xs flex flex-col justify-between p-4 rounded-xl bg-[#0f1522]/90 border border-gray-800/80">
                     <RatingsComponents avg={avgRating} count={count || 0} />
                   </div>

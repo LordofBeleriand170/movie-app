@@ -1,4 +1,3 @@
-// app/api/verify/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma";
 
@@ -37,7 +36,6 @@ export async function POST(req) {
       );
     }
 
-    // Update user: postavljamo verified i brišemo token
     const updatedUser = await prisma.user.update({
       where: { id: user.id },
       data: {

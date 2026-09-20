@@ -49,7 +49,6 @@ const CommentSectionComponent = ({
       el.scrollIntoView({ behavior: "smooth", block: "center" });
       el.classList.add("bg-gray-500"); // optional highlight
 
-      // Optional: remove highlight after 2s
       setTimeout(() => el.classList.remove("bg-yellow-200"), 2000);
     }
   }, [commentId, comments]);
@@ -106,7 +105,7 @@ const CommentSectionComponent = ({
 
   return (
     <div className="flex flex-col m-auto gap-10 w-[90%] px-8 pb-20">
-      {comments.length > 3 && (
+      {comments.length >= 3 && (
         <>
           <ReviewHighlights
             movieId={movieId}

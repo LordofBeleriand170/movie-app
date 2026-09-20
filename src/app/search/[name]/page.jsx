@@ -18,7 +18,6 @@ const SearchResults = () => {
 
   const loadMoreRef = useRef(null);
 
-  // Infinite scroll observer
   const handleObserver = useCallback(
     (entries) => {
       const target = entries[0];
@@ -46,13 +45,11 @@ const SearchResults = () => {
     };
   }, [handleObserver]);
 
-  // Reset when query changes
   useEffect(() => {
     setSearchResult([]);
     setPage(1);
   }, [name]);
 
-  // Fetch search results
   useEffect(() => {
     const fetchSearch = async () => {
       try {
@@ -102,7 +99,6 @@ const SearchResults = () => {
         searchResult={searchResult}
       />
 
-      {/* Infinite scroll trigger */}
       <div
         ref={loadMoreRef}
         className="h-20 bg-black flex items-center justify-center"

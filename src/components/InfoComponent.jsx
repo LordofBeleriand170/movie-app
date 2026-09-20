@@ -32,7 +32,6 @@ const InfoComponent = ({ option, type }) => {
     if (!user) return;
 
     setCurrentUser((prev) => {
-      // Compare shallowly by id or email
       if (prev?.id === user.id) return prev;
       return user;
     });
@@ -47,7 +46,6 @@ const InfoComponent = ({ option, type }) => {
       setLoading(true);
 
       try {
-        // Only include user if it exists
         const infoData = await fetchInfo(mediaId, type, currentUser);
 
         setInfo(infoData);
@@ -116,7 +114,6 @@ const InfoComponent = ({ option, type }) => {
 
           <div className="relative">
             <section className="relative w-full bg-[#09090b] min-h-[60vh] border-b border-zinc-900">
-              {/* Backdrop Image Container */}
               <div className="absolute inset-0 z-0 w-[86%] mx-auto h-full pointer-events-none overflow-hidden">
                 <div
                   style={{
@@ -132,11 +129,9 @@ const InfoComponent = ({ option, type }) => {
                   className="w-full h-full"
                 />
 
-                {/* Inner Bottom Gradient */}
                 <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#09090b] via-[#09090b]/80 to-transparent" />
               </div>
 
-              {/* Content Layer */}
               <div className="relative z-10 w-full h-full">
                 <ContentInfoComponent
                   type={type}
@@ -147,7 +142,6 @@ const InfoComponent = ({ option, type }) => {
               </div>
             </section>
 
-            {/* Extra Heavy Blur & Shadow Transition Strip */}
             <div className="relative w-full h-24 -mt-12 -mb-12 z-20 pointer-events-none bg-gradient-to-b from-transparent via-black/90 to-black backdrop-blur-xl shadow-2xl" />
 
             <main

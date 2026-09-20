@@ -55,7 +55,6 @@ const NotificationModal = () => {
 
   return (
     <div className="relative flex flex-col items-end">
-      {/* Bell Icon & Unread Badge */}
       <div className="relative flex items-center">
         <button
           id="notification-avatar"
@@ -77,13 +76,11 @@ const NotificationModal = () => {
         </button>
       </div>
 
-      {/* Notifications Modal / Dropdown */}
       {openNotifications && (
         <div
           ref={notificationsRef}
           className="absolute right-0 top-10 z-50 w-[360px] overflow-hidden rounded-xl border border-white/10 bg-[#121212]/95 shadow-2xl backdrop-blur-md"
         >
-          {/* Header */}
           <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
             <div className="flex items-center gap-2">
               <Bell className="h-4 w-4 text-red-500" />
@@ -101,7 +98,6 @@ const NotificationModal = () => {
             </button>
           </div>
 
-          {/* Notification Items List */}
           <div className="max-h-[380px] overflow-y-auto divide-y divide-white/5">
             {notifications.length > 0 ? (
               notifications
@@ -116,19 +112,16 @@ const NotificationModal = () => {
                       onClick={() => setOpenNotifications(false)}
                       className="group flex gap-3 px-4 py-3.5 transition hover:bg-white/5"
                     >
-                      {/* Avatar */}
                       <div className="relative shrink-0">
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-600/20 text-red-500 font-semibold text-sm border border-red-500/30">
                           {notification.sender?.name?.[0]?.toUpperCase() ?? "U"}
                         </div>
 
-                        {/* Unread indicator dot */}
                         {isUnread && (
                           <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[#121212] bg-red-500" />
                         )}
                       </div>
 
-                      {/* Content */}
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-xs font-semibold text-white">
                           {notification.sender?.name || "System"}
@@ -155,7 +148,6 @@ const NotificationModal = () => {
             )}
           </div>
 
-          {/* Footer */}
           <Link
             href="/notifications"
             onClick={() => setOpenNotifications(false)}

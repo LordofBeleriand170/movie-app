@@ -1,4 +1,3 @@
-// libs/getReviewSummary.ts
 export const getReviewSummary = (comments) => {
   if (!comments || comments.length === 0) {
     return { positive: 0, mixed: 0, negative: 0, topKeywords: [] };
@@ -11,7 +10,6 @@ export const getReviewSummary = (comments) => {
     topKeywords: [],
   };
 
-  // Simple keyword detection
   const themes = [
     "acting",
     "masterpiece",

@@ -1,14 +1,14 @@
-import { useCollectionStore } from "@/features/collection/collectionStore";
 import { useMovieStore } from "@/features/movie/movieStore";
 
-const handleAddLike = async (commentId, isReply) => {
-  const { user } = useCollectionStore.getState();
+const handleAddLike = async (commentId, isReply, userId) => {
   const { addLike } = useMovieStore.getState();
 
-  if (!commentId || !user || !user.email) return;
+  console.log("USER ID: ", userId);
+
+  if (!commentId || !userId) return;
 
   try {
-    await addLike(user, commentId, isReply);
+    await addLike(commentId, isReply, userId);
   } catch (err) {
     console.error("Failed to add like:", err);
   }

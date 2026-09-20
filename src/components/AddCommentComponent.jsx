@@ -57,17 +57,14 @@ const AddCommentComponent = ({ movieId, type, newRate, setNewRate }) => {
     try {
       setNewRate(rating);
 
-      // Add the comment with optional rating
       await addComment(user, movieId, text, rating, type, spoiler);
 
-      // Clear form
       setText("");
       setRating(0);
       setOpenComment(false);
     } catch (error) {
       console.error(error);
 
-      // ❌ Error toast
       toast.error("Failed to add comment. Please try again.");
     }
   };
@@ -85,7 +82,7 @@ const AddCommentComponent = ({ movieId, type, newRate, setNewRate }) => {
       </div>
 
       {openComment && (
-        <div className="fixed top-0 left-0 z-50 w-full h-full flex items-center justify-center bg-black/80 backdrop-blur-sm">
+        <div className="fixed top-0 left-0 z-100 w-full h-full flex items-center justify-center bg-black/80 backdrop-blur-sm">
           <div
             className="
             mt-4
@@ -116,7 +113,6 @@ const AddCommentComponent = ({ movieId, type, newRate, setNewRate }) => {
             </div>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-              {/* Rating */}
               <div>
                 <p className="text-sm text-neutral-400 mb-2 font-medium">
                   Your rating
@@ -146,7 +142,6 @@ const AddCommentComponent = ({ movieId, type, newRate, setNewRate }) => {
                 </div>
               </div>
 
-              {/* Text Area */}
               <textarea
                 className="
                 w-full
@@ -168,7 +163,6 @@ const AddCommentComponent = ({ movieId, type, newRate, setNewRate }) => {
                 onChange={(e) => setText(e.target.value)}
               />
 
-              {/* Spoiler Checkbox */}
               <label
                 className="
                 flex items-center gap-3
@@ -187,7 +181,6 @@ const AddCommentComponent = ({ movieId, type, newRate, setNewRate }) => {
                 Contains spoilers
               </label>
 
-              {/* Action Buttons */}
               <div className="flex justify-end gap-3 pt-2">
                 <button
                   type="button"

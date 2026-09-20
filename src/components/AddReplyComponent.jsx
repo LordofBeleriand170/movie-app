@@ -7,7 +7,7 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 
 const AddReplyComponent = ({ id }) => {
-  const { addRespond } = useMovieStore((state) => state.addRespond);
+  const addRespond = useMovieStore((state) => state.addRespond);
 
   const user = useCollectionStore((state) => state.user);
 
@@ -29,19 +29,13 @@ const AddReplyComponent = ({ id }) => {
     if (!respond.trim()) return;
 
     try {
-      // Add the reply
       await addRespond(user, commentId, respond);
 
-      // ✅ Success toast
-      toast.success("Reply added successfully!");
-
-      // Clear form
       setRespond("");
       setOpenComment(false);
     } catch (error) {
       console.error(error);
 
-      // ❌ Error toast
       toast.error("Failed to add reply. Please try again.");
     }
   };
@@ -58,16 +52,16 @@ const AddReplyComponent = ({ id }) => {
       </div>
 
       {openComment && (
-        <div className="fixed top-0 left-0 z-50 w-full h-full flex items-center justify-center bg-black/60">
-          <div className="bg-white text-black rounded-lg p-6 w-[90%] max-w-xl shadow-lg relative">
+        <div className="fixed top-0 left-0 z-50 w-full h-full flex items-center justify-center bg-black/70">
+          <div className="bg-[#0f0f10] text-white rounded-2xl p-6 w-[90%] max-w-xl shadow-2xl relative border border-zinc-800">
             <button
-              className="absolute top-2 right-2 text-gray-600 hover:text-black text-lg"
+              className="absolute top-4 right-4 text-zinc-400 hover:text-white text-lg"
               onClick={() => setOpenComment(false)}
             >
               &times;
             </button>
             <div className="flex flex-col gap-2">
-              <h2 className="text-lg font-bold">Add Response</h2>
+              <h2 className="text-xl font-bold text-white">Add Response</h2>
               <form
                 className="flex flex-col gap-4"
                 onSubmit={(e) => {
@@ -76,14 +70,14 @@ const AddReplyComponent = ({ id }) => {
                 }}
               >
                 <textarea
-                  className="w-full min-h-40 indent-2 py-2 px-3 bg-gray-200 rounded-lg outline-none resize-none"
+                  className="w-full min-h-40 py-3 px-4 bg-[#18181b] text-white placeholder-zinc-500 rounded-xl border border-zinc-800 outline-none resize-none focus:border-zinc-700"
                   placeholder="Add Review..."
                   value={respond}
                   onChange={(e) => setRespond(e.target.value)}
                 />
                 <button
                   type="submit"
-                  className="self-end px-4 py-2 border-2 border-black rounded-lg cursor-pointer hover:bg-black hover:text-white transition"
+                  className="self-end px-5 py-2.5 bg-red-600 text-white font-medium rounded-xl cursor-pointer hover:bg-red-700 transition"
                 >
                   Add Review
                 </button>

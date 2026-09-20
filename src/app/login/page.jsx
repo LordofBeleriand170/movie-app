@@ -28,7 +28,18 @@ const LoginForm = () => {
     const { username, password } = formData;
 
     if (!username || !password) {
-      toast.error("Please fill in all fields");
+      toast.error("Please fill in all fields", {
+        style: {
+          background: "#121212",
+          color: "#ffffff",
+          border: "1px solid #2a2a2a",
+          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
+        },
+        iconTheme: {
+          primary: "#E50914",
+          secondary: "#ffffff",
+        },
+      });
       return;
     }
 
@@ -45,7 +56,18 @@ const LoginForm = () => {
         const updatedSession = await sessionRes.json();
 
         if (!updatedSession?.user) {
-          toast.error("Failed to load session after login");
+          toast.error("Failed to load session after login", {
+            style: {
+              background: "#121212",
+              color: "#ffffff",
+              border: "1px solid #2a2a2a",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
+            },
+            iconTheme: {
+              primary: "#E50914",
+              secondary: "#ffffff",
+            },
+          });
           return;
         }
 
@@ -62,12 +84,34 @@ const LoginForm = () => {
           reviews: [],
         });
 
-        toast.success("Logged in successfully");
+        toast.success("Logged in successfully", {
+          style: {
+            background: "#121212",
+            color: "#ffffff",
+            border: "1px solid #2a2a2a",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
+          },
+          iconTheme: {
+            primary: "#22c55e", // Bright green checkmark icon
+            secondary: "#ffffff",
+          },
+        });
         router.refresh();
         router.replace("/");
       } else {
         const error = res?.error || "Login failed";
-        toast.error(error);
+        toast.error(error, {
+          style: {
+            background: "#121212",
+            color: "#ffffff",
+            border: "1px solid #2a2a2a",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
+          },
+          iconTheme: {
+            primary: "#E50914",
+            secondary: "#ffffff",
+          },
+        });
 
         if (
           error === "User not verified" ||
@@ -77,15 +121,40 @@ const LoginForm = () => {
         }
       }
     } catch {
-      toast.error("An unexpected error occurred");
+      toast.error("An unexpected error occurred", {
+        style: {
+          background: "#121212",
+          color: "#ffffff",
+          border: "1px solid #2a2a2a",
+          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
+        },
+        iconTheme: {
+          primary: "#E50914",
+          secondary: "#ffffff",
+        },
+      });
     } finally {
       setLoading(false);
     }
   };
 
+  /*  <button
+            type="button"
+            onClick={() => signIn("google")}
+            className="w-full mt-2 py-2.5 cursor-pointer bg-white text-zinc-900 font-medium text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-200 transition active:scale-[0.98]"
+          >
+            <Image
+              src="/google-logo.jpg"
+              alt="Google"
+              width={18}
+              height={18}
+              className="object-contain"
+            />
+            Sign in with Google
+          </button>*/
+
   return (
     <main className="min-h-screen w-full flex items-center justify-center bg-[#09090b] text-white px-4">
-      {/* Container Panel */}
       <div className="w-full max-w-md bg-[#111216] border border-zinc-900 rounded-2xl p-8 shadow-2xl">
         <div className="flex flex-col items-center mb-6">
           <h1 className="text-2xl font-bold tracking-wide">Login</h1>
@@ -95,7 +164,6 @@ const LoginForm = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          {/* Username Input */}
           <div className="flex flex-col gap-1.5">
             <label
               htmlFor="username"
@@ -115,7 +183,6 @@ const LoginForm = () => {
             />
           </div>
 
-          {/* Password Input */}
           <div className="flex flex-col gap-1.5">
             <label
               htmlFor="password"
@@ -135,23 +202,6 @@ const LoginForm = () => {
             />
           </div>
 
-          {/* Google Sign In Button */}
-          <button
-            type="button"
-            onClick={() => signIn("google")}
-            className="w-full mt-2 py-2.5 cursor-pointer bg-white text-zinc-900 font-medium text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-200 transition active:scale-[0.98]"
-          >
-            <Image
-              src="/google-logo.jpg"
-              alt="Google"
-              width={18}
-              height={18}
-              className="object-contain"
-            />
-            Sign in with Google
-          </button>
-
-          {/* Lighter Red Login Button */}
           <button
             type="submit"
             disabled={loading}
@@ -161,7 +211,6 @@ const LoginForm = () => {
           </button>
         </form>
 
-        {/* Lighter Red Link */}
         <p className="mt-6 text-xs text-zinc-400 text-center">
           Don't have an account?{" "}
           <Link

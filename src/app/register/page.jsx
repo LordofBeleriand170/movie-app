@@ -9,7 +9,6 @@ import { toast } from "react-toastify";
 import PasswordStrength from "@/components/PasswordStrength";
 import { getStrength } from "../utils/passwordStrength";
 
-// 1. Move all form state and searchParams logic into the inner component
 const RegisterFormContent = () => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -29,7 +28,18 @@ const RegisterFormContent = () => {
 
   useEffect(() => {
     if (!hasShownToast.current && error === "account_link_conflict") {
-      toast.error("This email is already used by a credentials account.");
+      toast.error("This email is already used by a credentials account.", {
+        style: {
+          background: "#121212",
+          color: "#ffffff",
+          border: "1px solid #2a2a2a",
+          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
+        },
+        iconTheme: {
+          primary: "#E50914",
+          secondary: "#ffffff",
+        },
+      });
       hasShownToast.current = true;
     }
   }, [error]);
@@ -43,7 +53,18 @@ const RegisterFormContent = () => {
   const handleNextStep = (e) => {
     e.preventDefault();
     if (!formData.username || !formData.email) {
-      toast.error("Please enter both username and email");
+      toast.error("Please enter both username and email", {
+        style: {
+          background: "#121212",
+          color: "#ffffff",
+          border: "1px solid #2a2a2a",
+          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
+        },
+        iconTheme: {
+          primary: "#E50914",
+          secondary: "#ffffff",
+        },
+      });
       return;
     }
     setStep(2);
@@ -55,17 +76,50 @@ const RegisterFormContent = () => {
     const { username, email, password, confirmPassword } = formData;
 
     if (!username || !email || !password || !confirmPassword) {
-      toast.error("Please fill in all fields");
+      toast.error("Please fill in all fields", {
+        style: {
+          background: "#121212",
+          color: "#ffffff",
+          border: "1px solid #2a2a2a",
+          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
+        },
+        iconTheme: {
+          primary: "#E50914",
+          secondary: "#ffffff",
+        },
+      });
       return;
     }
 
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
+      toast.error("Passwords do not match", {
+        style: {
+          background: "#121212",
+          color: "#ffffff",
+          border: "1px solid #2a2a2a",
+          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
+        },
+        iconTheme: {
+          primary: "#E50914",
+          secondary: "#ffffff",
+        },
+      });
       return;
     }
 
     if (strength !== 4) {
-      toast.error("Password is not strong enough");
+      toast.error("Password is not strong enough", {
+        style: {
+          background: "#121212",
+          color: "#ffffff",
+          border: "1px solid #2a2a2a",
+          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
+        },
+        iconTheme: {
+          primary: "#E50914",
+          secondary: "#ffffff",
+        },
+      });
       return;
     }
 
@@ -85,15 +139,50 @@ const RegisterFormContent = () => {
       if (!res.ok) {
         throw new Error(data.error || "Registration failed");
       } else {
-        toast.success("User created successfully");
+        toast.success("User created successfully", {
+          style: {
+            background: "#121212",
+            color: "#ffffff",
+            border: "1px solid #2a2a2a",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
+          },
+          iconTheme: {
+            primary: "#22c55e", // Bright green checkmark icon
+            secondary: "#ffffff",
+          },
+        });
         router.push("/verify");
       }
     } catch (err) {
-      toast.error(err.message || "Error occurred during registration");
+      toast.error(err.message || "Error occurred during registration", {
+        style: {
+          background: "#121212",
+          color: "#ffffff",
+          border: "1px solid #2a2a2a",
+          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
+        },
+        iconTheme: {
+          primary: "#E50914",
+          secondary: "#ffffff",
+        },
+      });
     } finally {
       setLoading(false);
     }
-  };
+  }; /*   <button
+              type="button"
+              onClick={() => signIn("google")}
+              className="w-full mt-1 py-2.5 bg-white text-zinc-900 font-medium text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-200 transition active:scale-[0.98]"
+            >
+              <Image
+                src="/google-logo.jpg"
+                alt="Google"
+                width={18}
+                height={18}
+                className="object-contain"
+              />
+              Register with Google
+            </button>*/
 
   return (
     <main className="min-h-screen w-full flex items-center justify-center bg-[#09090b] text-white px-4">
@@ -153,21 +242,6 @@ const RegisterFormContent = () => {
                 required
               />
             </div>
-
-            <button
-              type="button"
-              onClick={() => signIn("google")}
-              className="w-full mt-1 py-2.5 bg-white text-zinc-900 font-medium text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-200 transition active:scale-[0.98]"
-            >
-              <Image
-                src="/google-logo.jpg"
-                alt="Google"
-                width={18}
-                height={18}
-                className="object-contain"
-              />
-              Register with Google
-            </button>
 
             <button
               type="submit"
@@ -255,7 +329,6 @@ const RegisterFormContent = () => {
   );
 };
 
-// 2. Export main component wrapped in Suspense boundary
 export default function RegisterForm() {
   return (
     <Suspense

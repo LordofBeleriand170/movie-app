@@ -39,7 +39,6 @@ const UserModal = ({ openSettings, setOpenSettings }) => {
       {openSettings && (
         <div ref={optionsRef} className="absolute right-0 top-10 z-50 w-72">
           <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#121212]/95 shadow-2xl backdrop-blur-md">
-            {/* Profile */}
             <Link
               href={`/user/${user?.email}`}
               className="flex items-center gap-3 p-4 hover:bg-white/5 transition-colors"
@@ -61,7 +60,6 @@ const UserModal = ({ openSettings, setOpenSettings }) => {
 
             <div className="h-px bg-white/10" />
 
-            {/* Menu */}
             <div className="p-2">
               <Link
                 href="/settings/account"

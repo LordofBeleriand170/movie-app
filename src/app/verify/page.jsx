@@ -21,7 +21,18 @@ const VerifyPage = () => {
         toast.success("User verified");
         router.push("/login");
       } else {
-        toast.error(res?.error);
+        toast.error(res?.error, {
+          style: {
+            background: "#121212",
+            color: "#ffffff",
+            border: "1px solid #2a2a2a",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
+          },
+          iconTheme: {
+            primary: "#E50914",
+            secondary: "#ffffff",
+          },
+        });
       }
     } catch (err) {
       const errorMessage = "Error occurred during registration.";

@@ -28,7 +28,6 @@ export async function POST(req) {
       },
     };
 
-    // Fetch basic info
     const infoResponse = await fetch(
       `https://api.themoviedb.org/3/${commentFound?.mediaType}/${commentFound?.mediaId}`,
       tmdbOptions,

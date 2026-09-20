@@ -1,4 +1,3 @@
-// app/api/comments/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma";
 
@@ -13,7 +12,6 @@ export async function POST(req) {
 
     const media = mediaType === "movies" ? "movie" : "tv";
 
-    // Validate user exists
     const user = await prisma.user.findUnique({ where: { id } });
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -51,7 +49,6 @@ export async function POST(req) {
       };
 
       if (!watchlistExists) {
-        // Fetch basic info
         const infoResponse = await fetch(
           `https://api.themoviedb.org/3/${media}/${movieId}`,
           tmdbOptions,

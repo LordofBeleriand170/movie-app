@@ -30,7 +30,6 @@ export const useAuthStore = create(
 
           const data = await res.json();
 
-          // Prisma API: map relacije
           set({
             user: {
               id: data.user.id,

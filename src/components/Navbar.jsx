@@ -53,7 +53,6 @@ const NavbarContent = () => {
       {openMenu && <SideMenu setOpenMenu={setOpenMenu} />}
       <header className="w-full sticky top-0 z-50 bg-black border-b border-neutral-800/80 backdrop-blur-md transition-colors duration-300">
         <div className="w-[90%] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4 md:gap-8">
-          {/* Left Navigation Links */}
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
             {navLinks.map((link) => {
               const isActive =
@@ -80,7 +79,6 @@ const NavbarContent = () => {
             })}
           </nav>
 
-          {/* Mobile Menu Button */}
           <div className="flex md:hidden items-center">
             <button
               onClick={() => setOpenMenu(!openMenu)}
@@ -91,7 +89,6 @@ const NavbarContent = () => {
             </button>
           </div>
 
-          {/* Search Bar Section */}
           <div className="flex-1 max-w-md mx-2">
             <form
               onSubmit={handleSearch}
@@ -108,7 +105,6 @@ const NavbarContent = () => {
             </form>
           </div>
 
-          {/* Auth & Settings Section */}
           <div className="hidden md:flex items-center gap-4 text-xs font-semibold">
             {status !== "authenticated" ? (
               <>

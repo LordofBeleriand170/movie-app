@@ -1,7 +1,7 @@
 const formattedDate = (date) => {
   const now = new Date();
   const past = new Date(date);
-  const diff = now - past; // difference in ms
+  const diff = now - past;
 
   const seconds = Math.floor(diff / 1000);
   const minutes = Math.floor(diff / (1000 * 60));

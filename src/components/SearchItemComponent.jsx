@@ -40,7 +40,6 @@ const SearchItemComponent = ({ result }) => {
       href={href}
       className="flex gap-4 sm:gap-6 w-full bg-[#111216] hover:bg-[#15171e] border border-zinc-900 rounded-2xl overflow-hidden transition-colors duration-200"
     >
-      {/* Poster / Avatar Image */}
       <div className="relative w-28 sm:w-36 aspect-[2/3] shrink-0 bg-zinc-900">
         <Image
           src={
@@ -55,15 +54,12 @@ const SearchItemComponent = ({ result }) => {
         />
       </div>
 
-      {/* Card Body */}
       <div className="flex flex-col py-3 pr-4 sm:py-4 sm:pr-6 grow min-w-0 justify-between">
         <div className="flex flex-col gap-1.5">
-          {/* Title */}
           <h2 className="font-bold text-base sm:text-lg text-white truncate">
             {result.title || result.name}
           </h2>
 
-          {/* Details / Metadata */}
           {isPerson ? (
             <span className="text-xs text-zinc-400 font-medium">
               {result.known_for_department || "Person"}
@@ -84,7 +80,6 @@ const SearchItemComponent = ({ result }) => {
                 <span className="text-zinc-700">•</span>
               )}
 
-              {/* Release / Air Dates */}
               {result.media_type === "tv" ? (
                 <span>
                   {result.first_air_date?.split("-")[0]}
@@ -113,7 +108,6 @@ const SearchItemComponent = ({ result }) => {
                 </>
               )}
 
-              {/* Genres */}
               {result.genres?.length > 0 && (
                 <>
                   <span className="text-zinc-700">•</span>
@@ -130,7 +124,6 @@ const SearchItemComponent = ({ result }) => {
             </div>
           )}
 
-          {/* Overview / Bio */}
           {result.overview && (
             <p className="text-xs sm:text-sm text-zinc-400 line-clamp-2 mt-1 leading-relaxed">
               {result.overview}
@@ -138,7 +131,6 @@ const SearchItemComponent = ({ result }) => {
           )}
         </div>
 
-        {/* Footer info: Cast / Known For */}
         <div className="mt-3 text-xs text-zinc-400 truncate">
           {isPerson && result.known_for?.length > 0 && (
             <div className="flex items-center gap-1.5">

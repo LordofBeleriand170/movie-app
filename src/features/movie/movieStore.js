@@ -364,7 +364,7 @@ export const useMovieStore = create((set) => ({
     }
   },
 
-  addLike: async (user, commentId, isReply) => {
+  addLike: async (commentId, isReply, userId) => {
     try {
       const res = await fetch("/api/comments/like", {
         method: "PATCH",
@@ -372,7 +372,7 @@ export const useMovieStore = create((set) => ({
         body: JSON.stringify({
           commentId,
           isReply,
-          id: user.id,
+          id: userId,
         }),
       });
 

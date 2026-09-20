@@ -86,7 +86,6 @@ export const useContentStore = create((set, get) => ({
       set((state) => ({
         comments: state.comments.map((c) => {
           if (!isReply && c._id === data.comment._id) {
-            // Top-level comment like
             return {
               ...c,
               likes: data.comment.likes,
@@ -94,7 +93,7 @@ export const useContentStore = create((set, get) => ({
           }
 
           if (isReply) {
-            // Reply like — find and update the matching reply
+
             return {
               ...c,
               replies: c.replies.map((r) =>

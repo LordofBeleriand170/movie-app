@@ -11,7 +11,6 @@ const ActorComponent = () => {
 
   return (
     <div className="flex flex-col gap-3 relative py-2 px-8">
-      {/* Red accent header */}
       <div className="flex items-center gap-2.5">
         <span className="h-6 w-1 bg-gradient-to-b from-red-500 to-rose-600 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
         <h2 className="text-2xl font-extrabold tracking-tight text-white">
@@ -20,7 +19,6 @@ const ActorComponent = () => {
       </div>
 
       <div className="relative">
-        {/* Scrollable Cast List */}
         <div className="flex gap-3 overflow-x-auto scrollbar-thin pb-3">
           {casts.slice(0, 15).map((cast) => {
             const hasProfile =
@@ -39,7 +37,6 @@ const ActorComponent = () => {
                 key={cast.id}
                 className="flex flex-col bg-[#121824] hover:bg-[#1a2334] border border-gray-800/80 hover:border-gray-700 min-w-[150px] w-[150px] rounded-lg overflow-hidden cursor-pointer transition-all duration-200 group flex-shrink-0 shadow-lg"
               >
-                {/* Image Container with Fixed Aspect Ratio */}
                 <div className="relative w-full h-40 bg-gray-900 overflow-hidden">
                   <Image
                     src={imageUrl}
@@ -49,7 +46,6 @@ const ActorComponent = () => {
                   />
                 </div>
 
-                {/* High-Contrast Solid Dark Background Box */}
                 <div className="flex flex-col p-3 gap-0.5 min-h-[85px] justify-between">
                   <div className="flex flex-col">
                     <span className="text-xs font-bold text-white line-clamp-1 group-hover:text-red-400 transition-colors">
@@ -80,7 +76,6 @@ const ActorComponent = () => {
           )}
         </div>
 
-        {/* Subtle Right Fade Overlay */}
         <div className="absolute top-0 right-0 h-full w-12 pointer-events-none bg-gradient-to-l from-black via-black/40 to-transparent" />
       </div>
     </div>

@@ -75,7 +75,6 @@ const RecentlyVisited = () => {
 
   return (
     <div className="flex flex-col w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 text-white">
-      {/* Header Section */}
       <div className="flex items-center justify-between pb-3">
         <div className="flex items-center gap-2.5">
           <span className="h-5 w-1 bg-gradient-to-b from-red-500 to-rose-600 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
@@ -94,7 +93,6 @@ const RecentlyVisited = () => {
         )}
       </div>
 
-      {/* Loading State */}
       {isLoading ? (
         <TrendingLoading count={10} />
       ) : recentlyError ? (
@@ -103,7 +101,7 @@ const RecentlyVisited = () => {
         </div>
       ) : recently && recently.length > 0 ? (
         <div className="relative">
-          <div className="flex overflow-x-auto gap-3.5 py-3 scrollbar-thin scroll-smooth transition-all duration-300">
+          <div className="flex overflow-x-auto gap-3.5 py-3 scrollbar-thin scrollbar-thumb-neutral-700 scrollbar-track-transparent">
             {[...recently]?.map((recent) => {
               const titleOrName = recent.title || recent.name || "untitled";
               const slug = slugify(recent.id, titleOrName);

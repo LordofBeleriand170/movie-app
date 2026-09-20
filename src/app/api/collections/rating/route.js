@@ -11,7 +11,6 @@ export async function POST(req) {
 
     let mediaType = media === "movies" ? "movie" : "tv";
 
-    // Find user
     const user = await prisma.user.findUnique({
       where: isEmail ? { email: id } : { id },
       include: {
@@ -34,7 +33,6 @@ export async function POST(req) {
       include: { voters: true }, // only relation fields
     });
 
-    // Update or create user rating
     if (!userRatingExists && rating > 0) {
       await prisma.rating.create({
         data: {
@@ -56,80 +54,6 @@ export async function POST(req) {
         });
       }
     }
-
-    // Update global rating record
-    /*if (!ratingRecord && rating > 0) {
-      await prisma.rating.create({
-        data: {
-          movieId: itemId,
-          mediaType: result.info?.first_air_date ? "tv" : "movie", // "movie" or "tv"
-          rating,
-          votes: 1,
-          user: { connect: { id: user.id } }, // ✅ connect to existing user
-          voters: {
-            create: [{ user: { connect: { id: user.id } }, rating }],
-          }, // ✅ nested relation
-        },
-      });
-    } else if (ratingRecord) {
-      const existingVote = await prisma?.votes?.findUnique({
-        where: { userId_movieId: { userId: user.id, movieId: itemId } },
-      });
-
-      if (!existingVote && rating > 0) {
-        await prisma?.votes?.create({
-          data: { userId: user.id, movieId: itemId, rating },
-        });
-
-        // Recalculate average
-        const votes = await prisma?.votes?.findMany({
-          where: { movieId: itemId },
-        });
-        const avgRating =
-          votes.reduce((sum, v) => sum + v.rating, 0) / votes.length;
-
-        await prisma.rating.update({
-          where: { movieId: itemId },
-          data: { rating: avgRating, votes: votes.length },
-        });
-      } else if (existingVote) {
-        if (rating === 0) {
-          await prisma.votes.delete({
-            where: { userId_movieId: { userId: user.id, movieId: itemId } },
-          });
-
-          const votes = await prisma.votes.findMany({
-            where: { movieId: itemId },
-          });
-
-          if (votes.length === 0) {
-            await prisma.rating.delete({ where: { movieId: itemId } });
-          } else {
-            const avgRating =
-              votes.reduce((sum, v) => sum + v.rating, 0) / votes.length;
-            await prisma.rating.update({
-              where: { movieId: itemId },
-              data: { rating: avgRating, votes: votes.length },
-            });
-          }
-        } else {
-          await prisma.votes.update({
-            where: { userId_movieId: { userId: user.id, movieId: itemId } },
-            data: { rating },
-          });
-
-          const votes = await prisma.votes.findMany({
-            where: { movieId: itemId },
-          });
-          const avgRating =
-            votes.reduce((sum, v) => sum + v.rating, 0) / votes.length;
-          await prisma.rating.update({
-            where: { movieId: itemId },
-            data: { rating: avgRating },
-          });
-        }
-      }
-    }*/
 
     const updatedUser = await prisma.user.findUnique({
       where: isEmail ? { email: id } : { id },

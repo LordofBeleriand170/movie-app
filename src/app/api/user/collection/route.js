@@ -10,7 +10,6 @@ export async function POST(req) {
       return NextResponse.json({ error: "Email required" }, { status: 400 });
     }
 
-    // Fetch user with related collections
     const user = await prisma.user.findUnique({
       where: { email },
       include: {
@@ -48,7 +47,6 @@ export async function POST(req) {
         },
       };
 
-      // Fetch basic info
       const infoResponse = await fetch(
         `https://api.themoviedb.org/3/${user.recentlyVisited[i].type === "movies" ? "movie" : "tv"}/${user.recentlyVisited[i].mediaId}`,
         tmdbOptions,
@@ -70,7 +68,6 @@ export async function POST(req) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // 1. Create composite string keys: "mediaId-mediaType" => rating
     const ratingMap = new Map(
       (user.ratings || []).map((r) => [
         `${r.movieId}-${r.mediaType}`,
@@ -78,7 +75,6 @@ export async function POST(req) {
       ]),
     );
 
-    // 2. Look up using the same composite key format
     const watchlistWithRatings = (user.watchlist || []).map((item) => ({
       ...item,
       userRating: ratingMap.get(`${item.mediaId}-${item.mediaType}`) ?? null,
@@ -96,7 +92,6 @@ export async function POST(req) {
       });
     }
 
-    // Mapiramo user polja kao sto je bilo u Mongo verziji
     const formattedUser = {
       id: user.id,
       username: user.name,

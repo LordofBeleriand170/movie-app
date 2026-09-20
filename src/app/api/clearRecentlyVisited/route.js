@@ -11,7 +11,6 @@ export async function POST(req) {
       return NextResponse.json({ error: "User ID missing" }, { status: 400 });
     }
 
-    // Delete all recently visited entries for this user
     await prisma.userRecentlyVisited.deleteMany({
       where: { userId: user.id },
     });

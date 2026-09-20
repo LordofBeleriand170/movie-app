@@ -15,7 +15,7 @@ export async function POST(req) {
     }
     const isEmail = id?.includes("@");
 
-    // Find user
+
     const userWhere = isEmail ? { email: id } : id ? { id } : null;
 
     if (!userWhere) {

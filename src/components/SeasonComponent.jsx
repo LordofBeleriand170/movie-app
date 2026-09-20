@@ -8,7 +8,7 @@ const SeasonComponent = ({ id, tvShow, currentSeason, setCurrentSeason }) => {
   const [season, setSeason] = (useState < number) | (null > 1);
 
   const fetchSeason = useTvShowStore((state) => state.fetchSeason);
-  // Fetch Season Info when `season` changes
+
   useEffect(() => {
     const getSeason = async () => {
       try {
@@ -66,7 +66,6 @@ backdrop-blur-md
 rounded-2xl
 shadow-2xl overflow-hidden flex gap-6 min-h-50 cursor-pointer"
                     >
-                      {/* Episode Thumbnail */}
                       <div className="relative w-72 self-stretch flex-shrink-0 overflow-hidden rounded-l-2xl">
                         <Image
                           src={
@@ -80,7 +79,6 @@ shadow-2xl overflow-hidden flex gap-6 min-h-50 cursor-pointer"
                         />
                       </div>
 
-                      {/* Episode Details */}
                       <div className="flex flex-col gap-1 pt-4 pb-1 w-full">
                         <div className="flex flex-col gap-0.5">
                           <span className="uppercase text-xs">

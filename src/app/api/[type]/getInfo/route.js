@@ -1,4 +1,3 @@
-// app/api/movies/[id]/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma";
 
@@ -18,7 +17,6 @@ export async function POST(req) {
       const now = new Date();
 
       await prisma.$transaction(async (tx) => {
-        // Delete existing entry if present to force fresh row insertion
         await tx.userRecentlyVisited.deleteMany({
           where: {
             userId: user.id,
@@ -26,7 +24,6 @@ export async function POST(req) {
           },
         });
 
-        // Insert new entry with current timestamp
         await tx.userRecentlyVisited.create({
           data: {
             userId: user.id,

@@ -9,7 +9,6 @@ export async function POST(req) {
     const itemId = result?.info?.id || result?.id;
     const isEmail = id?.includes("@");
 
-    // Find user
     const user = await prisma.user.findUnique({
       where: isEmail ? { email: id } : { id },
       include: {
@@ -23,7 +22,6 @@ export async function POST(req) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Check if item exists in user's lists
     const favoriteExists = user.favorite.some((f) => f.mediaId === itemId);
     const watchlistExists = user.watchlist.some((w) => w.mediaId === itemId);
     const userRatingExists = user.ratings.some((r) => r.movieId === itemId);
@@ -63,7 +61,6 @@ export async function POST(req) {
           include: { voters: true }, // only relation fields
         });
 
-        // Update or create user rating
         if (!userRatingExists && rating > 0) {
           await prisma.rating.create({
             data: {
@@ -86,7 +83,6 @@ export async function POST(req) {
           }
         }
 
-        // Update global rating record
         if (!ratingRecord && rating > 0) {
           await prisma.rating.create({
             data: {
@@ -110,7 +106,6 @@ export async function POST(req) {
               data: { userId: user.id, movieId: itemId, rating },
             });
 
-            // Recalculate average
             const votes = await prisma.votes.findMany({
               where: { movieId: itemId },
             });

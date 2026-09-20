@@ -20,7 +20,6 @@ export const useInfiniteScroll = ({
       });
     };
 
-    // Disconnect old observer if exists
     if (observerRef.current) observerRef.current.disconnect();
 
     observerRef.current = new IntersectionObserver(observerCallback, {

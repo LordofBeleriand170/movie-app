@@ -17,7 +17,6 @@ const Similar = ({ type, id, info }) => {
     loading: isWatchedLoading,
   } = useBatchWatched();
 
-  // 1. Fetch similar items from content store
   useEffect(() => {
     const getSimilar = async () => {
       if (!id || !type) return;
@@ -30,7 +29,6 @@ const Similar = ({ type, id, info }) => {
     getSimilar();
   }, [id, type, similar]);
 
-  // 2. Batch check watched status whenever `movies` changes
   useEffect(() => {
     if (Array.isArray(movies) && movies.length > 0) {
       checkBatch(movies);
@@ -39,7 +37,6 @@ const Similar = ({ type, id, info }) => {
 
   return (
     <section className="flex flex-col gap-5 px-8 py-6 w-full text-white">
-      {/* Section Header */}
       <div className="flex items-center gap-3">
         <span className="h-6 w-1 bg-red-600 rounded-full shadow-[0_0_10px_rgba(220,38,38,0.7)]" />
         <h2 className="text-xl md:text-2xl font-bold tracking-tight text-white">
@@ -47,7 +44,6 @@ const Similar = ({ type, id, info }) => {
         </h2>
       </div>
 
-      {/* Horizontal Carousel Section */}
       <div className="relative w-full">
         <div className="flex gap-4 overflow-x-auto scrollbar-thin scroll-smooth pb-4">
           {Array.isArray(movies) && movies.length > 0 ? (
@@ -78,7 +74,6 @@ const Similar = ({ type, id, info }) => {
           )}
         </div>
 
-        {/* Gradient Edge Overlay */}
         {Array.isArray(movies) && movies.length > 0 && (
           <div className="pointer-events-none absolute top-0 right-0 h-full w-16 bg-gradient-to-l from-[#05070d] to-transparent z-10" />
         )}

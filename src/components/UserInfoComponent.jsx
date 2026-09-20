@@ -44,7 +44,7 @@ const UserInfoComponent = () => {
     " " +
     user?.createdAt?.split("T")[0].split("-")[0];
 
-  const [loading, setLoading] = useState < boolean > true;
+  const [loading, setLoading] = useState(true);
   const watchlist = useCollectionStore((state) => state.watchlist);
   const favorite = useCollectionStore((state) => state.favorite);
   const fetchUserCollections = useCollectionStore(
@@ -60,7 +60,6 @@ const UserInfoComponent = () => {
 
   return (
     <div className="relative overflow-hidden rounded-2xl">
-      {/* Background */}
       <div
         className="absolute inset-0"
         style={{
@@ -77,10 +76,8 @@ const UserInfoComponent = () => {
         }}
       />
 
-      {/* Optional dark overlay */}
       <div className="absolute inset-0 bg-black/30 -z-10" />
 
-      {/* Content */}
       <div className="relative flex justify-between items-center px-10 py-10">
         <div className="flex flex-col">
           <span className="text-3xl font-bold text-white">

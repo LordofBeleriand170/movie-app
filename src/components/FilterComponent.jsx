@@ -24,7 +24,6 @@ const FilterComponent = ({
   const router = useRouter();
   const params = useParams();
 
-  // Reset pagination and results when filters change
   const resetFeed = () => {
     setPage(1);
     setTrendingResult(null);
@@ -74,7 +73,6 @@ const FilterComponent = ({
   return (
     <div className="w-full">
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3 bg-neutral-950/60 backdrop-blur-md border border-white/10 rounded-xl">
-        {/* DECADE */}
         <select
           value={decade || "decade"}
           className={selectStyles}
@@ -93,7 +91,6 @@ const FilterComponent = ({
           ))}
         </select>
 
-        {/* YEAR (conditional on decade) */}
         <select
           disabled={!decade}
           value={year || "year"}
@@ -111,7 +108,6 @@ const FilterComponent = ({
           ))}
         </select>
 
-        {/* CATEGORY */}
         <select
           value={category || "category"}
           className={selectStyles}
@@ -128,7 +124,6 @@ const FilterComponent = ({
           ))}
         </select>
 
-        {/* COUNTRY */}
         <select className={selectStyles} defaultValue="country">
           <option value="country">Country</option>
         </select>

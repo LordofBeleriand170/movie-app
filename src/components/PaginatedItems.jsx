@@ -26,7 +26,6 @@ const PaginatedItems = ({
   const optionFetch = useMovieStore((state) => state.optionFetch);
   const error = useMovieStore((state) => state.error);
 
-  // Centralized batch watched hook
   const { watchedStatuses, checkBatch } = useBatchWatched();
 
   const loadMoreRef = useRef(null);
@@ -42,7 +41,7 @@ const PaginatedItems = ({
       setIsWatchedLoading(false);
     }
   }, [watchedStatuses]);
-  // Reset image cache status when changing filters or restarting from page 1
+
   useEffect(() => {
     if (page === 1) {
       setLoadedImageIds(new Set());
@@ -78,7 +77,6 @@ const PaginatedItems = ({
     }
   }, [loadedImageIds, trendingResult, page]);
 
-  // Batch watched check whenever trendingResult appends new items
   useEffect(() => {
     if (trendingResult && trendingResult.length > 0) {
       checkBatch(trendingResult);

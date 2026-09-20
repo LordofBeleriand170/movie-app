@@ -6,7 +6,6 @@ export async function POST(req) {
     const body = await req.json();
     const { id, result } = body;
 
-    // Ensure itemId is formatted as an Integer to match Prisma model type
     const rawId = result?.info?.id || result?.id || body?.mediaId;
     const itemId = typeof rawId === "string" ? parseInt(rawId, 10) : rawId;
 
@@ -16,7 +15,6 @@ export async function POST(req) {
 
     const isEmail = id?.includes("@");
 
-    // Find user
     const user = await prisma.user.findUnique({
       where: isEmail ? { email: id } : { id },
       include: { watchlist: true },
@@ -26,17 +24,14 @@ export async function POST(req) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Standardize mediaType resolution
     const mediaType = result?.type || (result?.first_air_date ? "tv" : "movie");
     console.log("MEDIA TYPE", mediaType);
 
-    // Match both ID (converted to Number) and resolved type
     const watchlistExists = user.watchlist.some(
       (w) => Number(w.mediaId) === Number(itemId) && w.mediaType === mediaType,
     );
 
     if (watchlistExists) {
-      // Toggle OFF: Remove from watchlist
       await prisma.watchlist.deleteMany({
         where: {
           userId: user.id,
@@ -44,7 +39,6 @@ export async function POST(req) {
         },
       });
     } else {
-      // Toggle ON: Extract values and create
       let poster = result?.poster_path || "";
       let title = result?.title || result?.name || "Untitled";
       let releaseDate = result?.release_date || result?.first_air_date || "";
