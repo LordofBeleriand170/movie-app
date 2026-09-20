@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 export async function POST(req) {
-  const body = await req.json(); // App Router requires reading json this way
+  const body = await req.json();
   const { input, page } = body;
 
   let url = `https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(input)}${page && page !== 0 ? `&page=${page}` : ""}`;

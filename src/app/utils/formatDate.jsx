@@ -4,6 +4,6 @@ export const formatDate = (dateString) => {
     day: "2-digit",
     month: "short",
     year: "numeric",
-    timeZone: "UTC", // ensure deterministic output
+    timeZone: "UTC",
   });
 };

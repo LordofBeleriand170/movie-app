@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 const TrailerPlayer = ({ video, setTrailer }) => {
-  const [isOpen, setIsOpen] = useState(true); // trailer open by default
+  const [isOpen, setIsOpen] = useState(true);
 
   if (!isOpen) return null; // hide component when closed
 

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 export async function POST(req) {
-  const body = await req.json(); // App Router requires reading json this way
+  const body = await req.json();
   const { id, type } = body;
 
   let url = `https://api.themoviedb.org/3/${type}/${id}/recommendations?language=en-US&page=1`;
@@ -33,7 +33,7 @@ export async function POST(req) {
 
     response.results = trendingResponse.results.filter((movie) => {
       const isEqual = movie.id.toString() !== id;
-      return isEqual; // ✅ must return the result
+      return isEqual;
     });
   }
 

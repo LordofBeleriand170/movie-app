@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma";
 
 export async function POST(req) {
-  const body = await req.json(); // App Router requires reading json this way
+  const body = await req.json();
   const { username } = body;
 
   try {

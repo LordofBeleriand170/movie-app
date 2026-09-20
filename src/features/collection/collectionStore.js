@@ -31,7 +31,7 @@ export const useCollectionStore = create((set) => ({
 
       set({
         user: data.user,
-        likes: [], // moze se kasnije mapirati ako implementiras upvotes/downvotes
+        likes: [],
         favorite: data.user.favorite || [],
         watchlist: data.user.watchlist || [],
         ratings: data.user.ratings || [],
@@ -216,7 +216,7 @@ export const useCollectionStore = create((set) => ({
       if (!res.ok) return {};
 
       const data = await res.json();
-      return data.watchedStatuses || {}; // Returns { "550": true, "680": false }
+      return data.watchedStatuses || {};
     } catch (err) {
       console.error("isWatchedBatch error:", err);
       return {};

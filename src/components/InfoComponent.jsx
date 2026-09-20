@@ -38,7 +38,7 @@ const InfoComponent = ({ option, type }) => {
   }, [user]);
 
   useEffect(() => {
-    if (!option) return; // no option → exit
+    if (!option) return;
 
     const getInfo = async () => {
       const mediaId = option.split("-")[0];
@@ -58,7 +58,7 @@ const InfoComponent = ({ option, type }) => {
     };
 
     getInfo();
-  }, [option, currentUser]); // depend only on `option`
+  }, [option, currentUser]);
 
   if (type === "movie" && !info?.info && !loading) {
     return <div>No movie found for ID: {id}</div>;
@@ -70,35 +70,6 @@ const InfoComponent = ({ option, type }) => {
     return <LoadingPage />;
   }
 
-  /* 2xl:px-82 xl:px-60 lg:px-40 md:px-20 sm:px-10*/
-
-  /* <div className=" bg-black ">
-            <div className="relative">
-              <div
-                className="absolute inset-0 z-0"
-                style={{
-                  backgroundImage: `
-            linear-gradient(to top, rgba(0,0,0,10) 0%, rgba(0,0,0,0) 20%), 
-        linear-gradient(to left, rgba(0,0,0,10) 0%, rgba(0,0,0,0) 20%),
-        linear-gradient(to right, rgba(0,0,0,10) 0%, rgba(0,0,0,0) 20%),
-            url(https://image.tmdb.org/t/p/original/${info?.info?.backdrop_path})`,
-                  backgroundRepeat: "no-repeat",
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                  filter: "brightness(50%)",
-                }}
-              />
-              <Navbar background={"no"} />
-
-              <section className="flex flex-col mx-auto gap-5 overflow-hidden text-white w-[90%]">
-                <ContentInfoComponent
-                  type={type}
-                  newRate={newRate}
-                  setNewRate={setNewRate}
-                />
-              </section>
-            </div>
-          </div>*/
   return (
     <>
       {error ? (

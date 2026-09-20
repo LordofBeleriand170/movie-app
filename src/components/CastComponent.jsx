@@ -31,8 +31,8 @@ const CastComponent = ({ cast, crew }) => {
                         : `https://image.tmdb.org/t/p/w342/${person.profile_path}`
                   }
                   alt="profile picture"
-                  width={160} // Tailwind w-40 => 160px
-                  height={200} // Tailwind h-50 => 200px
+                  width={160}
+                  height={200}
                   className="rounded"
                 />
                 <span>{person.name}</span>
@@ -64,8 +64,8 @@ const CastComponent = ({ cast, crew }) => {
                         : `https://image.tmdb.org/t/p/w342/${person.profile_path}`
                   }
                   alt="profile picture"
-                  width={160} // Tailwind w-40 => 160px
-                  height={200} // Tailwind h-50 => 200px
+                  width={160}
+                  height={200}
                   className="rounded"
                 />
                 <span>{person.name}</span>

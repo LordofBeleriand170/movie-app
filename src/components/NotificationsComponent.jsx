@@ -25,9 +25,7 @@ const NotificationsContent = () => {
 
   return (
     <div className="min-h-screen bg-[#08080a] text-white flex flex-col items-center py-10 px-4 sm:px-8">
-      {/* Main Container styled like the modal in the picture */}
       <div className="w-full max-w-5xl bg-[#0f0f12] border border-neutral-800/80 rounded-3xl p-6 sm:p-8 shadow-2xl flex flex-col gap-6 backdrop-blur-md">
-        {/* Header Section */}
         <div className="flex items-center justify-between border-b border-neutral-800/60 pb-5">
           <div>
             <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2.5">
@@ -45,7 +43,6 @@ const NotificationsContent = () => {
           )}
         </div>
 
-        {/* Horizontal Notification Previews List */}
         <div className="w-full">
           <div className="flex gap-3 overflow-x-auto pb-3 pt-1 scrollbar-thin scrollbar-thumb-neutral-800 scrollbar-track-transparent">
             {notifications
@@ -62,7 +59,6 @@ const NotificationsContent = () => {
           </div>
         </div>
 
-        {/* Active Notification Detail View */}
         <div className="bg-[#16161a] border border-neutral-800/60 rounded-2xl p-6 min-h-[350px] flex flex-col justify-center">
           {selectedNotifications ? (
             <NotificationCurrent

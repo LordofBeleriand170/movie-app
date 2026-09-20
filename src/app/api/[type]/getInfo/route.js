@@ -33,13 +33,9 @@ export async function POST(req) {
           },
         });
 
-        // Retain only the 10 most recent entries
         const extraItems = await tx.userRecentlyVisited.findMany({
           where: { userId: user.id },
-          orderBy: [
-            { createdAt: "desc" },
-            { id: "desc" }, // Tie-breaker for identical timestamps
-          ],
+          orderBy: [{ createdAt: "desc" }, { id: "desc" }],
           skip: 10,
           select: { id: true },
         });
@@ -64,7 +60,6 @@ export async function POST(req) {
       },
     };
 
-    // Fetch basic info
     const infoResponse = await fetch(
       `https://api.themoviedb.org/3/${mediaType}/${id}`,
       tmdbOptions,
@@ -85,7 +80,6 @@ export async function POST(req) {
 
     infoData.number_of_seasons = seasons;
 
-    // Fetch credits
     const creditsUrl =
       mediaType === "tv"
         ? `https://api.themoviedb.org/3/tv/${id}/aggregate_credits?language=en-US`
@@ -138,7 +132,6 @@ export async function POST(req) {
       mainWriter = writers;
     }
 
-    // Fetch videos
     const videosResponse = await fetch(
       `https://api.themoviedb.org/3/${mediaType}/${id}/videos`,
       tmdbOptions,
@@ -191,7 +184,6 @@ export async function POST(req) {
 
     keywordsData = await keywords.json();
 
-    // Fetch rating from Prisma
     const rating = await prisma?.rating?.findFirst({
       where: { movieId: parseInt(id) },
       include: { voters: true },

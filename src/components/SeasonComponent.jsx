@@ -35,7 +35,7 @@ const SeasonComponent = ({ id, tvShow, currentSeason, setCurrentSeason }) => {
             <div className="flex w-full overflow-x-auto scroll-smooth gap-5 pt-4 scrollbar-hide scrollbar-thin">
               {tvShow?.seasons?.map((season, index) => (
                 <div
-                  onClick={() => setSeason(season.season_number)} // Set the selected season number
+                  onClick={() => setSeason(season.season_number)}
                   key={index}
                   className="cursor-pointer flex flex-col items-center gap-3 flex-shrink-0"
                 >

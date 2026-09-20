@@ -1,6 +1,5 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma";
-import { Console } from "console";
 
 export async function GET(req) {
   try {
@@ -102,7 +101,6 @@ export async function POST(req) {
       );
     }
 
-    // Check if entry already exists
     const existingEntry = await prisma.watchlist.findFirst({
       where: {
         userId,
@@ -114,7 +112,6 @@ export async function POST(req) {
     });
 
     if (existingEntry) {
-      // Remove from watchlist
       await prisma.watchlist.delete({
         where: { id: existingEntry.id },
       });
@@ -124,7 +121,6 @@ export async function POST(req) {
         { status: 200 },
       );
     } else {
-      // Add to watchlist
       await prisma.watchlist.create({
         data: {
           userId,

@@ -47,7 +47,7 @@ const CommentSectionComponent = ({
     const el = document.getElementById(`comment-${commentId}`);
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "center" });
-      el.classList.add("bg-gray-500"); // optional highlight
+      el.classList.add("bg-gray-500");
 
       setTimeout(() => el.classList.remove("bg-yellow-200"), 2000);
     }

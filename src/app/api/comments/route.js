@@ -88,7 +88,7 @@ export async function POST(req) {
 
       let userRating = await prisma.rating.findFirst({
         where: { userId: id, movieId: movieId },
-        include: { voters: true }, // only relation fields
+        include: { voters: true },
       });
 
       if (!userRating) {
@@ -140,8 +140,8 @@ export async function GET(req) {
 
     const comments = await prisma.comment.findMany({
       where: {
-        mediaId: parseInt(mediaId), // convert string to number
-        mediaType: media, // "movie" | "tv"
+        mediaId: parseInt(mediaId),
+        mediaType: media,
       },
       orderBy: { createdAt: "desc" },
       include: {

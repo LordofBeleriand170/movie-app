@@ -2,11 +2,6 @@ import { create } from "zustand";
 import Sentiment from "sentiment";
 const sentimentAnalyzer = new Sentiment();
 
-/*const API_URL =
-  import.meta.env.MODE === "development"
-    ? "http://localhost:5000/api/auth"
-    : "/api/auth";*/
-
 export const useContentStore = create((set, get) => ({
   results: [],
   movies: [],
@@ -93,7 +88,6 @@ export const useContentStore = create((set, get) => ({
           }
 
           if (isReply) {
-
             return {
               ...c,
               replies: c.replies.map((r) =>
@@ -244,7 +238,7 @@ export const useContentStore = create((set, get) => ({
       return data.episodes || [];
     } catch (error) {
       set({ error: error.message || "Failed to fetch episode data" });
-      return []; // Return empty array on error
+      return [];
     }
   },
 

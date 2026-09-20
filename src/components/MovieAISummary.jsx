@@ -27,7 +27,7 @@ const MovieAISummary = ({ comments }) => {
     };
 
     fetchSummary();
-  }, [comments.length]); // Only re-fetch if a new comment is added
+  }, [comments.length]);
 
   return (
     <div className="p-4 rounded-lg bg-indigo-900/10 border border-indigo-500/30 my-4">

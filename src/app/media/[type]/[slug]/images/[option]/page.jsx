@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from "react";
 const Page = () => {
   const params = useParams();
   const id = params?.slug?.toString().split("-")[0];
-  const type = params?.type?.toString() ?? "movie"; // fallback to "movie" if not present
+  const type = params?.type?.toString() ?? "movie";
 
   const [media, setMedia] = useState(null);
   const { fetchInfo } = useMovieStore();

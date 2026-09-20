@@ -147,7 +147,7 @@ const RegisterFormContent = () => {
             boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
           },
           iconTheme: {
-            primary: "#22c55e", // Bright green checkmark icon
+            primary: "#22c55e",
             secondary: "#ffffff",
           },
         });

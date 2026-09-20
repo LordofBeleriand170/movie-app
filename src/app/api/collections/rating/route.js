@@ -28,11 +28,6 @@ export async function POST(req) {
       (r) => r.movieId === itemId && r.mediaType === mediaType,
     );
 
-    let ratingRecord = await prisma.rating.findFirst({
-      where: { userId: user.id, movieId: itemId },
-      include: { voters: true }, // only relation fields
-    });
-
     if (!userRatingExists && rating > 0) {
       await prisma.rating.create({
         data: {

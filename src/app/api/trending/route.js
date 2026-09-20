@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import pLimit from "p-limit";
 
-export const revalidate = 60; // cache 60s
+export const revalidate = 60;
 const TMDB_BASE = "https://api.themoviedb.org/3";
 
 const trailerCache = new Map();

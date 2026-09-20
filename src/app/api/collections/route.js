@@ -58,7 +58,7 @@ export async function POST(req) {
       case "your-rating":
         let ratingRecord = await prisma.rating.findFirst({
           where: { userId: user.id, movieId: itemId },
-          include: { voters: true }, // only relation fields
+          include: { voters: true },
         });
 
         if (!userRatingExists && rating > 0) {
@@ -87,13 +87,13 @@ export async function POST(req) {
           await prisma.rating.create({
             data: {
               movieId: itemId,
-              mediaType: result.info?.first_air_date ? "tv" : "movie", // "movie" or "tv"
+              mediaType: result.info?.first_air_date ? "tv" : "movie",
               rating,
               votes: 1,
-              user: { connect: { id: user.id } }, // ✅ connect to existing user
+              user: { connect: { id: user.id } },
               voters: {
                 create: [{ user: { connect: { id: user.id } }, rating }],
-              }, // ✅ nested relation
+              },
             },
           });
         } else if (ratingRecord) {

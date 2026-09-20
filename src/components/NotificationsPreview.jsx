@@ -37,7 +37,6 @@ const NotificationsPreview = ({
         }
       `}
     >
-      {/* Avatar Container */}
       <div className="relative">
         <div
           className={`
@@ -53,13 +52,11 @@ const NotificationsPreview = ({
           {notification?.sender?.name?.[0]?.toUpperCase() || "U"}
         </div>
 
-        {/* Unread Indicator Dot */}
         {!isSelected && (
           <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#16161a]" />
         )}
       </div>
 
-      {/* Content Container */}
       <div className="flex flex-col flex-1 min-w-0">
         <div className="flex items-center justify-between gap-2">
           <span className="font-semibold text-white text-sm truncate">
@@ -75,7 +72,6 @@ const NotificationsPreview = ({
         </p>
       </div>
 
-      {/* Delete Action Icon */}
       <button
         onClick={handleDelete}
         title="Delete notification"

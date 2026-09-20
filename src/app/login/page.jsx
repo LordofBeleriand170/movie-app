@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { toast } from "react-toastify";
@@ -92,7 +91,7 @@ const LoginForm = () => {
             boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
           },
           iconTheme: {
-            primary: "#22c55e", // Bright green checkmark icon
+            primary: "#22c55e",
             secondary: "#ffffff",
           },
         });

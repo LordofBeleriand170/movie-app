@@ -19,7 +19,7 @@ export async function POST(req) {
       include: {
         replies: {
           include: {
-            replyLikes: true, // include likes for each reply
+            replyLikes: true,
           },
         },
         commentLikes: true,

@@ -32,7 +32,6 @@ const CommentFormatComponent = ({ comment, type }) => {
   const report = useCollectionStore((state) => state.report);
   const fullUrl = `${pathname}?${searchParams.toString()}`;
 
-  // State za Ban Modal
   const [bannedModal, setBannedModal] = useState(false);
   const [banReason, setBanReason] = useState("");
   const [banDurationDays, setBanDurationDays] = useState("7");
@@ -106,7 +105,6 @@ const CommentFormatComponent = ({ comment, type }) => {
     }
   };
 
-  // Obrada banovanja korisnika
   const handleBanUser = async (e) => {
     e.preventDefault();
     if (!banReason.trim()) {
@@ -119,7 +117,6 @@ const CommentFormatComponent = ({ comment, type }) => {
 
       let bannedUntilDate;
       if (banDurationDays === "permanent") {
-        // Trajni ban (postavlja se na 100 godina unapred)
         bannedUntilDate = new Date();
         bannedUntilDate.setFullYear(bannedUntilDate.getFullYear() + 100);
       } else {
@@ -259,7 +256,6 @@ const CommentFormatComponent = ({ comment, type }) => {
           </p>
 
           <div className="flex items-center gap-5 pt-1 text-xs text-neutral-400">
-            {/* Like Button */}
             <div className="flex items-center gap-1.5">
               <Heart
                 onClick={() => {
@@ -286,7 +282,6 @@ const CommentFormatComponent = ({ comment, type }) => {
               </span>
             </div>
 
-            {/* Replies Trigger */}
             {type && (
               <button
                 onClick={() => {
@@ -301,7 +296,6 @@ const CommentFormatComponent = ({ comment, type }) => {
               </button>
             )}
 
-            {/* Admin / User Actions */}
             {user?.role === "ADMIN" ? (
               <div className="flex items-center gap-3">
                 <button
@@ -327,7 +321,6 @@ const CommentFormatComponent = ({ comment, type }) => {
             ) : null}
           </div>
 
-          {/* Reply List Section */}
           {openResponds === comment?.id && (
             <div className="ml-4 pl-4 border-l border-neutral-800 flex flex-col gap-3 mt-3">
               {comment?.replies && comment?.replies?.length > 0 ? (
@@ -362,7 +355,6 @@ const CommentFormatComponent = ({ comment, type }) => {
       {bannedModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="relative w-full max-w-md bg-[#16161a] border border-neutral-800 rounded-2xl p-6 shadow-2xl space-y-5">
-            {/* Header */}
             <div className="flex items-center justify-between border-b border-neutral-800/80 pb-4">
               <div className="flex items-center gap-2.5">
                 <div className="p-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500">
@@ -389,9 +381,7 @@ const CommentFormatComponent = ({ comment, type }) => {
               </button>
             </div>
 
-            {/* Form */}
             <form onSubmit={handleBanUser} className="space-y-4">
-              {/* Duration Field */}
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-neutral-300">
                   Ban Duration
@@ -409,7 +399,6 @@ const CommentFormatComponent = ({ comment, type }) => {
                 </select>
               </div>
 
-              {/* Reason Field */}
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-neutral-300">
                   Reason for Ban
@@ -423,7 +412,6 @@ const CommentFormatComponent = ({ comment, type }) => {
                 />
               </div>
 
-              {/* Actions */}
               <div className="flex items-center justify-end gap-3 pt-2">
                 <button
                   type="button"

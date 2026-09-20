@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import getCategoryId from "@/libs/getCategoryId";
 
 export async function POST(req) {
-  const body = await req.json(); // App Router requires reading json this way
+  const body = await req.json();
   const { filter } = body;
 
   const decade = filter?.decade?.substring(0, filter.decade.length - 1);
