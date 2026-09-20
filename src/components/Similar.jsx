@@ -1,6 +1,5 @@
 "use client";
 
-import SimilarSkeleton from "@/app/SimilarLoading";
 import { useContentStore } from "@/features/content/contentStore";
 import React, { useEffect } from "react";
 import slugify from "@/libs/slugify";
@@ -45,7 +44,7 @@ const Similar = ({ type, id, info }) => {
       </div>
 
       <div className="relative w-full">
-        <div className="flex gap-4 overflow-x-auto scrollbar-thin scroll-smooth pb-4">
+        <div className="flex gap-4 overflow-x-auto scrollbar-thin scrollbar-thumb-neutral-700 scrollbar-track-transparent pb-4">
           {Array.isArray(movies) && movies.length > 0 ? (
             movies.map((movie, index) => {
               const titleOrName = movie.title || movie.name || "untitled";

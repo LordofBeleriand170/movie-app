@@ -19,7 +19,7 @@ const ActorComponent = () => {
       </div>
 
       <div className="relative">
-        <div className="flex gap-3 overflow-x-auto scrollbar-thin pb-3">
+        <div className="flex gap-3 overflow-x-auto scrollbar-thin scrollbar-thumb-neutral-700 scrollbar-track-transparent pb-3">
           {casts.slice(0, 15).map((cast) => {
             const hasProfile =
               cast?.profile_path && !cast.profile_path.includes("null");
