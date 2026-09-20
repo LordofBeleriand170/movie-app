@@ -1,14 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Comment } from "@/types/comment";
 import { useCollectionStore } from "@/features/collection/collectionStore";
-import {
-  useParams,
-  usePathname,
-  useRouter,
-  useSearchParams,
-} from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FaHeart } from "react-icons/fa6";
 import { formatDate } from "@/app/utils/formatDate";
 import toggleLike from "@/app/utils/toggleLike";
@@ -22,9 +16,6 @@ const ReplyComponent = ({ reply }) => {
 
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  let params = useParams();
-
-  const mediaId = params?.slug;
 
   const fullUrl = `${pathname}?${searchParams.toString()}`;
 

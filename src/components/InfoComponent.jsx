@@ -1,15 +1,8 @@
 "use client";
 
-import { Creator, useContentStore } from "@/features/content/contentStore";
-import {
-  InfoComponentProps,
-  Movie,
-  TvShow,
-  Cast,
-  Crew,
-} from "@/features/content/contentStore";
-import React, { useEffect, useRef, useState } from "react";
-import { Rating } from "@/features/movie/movieStore";
+import { useContentStore } from "@/features/content/contentStore";
+
+import React, { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import LoadingPage from "@/app/LoadingPage";
 import Similar from "./Similar";

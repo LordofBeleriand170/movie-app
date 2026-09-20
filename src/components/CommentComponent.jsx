@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Comment } from "@/types/comment";
 import { formatDate } from "@/app/utils/formatDate";
 import { useCollectionStore } from "@/features/collection/collectionStore";
 import toggleLike from "@/app/utils/toggleLike";
@@ -22,7 +21,7 @@ const CommentComponent = (comment) => {
   const [bannedModal, setBannedModal] = useState(false);
   const [openSettings, setOpenSettings] = useState(false);
 
-  const optionsRef = useRef < HTMLDivElement > null;
+  const optionsRef = useRef(null);
 
   const pathname = usePathname();
   const searchParams = useSearchParams();

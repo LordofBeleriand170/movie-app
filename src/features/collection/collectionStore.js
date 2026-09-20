@@ -1,46 +1,6 @@
 import { create } from "zustand";
 
-interface CollectionState {
-  user: any | null;
-  likes: any[];
-  favorite: any[];
-  watchlist: any[];
-  watched: boolean;
-  ratings: any[];
-  notifications: any[];
-  banReason: string | null;
-  bannedUntil: string | null;
-  recently: any[];
-  comments: any[];
-  loading: boolean;
-  countries: any[];
-  fetchUserCollections: (email: any) => Promise<void>;
-  addFavorite: (id: string, result: any, media: string) => Promise<void>;
-  addWatchlist: (id: string, result: any) => Promise<void>;
-  addRating: (
-    id: string,
-    result: any,
-    media: string,
-    rating?: number,
-  ) => Promise<void>;
-  getCountries: () => Promise<void>;
-  report: (id: string, user: any) => Promise<void>;
-  ban: (
-    receiverId: string,
-    senderId: string,
-    bannedText: string | null,
-    bannedUntil: string | null,
-  ) => Promise<void>;
-  deleteComment: (id: string) => Promise<void>;
-  clearRecentlyVisited: (user: any) => Promise<void>;
-  clearNotifications: (userId: any) => Promise<void>;
-  isWatchedBatch: (
-    userId: string,
-    contentIds: (string | number)[],
-  ) => Promise<boolean>;
-}
-
-export const useCollectionStore = create<CollectionState>((set) => ({
+export const useCollectionStore = create((set) => ({
   user: null,
   watched: false,
   likes: [],
@@ -163,7 +123,7 @@ export const useCollectionStore = create<CollectionState>((set) => ({
     }
   },
 
-  report: async (id: string, user: any) => {
+  report: async (id, user) => {
     try {
       const res = await fetch(`/api/report`, {
         method: "POST",
@@ -179,12 +139,7 @@ export const useCollectionStore = create<CollectionState>((set) => ({
     }
   },
 
-  ban: async (
-    receiverId: string,
-    senderId: string,
-    bannedText: string | null,
-    bannedUntil: string | null,
-  ) => {
+  ban: async (receiverId, senderId, bannedText, bannedUntil) => {
     try {
       const res = await fetch(`/api/ban`, {
         method: "POST",
@@ -200,7 +155,7 @@ export const useCollectionStore = create<CollectionState>((set) => ({
     }
   },
 
-  deleteComment: async (id: string) => {
+  deleteComment: async (id) => {
     try {
       const res = await fetch(`/api/deleteComment`, {
         method: "POST",
@@ -216,7 +171,7 @@ export const useCollectionStore = create<CollectionState>((set) => ({
     }
   },
 
-  clearRecentlyVisited: async (user: any) => {
+  clearRecentlyVisited: async (user) => {
     try {
       const res = await fetch(`/api/clearRecentlyVisited`, {
         method: "POST",
@@ -234,7 +189,7 @@ export const useCollectionStore = create<CollectionState>((set) => ({
     }
   },
 
-  clearNotifications: async (userId: string) => {
+  clearNotifications: async (userId) => {
     try {
       const res = await fetch(`/api/clearNotifications`, {
         method: "POST",
@@ -250,8 +205,7 @@ export const useCollectionStore = create<CollectionState>((set) => ({
     }
   },
 
-  // Inside collectionStore.ts
-  isWatchedBatch: async (userId: string, contentIds: (string | number)[]) => {
+  isWatchedBatch: async (userId, contentIds) => {
     if (!userId || !contentIds.length) return {};
 
     try {

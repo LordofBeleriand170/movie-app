@@ -1,32 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { Movie } from "@/components/InfoComponent";
-import { Comment } from "@/types/comment";
 
-export type AuthState = {
-  user: {
-    id: string;
-    username: string | null;
-    email: string | null;
-    isVerified: boolean;
-    favorite: Movie[];
-    watchlist: Movie[];
-    likes: Comment[];
-    ratings: any[];
-    reviews: any[];
-    notifications: any[];
-  } | null;
-  isAuthenticated: boolean;
-  error: string | null;
-  isLoading: boolean;
-  isCheckingAuth: boolean;
-
-  verifyEmail: (verificationCode: string) => Promise<any>;
-  getUser: (username: string) => Promise<any>;
-  setUser: (user: AuthState["user"]) => void;
-};
-
-export const useAuthStore = create<AuthState>()(
+export const useAuthStore = create(
   persist(
     (set) => ({
       user: null,
@@ -35,7 +10,7 @@ export const useAuthStore = create<AuthState>()(
       isLoading: false,
       isCheckingAuth: false,
 
-      verifyEmail: async (verificationCode: string) => {
+      verifyEmail: async (verificationCode) => {
         set({
           isLoading: true,
           error: null,
@@ -75,7 +50,7 @@ export const useAuthStore = create<AuthState>()(
           });
 
           return data;
-        } catch (error: any) {
+        } catch (error) {
           set({
             error: error.message || "Error verifying email",
             isLoading: false,
@@ -84,7 +59,7 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      getUser: async (username: string) => {
+      getUser: async (username) => {
         set({
           isLoading: true,
           error: null,
@@ -105,7 +80,7 @@ export const useAuthStore = create<AuthState>()(
           const data = await res.json();
 
           return data.user;
-        } catch (error: any) {
+        } catch (error) {
           set({
             error: error.message || "Error verifying email",
             isLoading: false,

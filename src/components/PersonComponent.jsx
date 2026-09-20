@@ -26,7 +26,7 @@ const PersonComponent = () => {
   const error = usePersonStore((state) => state.error);
 
   const [isLoading, setIsLoading] = useState(true);
-  const [showMore, setShowMore] = (useState < boolean) | (null > false);
+  const [showMore, setShowMore] = useState(false);
 
   const handleShowMore = () => {
     setShowMore(!showMore);

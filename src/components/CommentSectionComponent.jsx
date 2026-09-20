@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 
 import { useMovieStore } from "@/features/movie/movieStore";
-import { Comment } from "@/types/comment";
 import { useSession } from "next-auth/react";
 import { useCollectionStore } from "@/features/collection/collectionStore";
 import CommentComponent from "./CommentComponent";

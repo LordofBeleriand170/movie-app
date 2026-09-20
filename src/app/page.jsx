@@ -18,8 +18,6 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [errorComponent, setErrorComponent] = useState(false);
 
-  console.log("ISAUTHENTICATED: ", isAuthenticated);
-
   useEffect(() => {
     if (status === "loading") {
       NProgress.start();

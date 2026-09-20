@@ -1,10 +1,7 @@
 import { useCollectionStore } from "@/features/collection/collectionStore";
 import { useMovieStore } from "@/features/movie/movieStore";
 
-const handleAddLike = async (
-  commentId: string | undefined,
-  isReply: boolean,
-) => {
+const handleAddLike = async (commentId, isReply) => {
   const { user } = useCollectionStore.getState();
   const { addLike } = useMovieStore.getState();
 

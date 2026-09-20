@@ -15,10 +15,9 @@ const AddCommentComponent = ({ movieId, type, newRate, setNewRate }) => {
 
   const [text, setText] = useState("");
   const [openComment, setOpenComment] = useState(false);
-  const [hoverRating, setHoverRating] = useState < number > 0;
-  const [showRating, setShowRating] = useState(false);
+  const [hoverRating, setHoverRating] = useState(0);
   const [spoiler, setSpoiler] = useState(false);
-  const [rating, setRating] = useState < number > 0;
+  const [rating, setRating] = useState(0);
 
   const pathname = usePathname();
   const searchParams = useSearchParams();

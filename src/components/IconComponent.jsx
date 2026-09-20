@@ -68,7 +68,6 @@ const IconComponent = ({
           : null
       } transition-all`}
     >
-      {/* Poster Image */}
       <Link href={`/media/${mediaType}/${slug}`}>
         <Image
           src={posterPath}
@@ -92,7 +91,6 @@ const IconComponent = ({
               router.push(`/login?callbackUrl=${encodeURIComponent(fullUrl)}`);
             }
           }}
-          disabled={isWatchedLoading}
           aria-label={watched ? "Remove from watched" : "Mark as watched"}
           className="absolute top-0 -left-1 z-30 flex items-center cursor-pointer justify-center w-10 h-12 transition-all duration-200 active:scale-95 focus:outline-none disabled:cursor-wait"
         >
@@ -112,7 +110,7 @@ const IconComponent = ({
 
           {/* Inner Icon / Spinner */}
           <span className="relative z-10 -mt-1">
-            {isWatchedLoading ? (
+            {isWatchedLoading && isAuthenticated ? (
               <Loader2 className="w-4 h-4 text-white/70 animate-spin" />
             ) : watched ? (
               <Check className="w-5 h-5 text-black stroke-[3]" />

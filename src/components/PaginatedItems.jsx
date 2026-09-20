@@ -157,7 +157,7 @@ const PaginatedItems = ({
 
         if (useFilters) {
           data = await optionFetch(filter);
-        } else if ((option === undefined && !titleSort) || trendings) {
+        } else if (option === undefined || trendings) {
           data = await trending(mediaType, page, { signal });
         }
 
