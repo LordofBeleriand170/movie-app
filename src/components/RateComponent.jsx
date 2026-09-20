@@ -68,12 +68,9 @@ const RateComponent = ({ rate, media, newRate, setNewRate }) => {
             <div className="flex items-center gap-3 w-fit h-6">
               <div className="flex items-center gap-3">
                 {[1, 2, 3, 4, 5].map((star) => {
-                  const active =
-                    isAuthenticated &&
-                    (hover
-                      ? star <= hover
-                      : star <=
-                        (clearRating ? 0 : newRate > 0 ? newRate : rate));
+                  const active = hover
+                    ? star <= hover
+                    : star <= (clearRating ? 0 : newRate > 0 ? newRate : rate);
 
                   return (
                     <FaStar
@@ -95,11 +92,9 @@ const RateComponent = ({ rate, media, newRate, setNewRate }) => {
                         }
                       }}
                       onMouseEnter={() => {
-                        if (!isAuthenticated) return;
                         setHover(star);
                       }}
                       onMouseLeave={() => {
-                        if (!isAuthenticated) return;
                         setHover(null);
                       }}
                       className={`cursor-pointer transition-all duration-200 shrink-0 ${

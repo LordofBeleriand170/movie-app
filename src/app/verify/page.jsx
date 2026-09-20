@@ -2,8 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/features/auth/authStore";
-import React, { KeyboardEvent, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
+import { X } from "lucide-react";
 
 const VerifyPage = () => {
   const [code, setCode] = useState(["", "", "", "", "", ""]);
@@ -12,7 +13,7 @@ const VerifyPage = () => {
   const verifyEmail = useAuthStore((state) => state.verifyEmail);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     const verificationCode = code.join("");
 
     try {
@@ -79,30 +80,61 @@ const VerifyPage = () => {
 
   useEffect(() => {
     if (code.every((digit) => digit !== "")) {
-      handleSubmit(new Event("submit"));
+      handleSubmit();
     }
   }, [code]);
 
   return (
-    <div className="flex flex-col space-y-4 max-w-sm mx-auto p-4">
-      <div className="flex flex-col gap-5 w-100">
-        <h2>Verify Email</h2>
-        <form
-          onSubmit={handleSubmit}
-          className="flex gap-3 relative justify-center w-full"
-        >
-          {code.map((digit, index) => (
-            <input
-              type="text"
-              key={index}
-              maxLength={1}
-              value={digit}
-              ref={setInputRef(index)}
-              onChange={(e) => handleChange(index, e.target.value)}
-              onKeyDown={(e) => handleKeyDown(index, e)}
-              className="w-12 h-12 text-center text-2xl font-bold bg-blue-900 text-white border-2 border-white rounded-lg focus:border-green-500 focus:outline-none"
-            />
-          ))}
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+      <div className="relative w-full max-w-md bg-[#0e0e11] border border-neutral-800/80 rounded-2xl p-6 shadow-2xl space-y-6">
+        <div className="flex items-start justify-between border-b border-neutral-800/80 pb-4">
+          <div className="space-y-1">
+            <h2 className="text-xl font-bold text-white tracking-tight">
+              Verify your email
+            </h2>
+            <p className="text-xs text-neutral-400">
+              Enter the 6-digit code sent to your email address
+            </p>
+          </div>
+          <button
+            onClick={() => router.back()}
+            className="text-neutral-500 hover:text-white transition-colors p-1"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="flex gap-2 sm:gap-3 justify-center w-full my-2">
+            {code.map((digit, index) => (
+              <input
+                key={index}
+                type="text"
+                maxLength={1}
+                value={digit}
+                ref={setInputRef(index)}
+                onChange={(e) => handleChange(index, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(index, e)}
+                className="w-11 h-12 sm:w-12 sm:h-14 text-center text-xl font-bold bg-[#16161a] text-white border border-neutral-800 rounded-xl focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none transition-all duration-200"
+              />
+            ))}
+          </div>
+
+          <div className="flex items-center justify-end gap-4 pt-2">
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="px-4 py-2 text-xs cursor-pointer font-medium text-neutral-400 hover:text-white transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-6 py-2.5 cursor-pointer rounded-full text-xs font-bold bg-[#ff0015] hover:bg-red-600 text-white transition-all duration-200 shadow-lg shadow-red-600/30"
+            >
+              Verify Code
+            </button>
+          </div>
         </form>
       </div>
     </div>

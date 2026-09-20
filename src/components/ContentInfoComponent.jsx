@@ -21,7 +21,9 @@ const ContentInfoComponent = ({ type, newRate, setNewRate, info }) => {
   const { data: session } = useSession();
   const ratings = useCollectionStore((state) => state.ratings);
 
-  const releaseDate = new Date(info?.info?.release_date);
+  const releaseDate = new Date(
+    info?.info?.release_date || info?.info?.first_air_date,
+  );
   const now = new Date();
 
   const checkDate = releaseDate <= now;

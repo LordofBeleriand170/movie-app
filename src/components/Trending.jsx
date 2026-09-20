@@ -134,11 +134,8 @@ const Trending = ({ setErrorComponent }) => {
   return (
     <div className="flex flex-col gap-10 w-full mx-auto px-4 sm:px-6 lg:px-8 pb-6 text-white">
       <section className="relative flex flex-col gap-5 rounded-2xl bg-neutral-900/60 p-6 backdrop-blur-md border border-neutral-800 shadow-2xl">
-        <div className="flex items-center justify-between border-b border-neutral-800/80 pb-4">
-          <h2 className="text-xl font-bold tracking-tight text-neutral-100">
-            Featured Trailers
-          </h2>
-          <div className="flex items-center gap-1 rounded-full bg-black/40 p-1.5 border border-neutral-800/60 shadow-inner">
+        <div className="flex items-center justify-end border-b border-neutral-800/80 pb-4">
+          <div className="flex items-center justify-between gap-1 rounded-full bg-black/40 p-1.5 border border-neutral-800/60 shadow-inner">
             <button
               type="button"
               onClick={() => {

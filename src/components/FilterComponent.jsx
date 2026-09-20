@@ -72,7 +72,7 @@ const FilterComponent = ({
 
   return (
     <div className="w-full">
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3 bg-neutral-950/60 backdrop-blur-md border border-white/10 rounded-xl">
+      <div className="flex gap-3 p-3 bg-neutral-950/60 backdrop-blur-md border border-white/10 rounded-xl">
         <select
           value={decade || "decade"}
           className={selectStyles}
@@ -122,10 +122,6 @@ const FilterComponent = ({
               {cat.name}
             </option>
           ))}
-        </select>
-
-        <select className={selectStyles} defaultValue="country">
-          <option value="country">Country</option>
         </select>
       </div>
     </div>

@@ -214,7 +214,7 @@ const LoginForm = () => {
           Don't have an account?{" "}
           <Link
             href="/register"
-            className="text-red-500 hover:text-red-400 hover:underline font-medium ml-1 cursor-pointer"
+            className="text-red-500  hover:text-red-400 hover:underline font-medium ml-1 cursor-pointer"
           >
             Create account
           </Link>

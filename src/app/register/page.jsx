@@ -2,9 +2,7 @@
 
 import React, { useEffect, useRef, useState, Suspense } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
 import { toast } from "react-toastify";
 import PasswordStrength from "@/components/PasswordStrength";
 import { getStrength } from "../utils/passwordStrength";
@@ -245,7 +243,7 @@ const RegisterFormContent = () => {
 
             <button
               type="submit"
-              className="w-full py-2.5 bg-red-600 hover:bg-red-500 text-white font-semibold text-sm rounded-full transition shadow-lg shadow-red-950/40 active:scale-[0.98]"
+              className="w-full py-2.5 bg-red-600  cursor-pointer hover:bg-red-500 text-white font-semibold text-sm rounded-full transition shadow-lg shadow-red-950/40 active:scale-[0.98]"
             >
               Continue &rarr;
             </button>
@@ -300,14 +298,14 @@ const RegisterFormContent = () => {
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="w-1/3 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium text-sm rounded-full transition active:scale-[0.98]"
+                className="w-1/3 py-2.5 bg-zinc-800 cursor-pointer hover:bg-zinc-700 text-zinc-300 font-medium text-sm rounded-full transition active:scale-[0.98]"
               >
                 &larr; Back
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="w-2/3 py-2.5 bg-red-600 hover:bg-red-500 disabled:bg-zinc-800 text-white font-semibold text-sm rounded-full transition shadow-lg shadow-red-950/40 active:scale-[0.98]"
+                className="w-2/3 py-2.5 bg-red-600 cursor-pointer hover:bg-red-500 disabled:bg-zinc-800 text-white font-semibold text-sm rounded-full transition shadow-lg shadow-red-950/40 active:scale-[0.98]"
               >
                 {loading ? "Registering..." : "Complete Registration"}
               </button>
@@ -319,7 +317,7 @@ const RegisterFormContent = () => {
           Already have an account?{" "}
           <Link
             href="/login"
-            className="text-red-500 hover:text-red-400 hover:underline font-medium ml-1"
+            className="text-red-500 cursor-pointer hover:text-red-400 hover:underline font-medium ml-1"
           >
             Sign in
           </Link>
