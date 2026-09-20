@@ -204,8 +204,8 @@ const UserPageComponent = () => {
             </div>
           ) : (
             <div className="relative">
-              <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-neutral-700 scrollbar-track-transparent">
-                {isActiveWatchlist?.slice(0, 20)?.map((item, idx) => {
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-8 gap-2">
+                {isActiveWatchlist?.map((item, idx) => {
                   const titleOrName = item.title || item.name || "untitled";
                   const slug = slugify(item.mediaId, titleOrName);
 
@@ -232,16 +232,6 @@ const UserPageComponent = () => {
                     </div>
                   );
                 })}
-
-                {isActiveWatchlist?.length > 20 && (
-                  <Link
-                    href={`/user/${activeWatchlist}/${user?.email}`}
-                    className="min-w-[120px] flex flex-col items-center justify-center gap-2 bg-neutral-950 hover:bg-neutral-900 border border-white/10 rounded-xl transition cursor-pointer text-xs font-semibold text-cyan-400 hover:text-cyan-300"
-                  >
-                    <span>View All</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </Link>
-                )}
               </div>
             </div>
           )}
