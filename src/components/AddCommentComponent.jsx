@@ -13,6 +13,18 @@ const AddCommentComponent = ({ movieId, type, newRate, setNewRate }) => {
   const user = useCollectionStore((state) => state.user);
   const ratings = useCollectionStore((state) => state.ratings);
 
+  const formatType = type === "movies" ? "movie" : "tv";
+
+  const existRating = ratings?.filter((rating) => {
+    return (
+      rating?.userId === user?.id &&
+      rating?.mediaType === formatType &&
+      rating?.movieId === movieId
+    );
+  });
+
+  const hasExistRating = Boolean(existRating && existRating.length > 0);
+
   const [text, setText] = useState("");
   const [openComment, setOpenComment] = useState(false);
   const [hoverRating, setHoverRating] = useState(0);
@@ -26,23 +38,15 @@ const AddCommentComponent = ({ movieId, type, newRate, setNewRate }) => {
 
   const router = useRouter();
 
-  let currentRating = [];
-
   useEffect(() => {
-    currentRating = ratings.find((rating) => {
-      return (
-        rating?.userId === user.id &&
-        rating?.movieId === movieId &&
-        rating?.type === "mediaType"
-      );
-    });
-
-    if (!currentRating) {
-      currentRating = newRate > 0 ? newRate : 0;
+    if (hasExistRating) {
+      setRating(existRating[0]?.rating || 0);
+    } else if (newRate > 0) {
+      setRating(newRate);
+    } else {
+      setRating(0);
     }
-
-    setRating(currentRating?.rating);
-  }, [ratings, openComment]);
+  }, [ratings, openComment, hasExistRating, newRate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -60,7 +64,6 @@ const AddCommentComponent = ({ movieId, type, newRate, setNewRate }) => {
       await addComment(user, movieId, text, rating, type, spoiler);
 
       setText("");
-      setRating(0);
       setOpenComment(false);
     } catch (error) {
       console.error(error);
@@ -114,21 +117,29 @@ const AddCommentComponent = ({ movieId, type, newRate, setNewRate }) => {
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
               <div>
-                <p className="text-sm text-neutral-400 mb-2 font-medium">
-                  Your rating
-                </p>
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-sm text-neutral-400 font-medium">
+                    Your rating
+                  </p>
+                </div>
 
                 <div className="flex gap-1.5">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <span
                       key={star}
-                      onMouseEnter={() => setHoverRating(star)}
-                      onMouseLeave={() => setHoverRating(0)}
-                      onClick={() => setRating(star)}
+                      onMouseEnter={() =>
+                        !hasExistRating && setHoverRating(star)
+                      }
+                      onMouseLeave={() => !hasExistRating && setHoverRating(0)}
+                      onClick={() => !hasExistRating && setRating(star)}
                       className={`
-                      cursor-pointer
                       text-3xl
-                      transition-all duration-150 transform hover:scale-110
+                      transition-all duration-150 transform
+                      ${
+                        hasExistRating
+                          ? "cursor-not-allowed opacity-90"
+                          : "cursor-pointer hover:scale-110"
+                      }
                       ${
                         (hoverRating || rating) >= star
                           ? "text-yellow-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]"
@@ -214,7 +225,6 @@ const AddCommentComponent = ({ movieId, type, newRate, setNewRate }) => {
                   hover:shadow-[0_0_18px_rgba(239,68,68,0.6)]
                   transition-all duration-200
                   cursor-pointer
-
                 "
                 >
                   Post Review
