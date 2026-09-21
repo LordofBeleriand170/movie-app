@@ -308,7 +308,7 @@ const CommentFormatComponent = ({ comment, type }) => {
               </button>
             )}
 
-            {user?.role === "ADMIN" ? (
+            {user?.role === "ADMIN" && user?.id !== comment?.userId ? (
               <div className="flex items-center gap-3">
                 <button
                   className="cursor-pointer text-xs text-neutral-400 hover:text-red-400 transition-colors"
