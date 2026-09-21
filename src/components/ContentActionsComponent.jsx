@@ -28,6 +28,7 @@ const ContentActionsComponent = ({ media }) => {
   false;
 
   const [watched, setWatched] = useState(false);
+  const [favorites, setFavorites] = useState(false);
   const [currentlyWatched, setCurrentlyWatched] = useState(false);
   const [favoriteContent, setFavoriteContent] = useState(false);
 
@@ -72,10 +73,12 @@ const ContentActionsComponent = ({ media }) => {
       }
     }
 
-    if (favoriteInWatchlist) {
-      setFavoriteContent(true);
-    } else {
-      setFavoriteContent(false);
+    if (!favorites) {
+      if (favoriteInWatchlist) {
+        setFavoriteContent(true);
+      } else {
+        setFavoriteContent(false);
+      }
     }
   }, [watchlist, user]);
 
@@ -113,6 +116,7 @@ const ContentActionsComponent = ({ media }) => {
             if (isAuthenticated) {
               if (favoriteType < 5) {
                 setFavoriteContent(!favoriteContent);
+                setFavorites(!favorites);
                 handleFavorite();
               } else {
                 toast.error(
