@@ -8,35 +8,41 @@ import SearchPageComponent from "@/components/SearchPageComponent";
 
 const SearchResults = () => {
   const params = useParams();
-  const name = decodeURIComponent(params.name);
+  const name = params?.name ? decodeURIComponent(params.name) : "";
 
   const [searchResult, setSearchResult] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
 
   const { search, total_pages } = useMovieStore();
 
   const loadMoreRef = useRef(null);
 
-  const handleObserver = useCallback(
-    (entries) => {
-      const target = entries[0];
+  const stateRef = useRef({ loading, page, total_pages });
+  useEffect(() => {
+    stateRef.current = { loading, page, total_pages };
+  }, [loading, page, total_pages]);
 
-      if (target.isIntersecting && !loading && page < total_pages) {
-        setPage((prev) => prev + 1);
-      }
-    },
-    [loading],
-  );
+  const handleObserver = useCallback((entries) => {
+    const target = entries[0];
+    const {
+      loading: isCurrentLoading,
+      page: currentPage,
+      total_pages: maxPages,
+    } = stateRef.current;
+
+    if (target.isIntersecting && !isCurrentLoading && currentPage < maxPages) {
+      setPage((prev) => prev + 1);
+    }
+  }, []);
 
   useEffect(() => {
+    const current = loadMoreRef.current;
     const observer = new IntersectionObserver(handleObserver, {
       root: null,
       rootMargin: "200px",
       threshold: 0,
     });
-
-    const current = loadMoreRef.current;
 
     if (current) observer.observe(current);
 
@@ -51,43 +57,52 @@ const SearchResults = () => {
   }, [name]);
 
   useEffect(() => {
+    if (!name) return;
+
+    let isMounted = true;
+
     const fetchSearch = async () => {
       try {
         setLoading(true);
 
-        const response = await search(name ?? "", page);
+        const response = await search(name, page);
 
-        if (response.length === 0) {
+        if (!isMounted) return;
+
+        const safeData = Array.isArray(response) ? response : [];
+
+        if (safeData.length === 0) {
           setLoading(false);
-        } else {
-          setSearchResult((prev) => {
-            const safePrev = page === 1 ? [] : prev || [];
-            const safeData = Array.isArray(response) ? response : [];
-
-            const existing = new Set(
-              safePrev.map((item) => `${item.id}-${item.media_type}`),
-            );
-
-            const filtered = safeData.filter(
-              (item) => !existing.has(`${item.id}-${item.media_type}`),
-            );
-
-            return [...safePrev, ...filtered];
-          });
+          return;
         }
+
+        setSearchResult((prev) => {
+          const safePrev = page === 1 ? [] : prev || [];
+
+          const existing = new Set(
+            safePrev.map((item) => `${item.id}-${item.media_type}`),
+          );
+
+          const filtered = safeData.filter(
+            (item) => !existing.has(`${item.id}-${item.media_type}`),
+          );
+
+          return [...safePrev, ...filtered];
+        });
       } catch (error) {
         console.error("Error fetching search results:", error);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
-    if (name) fetchSearch();
-  }, [name, page, search]);
+    fetchSearch();
 
-  useEffect(() => {
-    console.log(total_pages);
-  }, [total_pages]);
+    return () => {
+      isMounted = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [name, page]);
 
   return (
     <>
@@ -95,7 +110,7 @@ const SearchResults = () => {
 
       <SearchPageComponent
         query={name}
-        loading={loading}
+        loading={loading && page === 1}
         searchResult={searchResult}
       />
 
@@ -103,9 +118,7 @@ const SearchResults = () => {
         ref={loadMoreRef}
         className="h-20 bg-black flex items-center justify-center"
       >
-        {loading && page < total_pages && (
-          <span className="text-gray-400">Loading more...</span>
-        )}
+        {loading && <span className="text-gray-400">Loading more...</span>}
       </div>
     </>
   );
