@@ -31,6 +31,7 @@ receivedNotifications Notification[] @relation("ReceivedNotifications")
 
 
   comments   Comment[]
+  bookmark   Bookmark[]
   replies    Reply[]
   favorite  Favorite[]
   watchlist  Watchlist[]
@@ -41,6 +42,8 @@ receivedNotifications Notification[] @relation("ReceivedNotifications")
   replyLikes   ReplyLike[]
   recentlyVisited UserRecentlyVisited[]
 }
+
+
 
 model Notification {
   id         String   @id @default(cuid())
@@ -93,6 +96,20 @@ model Watchlist {
   poster    String   @default("")
   mediaType MediaType @default(movie)
   releaseDate String 
+
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, mediaId])
+}
+
+model Bookmark{
+  id      String @id @default(cuid())
+  userId  String
+  mediaId Int
+  title     String   @default("Unknown")
+  poster    String   @default("")
+  mediaType MediaType @default(movie)
+  releaseDate String
 
   user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 

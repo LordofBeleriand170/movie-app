@@ -10,7 +10,7 @@ const limit = pLimit(3);
 
 async function fetchTrending(mediaType, page, token) {
   const res = await fetch(
-    `${TMDB_BASE}/discover/${mediaType}?language=en-US&sort_by=popularity.desc&include_adult=false&page=${page}`,
+    `${TMDB_BASE}/discover/${mediaType}?language=en-US&sort_by=popularity.desc&vote_count.gte=500&include_adult=false&page=${page}`,
     {
       headers: {
         accept: "application/json",

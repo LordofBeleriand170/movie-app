@@ -15,7 +15,6 @@ export async function POST(req) {
     }
     const isEmail = id?.includes("@");
 
-
     const userWhere = isEmail ? { email: id } : id ? { id } : null;
 
     if (!userWhere) {
@@ -29,6 +28,7 @@ export async function POST(req) {
       where: userWhere,
       include: {
         favorite: true,
+        bookmark: true,
         watchlist: true,
         ratings: true,
       },
@@ -52,7 +52,7 @@ export async function POST(req) {
     }
 
     const favoriteExists = user.favorite.some(
-      (f) => f.mediaId === itemId && f.mediaType === media,
+      (f) => f.mediaId === itemId && f.mediaType === type,
     );
 
     if (favoriteExists) {
@@ -60,7 +60,7 @@ export async function POST(req) {
         where: {
           userId: user.id,
           mediaId: itemId,
-          mediaType: result?.first_air_date ? "tv" : "movie",
+          mediaType: type,
         },
       });
     } else {
@@ -68,10 +68,10 @@ export async function POST(req) {
         data: {
           userId: user.id,
           mediaId: itemId,
-          mediaType: result?.first_air_date ? "tv" : "movie",
+          mediaType: type,
           poster: result?.poster_path,
           title: result?.first_air_date ? result?.name : result?.title,
-          releaseDate: result?.release_date,
+          releaseDate: result?.release_date || result?.first_air_date,
         },
       });
     }
@@ -81,6 +81,7 @@ export async function POST(req) {
       include: {
         favorite: true,
         watchlist: true,
+        bookmark: true,
         ratings: true,
         comments: true,
       },

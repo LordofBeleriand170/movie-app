@@ -6,6 +6,7 @@ export const useCollectionStore = create((set) => ({
   likes: [],
   favorite: [],
   watchlist: [],
+  bookmark: [],
   ratings: [],
   notifications: [],
   banReason: null,
@@ -34,6 +35,7 @@ export const useCollectionStore = create((set) => ({
         likes: [],
         favorite: data.user.favorite || [],
         watchlist: data.user.watchlist || [],
+        bookmark: data.user.bookmark || [],
         ratings: data.user.ratings || [],
         recently: data.user.recently || [],
         notifications: data.user.notifications || [],
@@ -82,6 +84,25 @@ export const useCollectionStore = create((set) => ({
       });
     } catch (err) {
       console.error(`Failed to add watchlist:`, err);
+    }
+  },
+
+  addBookmark: async (id, result) => {
+    try {
+      const res = await fetch(`/api/collections/bookmark`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, result }),
+      });
+
+      const data = await res.json();
+
+      set({
+        bookmark: data?.user?.bookmark || [],
+        loading: false,
+      });
+    } catch (err) {
+      console.error(`Failed to add bookmark:`, err);
     }
   },
 
@@ -206,12 +227,18 @@ export const useCollectionStore = create((set) => ({
   },
 
   isWatchedBatch: async (userId, contentIds) => {
-    if (!userId || !contentIds.length) return {};
+    if (!userId || !contentIds?.length) return {};
 
     try {
-      const idsParam = contentIds.join(",");
+      const idsParam = contentIds
+        .map((item) => (typeof item === "object" ? item?.key : item))
+        .filter(Boolean)
+        .join(",");
+
+      if (!idsParam) return {};
+
       const res = await fetch(
-        `/api/watched?userId=${userId}&contentIds=${idsParam}`,
+        `/api/watched?userId=${userId}&contentIds=${encodeURIComponent(idsParam)}`,
       );
       if (!res.ok) return {};
 

@@ -15,7 +15,9 @@ const ContentActionsComponent = ({ media }) => {
   const user = useCollectionStore((state) => state.user);
   const favorite = useCollectionStore((state) => state.favorite);
   const watchlist = useCollectionStore((state) => state.watchlist);
+  const bookmark = useCollectionStore((state) => state.bookmark);
   const addFavorite = useCollectionStore((state) => state.addFavorite);
+  const addBookmark = useCollectionStore((state) => state.addBookmark);
   const content = useContentStore((state) => state.content);
   const { toggleWatchlist } = useToggleWatchlist();
 
@@ -31,6 +33,8 @@ const ContentActionsComponent = ({ media }) => {
   const [favorites, setFavorites] = useState(false);
   const [currentlyWatched, setCurrentlyWatched] = useState(false);
   const [favoriteContent, setFavoriteContent] = useState(false);
+  const [bookmarked, setBookmarked] = useState(false);
+  const [bookmarkContent, setBookmarkContent] = useState(false);
 
   const fullUrl = `${pathname}?${searchParams.toString()}`;
 
@@ -38,6 +42,14 @@ const ContentActionsComponent = ({ media }) => {
 
   const handleFavorite = async () => {
     await addFavorite(
+      user?.id ? user?.id : user?.email,
+      content?.info,
+      mediaType,
+    );
+  };
+
+  const handleBookmark = async () => {
+    await addBookmark(
       user?.id ? user?.id : user?.email,
       content?.info,
       mediaType,
@@ -64,6 +76,11 @@ const ContentActionsComponent = ({ media }) => {
       item.mediaId === content?.info?.id && item.mediaType === mediaType,
   );
 
+  const bookmarkExists = bookmark.some(
+    (item) =>
+      item.mediaId === content?.info?.id && item.mediaType === mediaType,
+  );
+
   useEffect(() => {
     if (!currentlyWatched) {
       if (mediaInWatchlist) {
@@ -80,7 +97,15 @@ const ContentActionsComponent = ({ media }) => {
         setFavoriteContent(false);
       }
     }
-  }, [watchlist, user]);
+
+    if (!bookmarked) {
+      if (bookmarkExists) {
+        setBookmarkContent(true);
+      } else {
+        setBookmarkContent(false);
+      }
+    }
+  }, [watchlist, user, bookmark]);
 
   const favoriteType = favorite.filter((fav) => fav.mediaType === media).length;
 
@@ -141,7 +166,23 @@ const ContentActionsComponent = ({ media }) => {
       </div>
 
       <div className="flex flex-col items-center gap-1.5 group">
-        <button className="p-3 rounded-full bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white border border-white/10 transition-all duration-200 cursor-pointer">
+        <button
+          onClick={() => {
+            if (isAuthenticated) {
+              setBookmarkContent(!bookmarkContent);
+              setBookmarked(!bookmarked);
+              handleBookmark();
+            } else {
+              router.push(`/login?callbackUrl=${encodeURIComponent(fullUrl)}`);
+            }
+          }}
+          // Apply dynamic blue styling similar to how the Favorite button uses rose
+          className={`p-3 rounded-full transition-all duration-200 cursor-pointer ${
+            bookmarkContent
+              ? "bg-blue-500/20 text-blue-400 border border-blue-500/40"
+              : "bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white border border-white/10"
+          }`}
+        >
           <GoClock className="w-5 h-5" />
         </button>
         <span className="text-[11px] font-medium text-neutral-400 group-hover:text-neutral-200">

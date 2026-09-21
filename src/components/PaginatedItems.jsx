@@ -34,6 +34,8 @@ const PaginatedItems = ({
   const [isImagesReady, setIsImagesReady] = useState(false);
   const [isWatchedLoading, setIsWatchedLoading] = useState(true);
 
+  console.log(trendingResult);
+
   useEffect(() => {
     if (watchedStatuses && Object.keys(watchedStatuses).length === 0) {
       setIsWatchedLoading(true);

@@ -25,7 +25,6 @@ export async function POST(req) {
     }
 
     const mediaType = result?.type || (result?.first_air_date ? "tv" : "movie");
-    console.log("MEDIA TYPE", mediaType);
 
     const watchlistExists = user.watchlist.some(
       (w) => Number(w.mediaId) === Number(itemId) && w.mediaType === mediaType,

@@ -15,6 +15,7 @@ export async function POST(req) {
       include: {
         favorite: true,
         watchlist: true,
+        bookmark: true,
         ratings: true,
         recentlyVisited: {
           orderBy: [{ createdAt: "desc" }, { id: "desc" }],
@@ -98,6 +99,7 @@ export async function POST(req) {
       email: user.email,
       favorite: user.favorite || [],
       watchlist: watchlistWithRatings || [],
+      bookmark: user.bookmark || [],
       ratings: user.ratings || [],
       recently: recentlyVisited || [],
       comments: user.comments || [],

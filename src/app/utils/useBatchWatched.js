@@ -26,11 +26,22 @@ export const useBatchWatched = () => {
 
       lastItemsRef.current = items;
 
-      const rawIds = items
-        .map((item) => item?.id || item?.mediaId || item?.contentId)
+      const normalizedItems = items
+        .map((item) => {
+          const id = item?.id || item?.mediaId || item?.contentId;
+          if (!id) return null;
+
+          const mediaType =
+            item?.mediaType ||
+            item?.media_type ||
+            (item?.first_air_date ? "tv" : "movie");
+
+          const key = `${mediaType}_${id}`;
+          return { key };
+        })
         .filter(Boolean);
 
-      const idsToFetch = rawIds.filter(
+      const idsToFetch = normalizedItems.filter(
         (id) =>
           isBackgroundRefresh ||
           !isInitialReady ||

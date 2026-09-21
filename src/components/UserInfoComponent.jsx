@@ -3,7 +3,7 @@
 import { useCollectionStore } from "@/features/collection/collectionStore";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
-import { Calendar, Heart, Eye } from "lucide-react";
+import { Calendar, Heart, Eye, LucideClock2 } from "lucide-react";
 
 const UserInfoComponent = () => {
   const { data: session } = useSession();
@@ -47,6 +47,7 @@ const UserInfoComponent = () => {
   const [loading, setLoading] = useState(true);
   const watchlist = useCollectionStore((state) => state.watchlist);
   const favorite = useCollectionStore((state) => state.favorite);
+  const bookmark = useCollectionStore((state) => state.bookmark);
   const fetchUserCollections = useCollectionStore(
     (state) => state.fetchUserCollections,
   );
@@ -112,6 +113,17 @@ const UserInfoComponent = () => {
               </div>
               <div className="text-xs text-gray-300 uppercase tracking-wide">
                 Watched
+              </div>
+            </div>
+          </div>
+          <div className="flex gap-2 rounded-lg border border-gray-900 p-5 bg-gray-900">
+            <LucideClock2 className="text-blue-500 mt-1" />
+            <div className="flex flex-col text-left">
+              <div className="text-2xl font-bold text-white">
+                {bookmark?.length}
+              </div>
+              <div className="text-xs text-gray-300 uppercase tracking-wide">
+                Bookmark
               </div>
             </div>
           </div>

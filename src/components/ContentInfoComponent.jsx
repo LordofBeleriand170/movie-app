@@ -6,9 +6,7 @@ import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { FaPlay, FaChevronDown } from "react-icons/fa6";
 
-import { Rating } from "@/features/content/contentStore";
 import { useCollectionStore } from "@/features/collection/collectionStore";
-import { Cast, Crew, TvShow } from "@/features/content/contentStore";
 
 import RateComponent from "./RateComponent";
 import TrailerPlayer from "./TrailerPlayer";
@@ -16,10 +14,13 @@ import ContentActionsComponent from "./ContentActionsComponent";
 import ContentPosterComponent from "./ContentPosterComponent";
 import RatingsComponents from "./RatingsComponents";
 import AwardsComponent from "./AwardsComponent";
+import { useContentStore } from "@/features/content/contentStore";
 
 const ContentInfoComponent = ({ type, newRate, setNewRate, info }) => {
   const { data: session } = useSession();
   const ratings = useCollectionStore((state) => state.ratings);
+  const content = useContentStore((state) => state.content);
+  console.log("CONTENT AWARDS", content);
 
   const releaseDate = new Date(
     info?.info?.release_date || info?.info?.first_air_date,
@@ -288,9 +289,11 @@ const ContentInfoComponent = ({ type, newRate, setNewRate, info }) => {
 
               {checkDate && (
                 <div className="flex flex-wrap justify-center items-stretch gap-4 max-w-3xl mt-auto pt-6">
-                  <div className="flex-1 min-w-[220px] max-w-xs flex items-center justify-center p-4 rounded-xl bg-[#0f1522]/90 border border-gray-800/80">
-                    <AwardsComponent />
-                  </div>
+                  {content?.awards !== "N/A" && (
+                    <div className="flex-1 min-w-[220px] max-w-xs flex items-center justify-center p-4 rounded-xl bg-[#0f1522]/90 border border-gray-800/80">
+                      <AwardsComponent />
+                    </div>
+                  )}
 
                   <div className="flex-1 min-w-[240px] max-w-xs flex flex-col justify-center items-center gap-3 p-4 rounded-xl bg-[#0f1522]/90 border border-gray-800/80">
                     <ContentActionsComponent media={media} />
