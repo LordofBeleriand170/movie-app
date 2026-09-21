@@ -77,14 +77,16 @@ const NotificationCurrent = ({ selectedNotifications }) => {
           {selectedNotifications?.text}
         </p>
 
-        <div className="mt-6 flex justify-end">
-          <button
-            onClick={redirect}
-            className="px-5 py-2 cursor-pointer rounded-lg bg-blue-600 hover:bg-blue-500 transition font-medium"
-          >
-            View Comment
-          </button>
-        </div>
+        {selectedNotifications?.commentId && (
+          <div className="mt-6 flex justify-end">
+            <button
+              onClick={redirect}
+              className="px-5 py-2 cursor-pointer rounded-lg bg-blue-600 hover:bg-blue-500 transition font-medium"
+            >
+              View Comment
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
