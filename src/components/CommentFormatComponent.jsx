@@ -11,6 +11,7 @@ import {
   MessageSquareX,
   ShieldAlert,
   X,
+  Star,
 } from "lucide-react";
 import { useCollectionStore } from "@/features/collection/collectionStore";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -151,9 +152,6 @@ const CommentFormatComponent = ({ comment, type }) => {
     setLiked(hasLiked);
   }, [hasLiked]);
 
-  /* -------------------------------------------------------------------------- */
-  /*                       DELETED COMMENT DESIGN STATE                         */
-  /* -------------------------------------------------------------------------- */
   if (comment?.isDeleted) {
     return (
       <div
@@ -212,9 +210,8 @@ const CommentFormatComponent = ({ comment, type }) => {
     );
   }
 
-  /* -------------------------------------------------------------------------- */
-  /*                        ACTIVE COMMENT DESIGN STATE                         */
-  /* -------------------------------------------------------------------------- */
+  const ratingValue = Number(comment?.rating) || 0;
+
   return (
     <>
       <div
@@ -242,6 +239,21 @@ const CommentFormatComponent = ({ comment, type }) => {
               <span className="font-semibold text-white truncate">
                 {comment?.username || "Anonymous"}
               </span>
+
+              {ratingValue > 0 && (
+                <div className="flex items-center gap-0.5">
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <Star
+                      key={index}
+                      className={`w-3.5 h-3.5 ${
+                        index < ratingValue
+                          ? "text-amber-400 fill-amber-400"
+                          : "text-neutral-600"
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
 
               {comment?.createdAt && (
                 <span className="text-neutral-400">

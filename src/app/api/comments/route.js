@@ -6,6 +6,8 @@ export async function POST(req) {
     const body = await req.json();
     const { id, username, movieId, text, mediaType, rating, spoiler } = body;
 
+    console.log("BODY: ", body);
+
     if (!id || !movieId || !text || !mediaType) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
