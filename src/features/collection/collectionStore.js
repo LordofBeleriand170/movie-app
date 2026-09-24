@@ -29,6 +29,7 @@ export const useCollectionStore = create((set) => ({
       if (!res.ok) throw new Error("Failed to fetch collections");
 
       const data = await res.json();
+      console.log("DATA USER: ", data?.user);
 
       set({
         user: data.user,
@@ -228,6 +229,8 @@ export const useCollectionStore = create((set) => ({
 
   isWatchedBatch: async (userId, contentIds) => {
     if (!userId || !contentIds?.length) return {};
+
+    console.log("CONTENTIDS: ", contentIds);
 
     try {
       const idsParam = contentIds

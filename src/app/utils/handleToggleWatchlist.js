@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useCollectionStore } from "@/features/collection/collectionStore";
 import { useSession } from "next-auth/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";

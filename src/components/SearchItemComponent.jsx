@@ -4,10 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 
 const SearchItemComponent = ({ result }) => {
-  console.log(result);
   let avgVote = result?.ratingAvg?._avg?.rating || result?.vote_average / 2;
 
-  console.log(result?.vote_average);
   const getImageUrl = (posterPath, gender) => {
     if (
       posterPath &&
@@ -38,7 +36,7 @@ const SearchItemComponent = ({ result }) => {
   return (
     <Link
       href={href}
-      className="flex gap-4 sm:gap-6 w-full bg-[#111216] hover:bg-[#15171e] border border-zinc-900 rounded-2xl overflow-hidden transition-colors duration-200"
+      className="flex gap-4 sm:gap-6 cursor-pointer w-full bg-[#111216] hover:bg-[#15171e] border border-zinc-900 rounded-2xl overflow-hidden transition-colors duration-200"
     >
       <div className="relative w-28 sm:w-36 aspect-[2/3] shrink-0 bg-zinc-900">
         <Image
@@ -69,7 +67,7 @@ const SearchItemComponent = ({ result }) => {
               {avgVote > 0 && (
                 <div className="flex items-center gap-1.5 text-yellow-500 text-base sm:text-md font-bold">
                   <span>⭐</span>
-                  <span className="text-white">{avgVote.toFixed(1)}</span>
+                  <span className="text-white">{+avgVote.toFixed(1)}</span>
                   <span className="text-zinc-500 font-normal text-xs sm:text-sm">
                     /5
                   </span>

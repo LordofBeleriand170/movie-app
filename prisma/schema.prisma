@@ -66,12 +66,12 @@ model UserRecentlyVisited {
   id        String   @id @default(cuid())
   userId    String
   mediaId   String
-  type      String
+  mediaType MediaType @default(movie)
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
 
-  @@unique([userId, mediaId])
+  @@unique([userId, mediaId, mediaType])
 }
 
 model Favorite {
@@ -85,7 +85,7 @@ model Favorite {
 
   user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, mediaId])
+  @@unique([userId, mediaId, mediaType])
 }
 
 model Watchlist {
@@ -99,7 +99,7 @@ model Watchlist {
 
   user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, mediaId])
+  @@unique([userId, mediaId, mediaType])
 }
 
 model Bookmark{
@@ -113,7 +113,7 @@ model Bookmark{
 
   user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, mediaId])
+  @@unique([userId, mediaId, mediaType])
 }
 
 model Comment {
@@ -173,7 +173,7 @@ model ReplyLike {
 model Rating {
   id        String   @id @default(cuid())
   movieId   Int
-  mediaType String
+  mediaType MediaType @default(movie)
   rating    Float    @default(0)
   votes     Int      @default(0)
   voters    Voter[]

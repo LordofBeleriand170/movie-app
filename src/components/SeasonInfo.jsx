@@ -1,70 +1,109 @@
-import Image from "next/image";
+import { useTvShowStore } from "@/features/tv/tvStore";
+import ImageFormat from "./ImageFormat";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
-const SeasonInfo = ({ tvShow, currentSeason }) => {
+const SeasonInfo = () => {
+  const season = useTvShowStore((state) => state.season);
+  const tvShow = useTvShowStore((state) => state.tvShow);
+  const params = useParams();
+
+  const router = useRouter();
+
+  const searchParams = useSearchParams();
+
+  const targetedSeasonId = searchParams.has("seasonId-name");
+  console.log("TARGETED SEASON ID: ", targetedSeasonId);
+
+  const redirect = () => {
+    router.push(`/media/${params?.type}/${params?.slug}/seasons?seasonId-name`);
+  };
+
+  useEffect(() => {
+    if (!targetedSeasonId) return;
+    const timer = setTimeout(() => {
+      const element = document.getElementById(`seasonId-name`);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }, 300);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [targetedSeasonId]);
+
+  const name = season?.name || tvShow?.name || "Season";
+  const imageUrl = season?.poster_path
+    ? `https://image.tmdb.org/t/p/original${season.poster_path}`
+    : "/image-not-found.jpg";
+
+  const backdropUrl = tvShow?.backdrop_path
+    ? `https://image.tmdb.org/t/p/original${tvShow.backdrop_path}`
+    : null;
+
   return (
-    <div className="relative overflow-hidden min-h-[350px]">
-      <div className="absolute inset-0 overflow-hidden">
-        <div
-          className="absolute inset-0 bg-no-repeat bg-top brightness-40"
-          style={{
-            backgroundImage: `url(https://image.tmdb.org/t/p/original/${tvShow?.backdrop_path})`,
-            backgroundSize: "86%",
-          }}
-        />
-      </div>
+    <div className="relative flex justify-center overflow-hidden min-h-[350px] w-[90%] mx-auto rounded-2xl">
+      {backdropUrl && (
+        <div className="absolute inset-0 overflow-hidden flex justify-center">
+          <div
+            className="absolute inset-0 bg-no-repeat bg-top brightness-40"
+            style={{
+              backgroundImage: `url(${backdropUrl})`,
+              backgroundSize: "cover",
+            }}
+          />
+        </div>
+      )}
 
       <div
-        className="absolute inset-y-0 right-0"
+        className="absolute inset-y-0 left-0 w-[15%]"
         style={{
-          width: "15%",
+          background:
+            "linear-gradient(to right, black 0%, black 10%, rgba(0,0,0,.9) 70%, rgba(0,0,0,0) 100%)",
+        }}
+      />
+      <div
+        className="absolute inset-y-0 right-0 w-[15%]"
+        style={{
           background:
             "linear-gradient(to left, black 0%, black 10%, rgba(0,0,0,.9) 70%, rgba(0,0,0,0) 100%)",
         }}
       />
 
-      <div
-        className="absolute inset-y-0 left-0"
-        style={{
-          width: "15%",
-          background:
-            "linear-gradient(to right, black 0%, black 10%, rgba(0,0,0,.9) 70%, rgba(0,0,0,0) 100%)",
-        }}
-      />
-
       <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black to-transparent" />
 
-      <div className="relative z-10 flex min-h-[350px]  gap-8 px-16 2xl:px-82 xl:px-60 lg:px-40 md:px-20 sm:px-10 py-12">
-        <div className="relative h-[300px] w-[200px] shrink-0 overflow-hidden rounded-xl shadow-2xl ring-1 ring-white/10 brightness-90">
-          <Image
-            src={`https://image.tmdb.org/t/p/original${currentSeason?.poster_path}`}
-            fill
-            className="object-cover"
-            alt={currentSeason?.name}
-          />
-        </div>
+      <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 p-8 min-h-[350px] mx-auto">
+        <ImageFormat
+          imageUrl={imageUrl}
+          name={name}
+          width="w-56"
+          style={"rounded-lg"}
+        />
 
-        <div className="pb-2">
-          <h2 className="mt-3 text-4xl font-bold tracking-tight">
-            {currentSeason?.name}
-          </h2>
+        <div className="flex-1 text-white">
+          <h2 className="text-4xl font-bold tracking-tight">{name}</h2>
 
-          <div className="mt-3 flex gap-4 text-sm text-zinc-400">
-            {currentSeason?.air_date && (
-              <>
-                <span>{currentSeason.air_date.slice(0, 4)}</span>
-              </>
+          <div className="mt-2 flex items-center gap-4 text-sm text-zinc-400">
+            {season?.air_date && <span>{season?.air_date?.slice(0, 4)}</span>}
+            {season?.episodes?.length > 0 && (
+              <span>{season?.episodes?.length} Episodes</span>
             )}
           </div>
 
-          <p className="mt-5 w-[80%] leading-7 text-zinc-300 line-clamp-4">
-            {currentSeason?.overview}
+          <p className="mt-4 max-w-2xl text-sm leading-6 text-zinc-300 line-clamp-3">
+            {season?.overview || "No overview available for this season."}
           </p>
-          <div className="mt-8 flex gap-4">
-            <button className="rounded-lg bg-white px-6 py-3 font-semibold text-black transition hover:bg-zinc-200 cursor-pointer">
+
+          <div className="mt-6 flex gap-4">
+            <button
+              onClick={redirect}
+              className="rounded-lg bg-white px-6 py-2.5 font-semibold text-black transition hover:bg-zinc-200 cursor-pointer"
+            >
               Episodes
             </button>
 
-            <button className="rounded-lg border border-white/15 bg-white/5 px-6 py-3 backdrop-blur hover:bg-white/10 cursor-pointer">
+            <button className="rounded-lg border border-white/15 bg-white/5 px-6 py-2.5 backdrop-blur hover:bg-white/10 transition cursor-pointer">
               More Details
             </button>
           </div>

@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useContentStore } from "@/features/content/contentStore";
+import ImageFormat from "./ImageFormat";
 
 const ActorComponent = () => {
   const content = useContentStore((state) => state.content);
@@ -30,6 +31,7 @@ const ActorComponent = () => {
             const imageUrl = hasProfile
               ? `https://image.tmdb.org/t/p/w300/${cast.profile_path}`
               : fallbackImg;
+            const name = cast?.name || "Actor";
 
             return (
               <Link
@@ -37,14 +39,7 @@ const ActorComponent = () => {
                 key={cast.id}
                 className="flex flex-col bg-[#121824] hover:bg-[#1a2334] border border-gray-800/80 hover:border-gray-700 min-w-[150px] w-[150px] rounded-lg overflow-hidden cursor-pointer transition-all duration-200 group flex-shrink-0 shadow-lg"
               >
-                <div className="relative w-full h-40 bg-gray-900 overflow-hidden">
-                  <Image
-                    src={imageUrl}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 origin-top"
-                    fill
-                    alt={cast?.name || "Actor"}
-                  />
-                </div>
+                <ImageFormat imageUrl={imageUrl} name={name} height={"h-40"} />
 
                 <div className="flex flex-col p-3 gap-0.5 min-h-[85px] justify-between">
                   <div className="flex flex-col">

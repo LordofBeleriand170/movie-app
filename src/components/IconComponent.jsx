@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { Check, Plus, Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -12,6 +11,7 @@ import {
   useSearchParams,
 } from "next/navigation";
 import { useToggleWatchlist } from "@/app/utils/handleToggleWatchlist";
+import ImageFormat from "./ImageFormat";
 
 const IconComponent = ({
   result,
@@ -58,18 +58,7 @@ const IconComponent = ({
       : `https://image.tmdb.org/t/p/w500${rawPoster}`
     : "/placeholder.png";
 
-  return (
-    <div
-      className={`group relative aspect-[2/3] w-full overflow-hidden rounded-r-xl bg-neutral-900 shadow-md hover:shadow-2xl hover:shadow-red-950/30 border border-white/5 ${
-        watchDisplay === "yes"
-          ? watched
-            ? "hover:border-amber-400/60"
-            : "hover:border-red-500"
-          : null
-      } transition-all`}
-    >
-      <Link href={`/media/${mediaType}/${slug}`}>
-        <Image
+  /*<Image
           src={posterPath}
           alt={title}
           fill
@@ -78,7 +67,22 @@ const IconComponent = ({
           onLoad={onImageLoad}
           onError={onImageLoad}
           unoptimized={posterPath === "/placeholder.png"}
-        />
+        />*/
+
+  const sizes = "(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 16vw";
+
+  return (
+    <div
+      className={`group relative aspect-[2/3] cursor-pointer w-full overflow-hidden rounded-r-xl bg-neutral-900 shadow-md hover:shadow-2xl hover:shadow-red-950/30 border border-white/5 ${
+        watchDisplay === "yes"
+          ? watched
+            ? "hover:border-amber-400/60"
+            : "hover:border-red-500"
+          : null
+      }`}
+    >
+      <Link href={`/media/${mediaType}/${slug}`}>
+        <ImageFormat imageUrl={posterPath} name={title} sizes={sizes} />
       </Link>
 
       {watchDisplay !== "no" && watchDisplay !== "false" && (

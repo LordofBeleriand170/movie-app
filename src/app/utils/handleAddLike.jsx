@@ -3,8 +3,6 @@ import { useMovieStore } from "@/features/movie/movieStore";
 const handleAddLike = async (commentId, isReply, userId) => {
   const { addLike } = useMovieStore.getState();
 
-  console.log("USER ID: ", userId);
-
   if (!commentId || !userId) return;
 
   try {

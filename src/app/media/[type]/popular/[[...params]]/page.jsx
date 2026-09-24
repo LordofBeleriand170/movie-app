@@ -51,7 +51,6 @@ const TypePage = ({ option }) => {
     }
     let indexRating = params?.params?.indexOf("by");
     if (indexRating >= 0) {
-      console.log();
       if (params?.params?.[indexRating + 1] === "rating") {
         setRating("highest");
       } else {

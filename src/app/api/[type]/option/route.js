@@ -76,13 +76,6 @@ ${
     (result) => result.poster_path !== null || result.backdrop_path !== null,
   );
 
-  /*if (filter.option === "upcoming") {
-      response.results = response.results.filter((result) => {
-        console.log(new Date(result.release_date));
-        new Date(result.release_date) < new Date();
-      });
-    }*/
-
   const finalResponse = {
     result: response,
     total_pages: response.total_pages,

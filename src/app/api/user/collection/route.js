@@ -49,7 +49,7 @@ export async function POST(req) {
       };
 
       const infoResponse = await fetch(
-        `https://api.themoviedb.org/3/${user.recentlyVisited[i].type === "movies" ? "movie" : "tv"}/${user.recentlyVisited[i].mediaId}`,
+        `https://api.themoviedb.org/3/${user.recentlyVisited[i].mediaType}/${user.recentlyVisited[i].mediaId}`,
         tmdbOptions,
       );
 

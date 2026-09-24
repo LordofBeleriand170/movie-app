@@ -24,7 +24,6 @@ export const usePersonStore = create((set, get) => ({
       }
 
       const data = await res.json();
-      console.log(data);
 
       set({
         person: data || null,

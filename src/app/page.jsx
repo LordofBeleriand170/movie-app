@@ -227,8 +227,6 @@ export default function Home() {
 
   const isUserAuthenticated = status === "authenticated" && !!session?.user;
 
-  console.log("isUserAuthenticated", isUserAuthenticated);
-
   return (
     <div className="relative min-h-screen bg-[#070709] text-white overflow-x-hidden">
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">

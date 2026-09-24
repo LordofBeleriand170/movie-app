@@ -1,48 +1,44 @@
 "use client";
 
+import LoadingPage from "@/app/LoadingPage";
 import Navbar from "@/components/Navbar";
 import SeasonComponent from "@/components/SeasonComponent";
 import SeasonInfo from "@/components/SeasonInfo";
-import { useMovieStore } from "@/features/movie/movieStore";
+import { useTvShowStore } from "@/features/tv/tvStore";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const SeasonPage = () => {
-  const [tvShow, setTvShow] = useState(null);
-  const [currentSeason, setCurrentSeason] = useState(null);
-
   const { slug } = useParams();
   const slugParts = slug?.split("-") || [];
 
-  const { fetchInfo } = useMovieStore();
+  const { fetchInfo } = useTvShowStore();
+  const loading = useTvShowStore((state) => state.loading);
 
   const id = slugParts[0];
 
   useEffect(() => {
     const getContent = async () => {
       try {
-        const response = await fetchInfo(id, "tvshows");
-        if (response) {
-          setTvShow(response?.info);
-        }
+        await fetchInfo(id, "tvshows");
       } catch (err) {
         console.log(err);
       }
     };
     getContent();
   }, [id, fetchInfo]);
+
+  if (loading) {
+    return <LoadingPage />;
+  }
+
   return (
     <>
       <div className="bg-black">
         <Navbar background={"no"} />
-        <SeasonInfo tvShow={tvShow} currentSeason={currentSeason} />
+        <SeasonInfo />
       </div>
-      <SeasonComponent
-        id={id}
-        tvShow={tvShow}
-        currentSeason={currentSeason}
-        setCurrentSeason={setCurrentSeason}
-      />
+      <SeasonComponent id={id} />
     </>
   );
 };

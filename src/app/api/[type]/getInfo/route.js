@@ -5,6 +5,9 @@ export async function POST(req) {
   try {
     const body = await req.json();
     const { id, type, user } = body;
+    console.log("TYPE: ", type);
+
+    const mediaType = type === "tvshows" ? "tv" : "movie";
 
     if (!id || !type) {
       return NextResponse.json(
@@ -21,6 +24,7 @@ export async function POST(req) {
           where: {
             userId: user.id,
             mediaId: String(id),
+            mediaType: mediaType,
           },
         });
 
@@ -28,7 +32,7 @@ export async function POST(req) {
           data: {
             userId: user.id,
             mediaId: String(id),
-            type,
+            mediaType: mediaType,
             createdAt: now,
           },
         });
@@ -50,8 +54,6 @@ export async function POST(req) {
       });
     }
 
-    const mediaType = type === "tvshows" ? "tv" : "movie";
-
     const tmdbOptions = {
       method: "GET",
       headers: {
@@ -65,6 +67,33 @@ export async function POST(req) {
       tmdbOptions,
     );
     const infoData = await infoResponse.json();
+    let seasonOne = infoData?.seasons?.find(
+      (season) => season?.name === "Season 1" || season?.season_number === 1,
+    );
+    if (mediaType === "tv") {
+      const seasonResponse = await fetch(
+        `https://api.themoviedb.org/3/tv/${id}/season/1`,
+        tmdbOptions,
+      );
+
+      const seasonIndex = infoData.seasons.findIndex(
+        (season) => season?.season_number === 1 || season?.name === "Season 1",
+      );
+
+      if (seasonResponse.ok) {
+        const seasonData = await seasonResponse.json();
+
+        seasonOne = {
+          ...seasonOne,
+          episodes: seasonData.episodes || [],
+        };
+
+        infoData.seasons[seasonIndex] = {
+          ...infoData.seasons[seasonIndex],
+          ...seasonData,
+        };
+      }
+    }
 
     let seasons = 0;
 

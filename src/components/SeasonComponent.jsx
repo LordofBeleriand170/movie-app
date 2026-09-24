@@ -1,19 +1,41 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Episode, useTvShowStore } from "@/features/tv/tvStore";
-import Image from "next/image";
+import { useTvShowStore } from "@/features/tv/tvStore";
+import ImageFormat from "./ImageFormat";
+import { formatDate } from "@/app/utils/formatDate";
+import { useParams, useRouter } from "next/navigation";
 
-const SeasonComponent = ({ id, tvShow, currentSeason, setCurrentSeason }) => {
-  const [season, setSeason] = (useState < number) | (null > 1);
+const SeasonComponent = ({ id }) => {
+  const [season, setSeason] = useState(null);
+  const router = useRouter();
+  const params = useParams();
 
+  const currentSeason = useTvShowStore((state) => state.season);
   const fetchSeason = useTvShowStore((state) => state.fetchSeason);
+  const tvShow = useTvShowStore((state) => state.tvShow);
+
+  /*<div className="relative h-[300px] w-[200px]">
+                    <Image
+                      src={``}
+                      fill
+                      className="rounded-lg object-cover"
+                      alt={season.name}
+                    />
+                  </div>*/
+
+  const tvShowSeason = tvShow?.season?.find(
+    (season) => season?.name === "Season 1" || season?.number === 1,
+  );
+
+  const episodes = currentSeason?.episodes
+    ? currentSeason?.episodes
+    : tvShowSeason?.episodes;
 
   useEffect(() => {
     const getSeason = async () => {
       try {
-        const response = await fetchSeason(id, season);
-        setCurrentSeason(response);
+        await fetchSeason(id, season);
       } catch (err) {
         console.log(err);
       }
@@ -32,52 +54,68 @@ const SeasonComponent = ({ id, tvShow, currentSeason, setCurrentSeason }) => {
 
         <div className="flex flex-col gap-10">
           <div className="flex flex-col h-full mt-5 items-center justify-center">
-            <div className="flex w-full overflow-x-auto scroll-smooth gap-5 pt-4 scrollbar-hide scrollbar-thin">
-              {tvShow?.seasons?.map((season, index) => (
-                <div
-                  onClick={() => setSeason(season.season_number)}
-                  key={index}
-                  className="cursor-pointer flex flex-col items-center gap-3 flex-shrink-0"
-                >
-                  <div className="relative h-[300px] w-[200px]">
-                    <Image
-                      src={`https://image.tmdb.org/t/p/original${season.poster_path}`}
-                      fill
-                      className="rounded-lg object-cover"
-                      alt={season.name}
+            <div className="flex w-full overflow-x-auto gap-5 pt-4 scrollbar-thin scrollbar-thumb-neutral-700 scrollbar-track-transparent">
+              {tvShow?.seasons?.map((season, index) => {
+                const imageUrl = `https://image.tmdb.org/t/p/original${season.poster_path}`;
+                const name = season.name;
+                const height = "h-[300px]";
+                const width = "w-[200px]";
+
+                return (
+                  <div
+                    onClick={() => {
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                      setSeason(season.season_number);
+                      router.replace(
+                        `/media/${params?.type}/${params?.slug}/seasons`,
+                        {
+                          scroll: false,
+                        },
+                      );
+                    }}
+                    key={index}
+                    className="cursor-pointer rounded-lg flex flex-col items-center gap-3 flex-shrink-0"
+                  >
+                    <ImageFormat
+                      imageUrl={imageUrl}
+                      name={name}
+                      height={height}
+                      width={width}
+                      style={"rounded-lg"}
                     />
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
           <div>
-            {currentSeason && (
-              <div className="flex rounded-2xl border border-gray-500 bg-black p-5 flex-col gap-2">
-                {currentSeason?.episodes &&
-                Array.isArray(currentSeason?.episodes) ? (
-                  currentSeason?.episodes.map((episode, index) => (
+            <h2 id="seasonId-name" className="text-3xl">
+              {currentSeason?.name}
+            </h2>
+            <span>{currentSeason?.overview}</span>
+          </div>
+
+          <div>
+            <div className="flex rounded-2xl border border-gray-500 bg-black p-5 flex-col gap-2">
+              {episodes && Array.isArray(episodes) ? (
+                episodes.map((episode, index) => {
+                  const imageUrl = episode.still_path
+                    ? `https://image.tmdb.org/t/p/original${episode.still_path}`
+                    : "/image-not-found.jpg";
+
+                  const name = episode?.still_path;
+
+                  return (
                     <div
                       key={index}
-                      className="relative pr-3 
-bg-zinc-900
-backdrop-blur-md
-rounded-2xl
-shadow-2xl overflow-hidden flex gap-6 min-h-50 cursor-pointer"
+                      className="relative pr-3  bg-zinc-900 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden flex gap-6 h-50 min-h-[200px] cursor-pointer"
                     >
-                      <div className="relative w-72 self-stretch flex-shrink-0 overflow-hidden rounded-l-2xl">
-                        <Image
-                          src={
-                            episode.still_path
-                              ? `https://image.tmdb.org/t/p/original${episode.still_path}`
-                              : "/image-not-found.jpg"
-                          }
-                          alt={episode.name}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
+                      <ImageFormat
+                        imageUrl={imageUrl}
+                        name={name}
+                        width={"w-100"}
+                      />
 
                       <div className="flex flex-col gap-1 pt-4 pb-1 w-full">
                         <div className="flex flex-col gap-0.5">
@@ -95,7 +133,7 @@ shadow-2xl overflow-hidden flex gap-6 min-h-50 cursor-pointer"
                             )}{" "}
                             |{" "}
                             <span className="text-xs text-white">
-                              {episode?.air_date}
+                              {formatDate(episode?.air_date)}
                             </span>
                           </div>
                         </div>
@@ -105,14 +143,14 @@ shadow-2xl overflow-hidden flex gap-6 min-h-50 cursor-pointer"
                         </p>
                       </div>
                     </div>
-                  ))
-                ) : (
-                  <p className="text-center text-gray-500">
-                    No episodes available
-                  </p>
-                )}
-              </div>
-            )}
+                  );
+                })
+              ) : (
+                <p className="text-center text-gray-500">
+                  No episodes available
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </div>

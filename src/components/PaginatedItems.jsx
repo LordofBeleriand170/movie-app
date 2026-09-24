@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { MovieState, useMovieStore } from "@/features/movie/movieStore";
+import { useMovieStore } from "@/features/movie/movieStore";
 import ContentLoading from "@/app/ContentLoading";
 import IconComponent from "./IconComponent";
 import slugify from "@/libs/slugify";
@@ -33,8 +33,6 @@ const PaginatedItems = ({
   const [loadedImageIds, setLoadedImageIds] = useState(new Set());
   const [isImagesReady, setIsImagesReady] = useState(false);
   const [isWatchedLoading, setIsWatchedLoading] = useState(true);
-
-  console.log(trendingResult);
 
   useEffect(() => {
     if (watchedStatuses && Object.keys(watchedStatuses).length === 0) {
@@ -128,6 +126,10 @@ const PaginatedItems = ({
   }, [handleObserver]);
 
   useEffect(() => {
+    console.log("WATCHED STATUSES: ", watchedStatuses);
+  }, [watchedStatuses]);
+
+  useEffect(() => {
     const controller = new AbortController();
     const { signal } = controller;
 
@@ -203,7 +205,7 @@ const PaginatedItems = ({
           <ContentLoading />
         ) : (
           <div className="w-full">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
               {Array.isArray(trendingResult) &&
                 trendingResult.map((result, i) => {
                   const titleOrName = result.title || result.name || "untitled";
@@ -212,10 +214,7 @@ const PaginatedItems = ({
                     result.id || result.mediaId || result.contentId;
 
                   return (
-                    <div
-                      key={result.id || i}
-                      className="group relative transition-all duration-300 ease-out"
-                    >
+                    <div key={result.id || i} className="group relative">
                       <div>
                         <IconComponent
                           result={result}

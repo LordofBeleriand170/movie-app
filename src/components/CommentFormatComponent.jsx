@@ -42,8 +42,6 @@ const CommentFormatComponent = ({ comment, type }) => {
   const [isHighlighted, setIsHighlighted] = useState(false);
   let isBanned = new Date(user?.bannedUntil) > new Date();
 
-  const optionsRef = useRef(null);
-
   const isReply = !type || Boolean(comment?.replyLikes);
 
   const hasLiked = isReply

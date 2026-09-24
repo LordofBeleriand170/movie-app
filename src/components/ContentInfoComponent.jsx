@@ -20,7 +20,6 @@ const ContentInfoComponent = ({ type, newRate, setNewRate, info }) => {
   const { data: session } = useSession();
   const ratings = useCollectionStore((state) => state.ratings);
   const content = useContentStore((state) => state.content);
-  console.log("CONTENT AWARDS", content);
 
   const releaseDate = new Date(
     info?.info?.release_date || info?.info?.first_air_date,

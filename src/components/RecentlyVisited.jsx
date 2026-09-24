@@ -13,6 +13,7 @@ const RecentlyVisited = () => {
   const user = session?.user;
 
   const recently = useCollectionStore((state) => state.recently);
+  console.log("RECENTLY FDSFDSFGDSFSDFSDFDSFSD: ", recently);
   const [recentlyError, setRecentlyError] = useState(false);
   const watchlist = useCollectionStore((state) => state.watchlist);
 
@@ -41,6 +42,10 @@ const RecentlyVisited = () => {
       checkBatch(recently);
     }
   }, [recently, watchlist, checkBatch]);
+
+  useEffect(() => {
+    console.log("WATCHED STATUSES: ", watchedStatuses);
+  }, [watchedStatuses]);
 
   useEffect(() => {
     if (status === "loading") return;
@@ -103,13 +108,16 @@ const RecentlyVisited = () => {
         <div className="relative">
           <div className="flex overflow-x-auto gap-3.5 py-3 scrollbar-thin scrollbar-thumb-neutral-700 scrollbar-track-transparent">
             {[...recently]?.map((recent) => {
+              console.log("RECENT: ", recent);
               const titleOrName = recent.title || recent.name || "untitled";
               const slug = slugify(recent.id, titleOrName);
               const contentId = recent.id || recent.mediaId || recent.contentId;
+              const recentType = recent?.type || recent?.mediaType;
+              const id = recentType + "-" + recent?.id;
 
               return (
                 <div
-                  key={recent.id}
+                  key={id}
                   className="w-28 sm:w-36 md:w-40 lg:w-44 flex-shrink-0"
                 >
                   <div className="group relative transition-all duration-300 ease-out">

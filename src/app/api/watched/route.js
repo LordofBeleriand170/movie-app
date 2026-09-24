@@ -112,8 +112,6 @@ export async function POST(req) {
       mediaType = "movie",
     } = body;
 
-    console.log("BODY: ", body);
-
     if (!userId || userId === "undefined" || !contentId) {
       return NextResponse.json(
         { error: "Valid userId and contentId required" },

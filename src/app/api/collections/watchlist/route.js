@@ -5,6 +5,7 @@ export async function POST(req) {
   try {
     const body = await req.json();
     const { id, result } = body;
+    console.log("RESULT: ", result);
 
     const rawId = result?.info?.id || result?.id || body?.mediaId;
     const itemId = typeof rawId === "string" ? parseInt(rawId, 10) : rawId;
@@ -19,6 +20,8 @@ export async function POST(req) {
       where: isEmail ? { email: id } : { id },
       include: { watchlist: true },
     });
+
+    console.log("USER: ", user);
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -35,6 +38,7 @@ export async function POST(req) {
         where: {
           userId: user.id,
           mediaId: itemId,
+          mediaType: mediaType,
         },
       });
     } else {
