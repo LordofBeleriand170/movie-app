@@ -18,10 +18,8 @@ export async function POST(req) {
 
     const user = await prisma.user.findUnique({
       where: isEmail ? { email: id } : { id },
-      include: { watchlist: true },
+      include: { watchlist: true, recentlyVisited: true },
     });
-
-    console.log("USER: ", user);
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -33,6 +31,12 @@ export async function POST(req) {
       (w) => Number(w.mediaId) === Number(itemId) && w.mediaType === mediaType,
     );
 
+    const recentlyExists = user.recentlyVisited.some(
+      (w) => Number(w.mediaId) === Number(itemId) && w.mediaType === mediaType,
+    );
+
+    let isWatchedNextState = false;
+
     if (watchlistExists) {
       await prisma.watchlist.deleteMany({
         where: {
@@ -41,6 +45,8 @@ export async function POST(req) {
           mediaType: mediaType,
         },
       });
+
+      isWatchedNextState = false;
     } else {
       let poster = result?.poster_path || "";
       let title = result?.title || result?.name || "Untitled";
@@ -76,6 +82,23 @@ export async function POST(req) {
           releaseDate,
         },
       });
+
+      isWatchedNextState = true;
+    }
+
+    if (recentlyExists) {
+      await prisma.userRecentlyVisited.update({
+        where: {
+          userId_mediaId_mediaType: {
+            userId: user.id,
+            mediaId: String(itemId),
+            mediaType: mediaType,
+          },
+        },
+        data: {
+          isWatched: isWatchedNextState,
+        },
+      });
     }
 
     const updatedUser = await prisma.user.findUnique({
@@ -83,6 +106,7 @@ export async function POST(req) {
       include: {
         favorite: true,
         watchlist: true,
+        recentlyVisited: true,
         ratings: true,
         comments: true,
       },

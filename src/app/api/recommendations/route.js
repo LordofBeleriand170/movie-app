@@ -127,8 +127,6 @@ export async function POST(req) {
       page++;
     }
 
-    console.log("INFO DATA: ", data);
-
     return NextResponse.json(data);
   } catch (err) {
     console.error("Error fetching movie info:", err);

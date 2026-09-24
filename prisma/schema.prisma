@@ -67,6 +67,7 @@ model UserRecentlyVisited {
   userId    String
   mediaId   String
   mediaType MediaType @default(movie)
+  isWatched Boolean  @default(false)
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])

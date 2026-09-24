@@ -13,14 +13,9 @@ const RecentlyVisited = () => {
   const user = session?.user;
 
   const recently = useCollectionStore((state) => state.recently);
-  console.log("RECENTLY FDSFDSFGDSFSDFSDFDSFSD: ", recently);
   const [recentlyError, setRecentlyError] = useState(false);
-  const watchlist = useCollectionStore((state) => state.watchlist);
 
   const [recentlyLoading, setRecentlyLoading] = useState(true);
-  const [isWatchedLoading, setIsWatchedLoading] = useState(true);
-
-  const { watchedStatuses, checkBatch } = useBatchWatched();
 
   const fetchUserCollections = useCollectionStore(
     (state) => state.fetchUserCollections,
@@ -28,24 +23,6 @@ const RecentlyVisited = () => {
   const clearRecentlyVisited = useCollectionStore(
     (state) => state.clearRecentlyVisited,
   );
-
-  useEffect(() => {
-    if (watchedStatuses && Object.keys(watchedStatuses).length === 0) {
-      setIsWatchedLoading(true);
-    } else {
-      setIsWatchedLoading(false);
-    }
-  }, [watchedStatuses]);
-
-  useEffect(() => {
-    if (recently && recently.length > 0) {
-      checkBatch(recently);
-    }
-  }, [recently, watchlist, checkBatch]);
-
-  useEffect(() => {
-    console.log("WATCHED STATUSES: ", watchedStatuses);
-  }, [watchedStatuses]);
 
   useEffect(() => {
     if (status === "loading") return;
@@ -111,9 +88,10 @@ const RecentlyVisited = () => {
               console.log("RECENT: ", recent);
               const titleOrName = recent.title || recent.name || "untitled";
               const slug = slugify(recent.id, titleOrName);
-              const contentId = recent.id || recent.mediaId || recent.contentId;
               const recentType = recent?.type || recent?.mediaType;
               const id = recentType + "-" + recent?.id;
+
+              console.log("RECENTLYY: ", recent);
 
               return (
                 <div
@@ -125,8 +103,8 @@ const RecentlyVisited = () => {
                       result={recent}
                       slug={slug}
                       watchDisplay={"true"}
-                      checked={watchedStatuses[contentId] ?? false}
-                      isWatchedLoading={isWatchedLoading}
+                      checked={recent?.isWatched}
+                      isWatchedLoading={recentlyLoading}
                     />
                   </div>
                 </div>
@@ -135,7 +113,6 @@ const RecentlyVisited = () => {
           </div>
         </div>
       ) : (
-        /* Glassmorphic Empty State */
         <div className="flex items-center justify-center p-8 rounded-2xl bg-neutral-900/30 border border-white/5 backdrop-blur-md">
           <p className="text-xs sm:text-sm text-neutral-400 font-medium">
             You have no recently viewed media.

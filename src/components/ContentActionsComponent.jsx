@@ -58,12 +58,16 @@ const ContentActionsComponent = ({ media }) => {
 
   const mediaType = media === "movies" ? "movie" : "tv";
 
-  let result = content
+  console.log("CONTENT: ", content);
+
+  const result = content
     ? {
         id: content?.info?.id,
         name: content?.info?.title || content?.info?.name,
         poster_path: content?.info?.poster_path,
         type: content?.info?.release_date ? "movie" : "tv",
+        release_date:
+          content?.info?.release_date || content?.info?.first_air_date,
       }
     : null;
   const mediaInWatchlist = watchlist.some(

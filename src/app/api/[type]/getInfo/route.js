@@ -5,9 +5,20 @@ export async function POST(req) {
   try {
     const body = await req.json();
     const { id, type, user } = body;
-    console.log("TYPE: ", type);
 
     const mediaType = type === "tvshows" ? "tv" : "movie";
+
+    const mediaInWatchlist = await prisma.watchlist.findFirst({
+      where: {
+        userId: user?.id,
+        mediaId: parseInt(id),
+        mediaType: mediaType,
+      },
+    });
+
+    console.log("sddssds", mediaInWatchlist);
+
+    const isWatched = mediaInWatchlist ? true : false;
 
     if (!id || !type) {
       return NextResponse.json(
@@ -33,6 +44,7 @@ export async function POST(req) {
             userId: user.id,
             mediaId: String(id),
             mediaType: mediaType,
+            isWatched,
             createdAt: now,
           },
         });

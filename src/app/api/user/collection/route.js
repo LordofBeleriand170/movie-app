@@ -60,6 +60,7 @@ export async function POST(req) {
         name: infoData?.first_air_date ? infoData?.name : infoData?.title,
         poster_path: infoData?.poster_path,
         type: infoData?.first_air_date ? "tv" : "movie",
+        isWatched: user.recentlyVisited[i].isWatched,
       };
 
       recentlyVisited.push(content);

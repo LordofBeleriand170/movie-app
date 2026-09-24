@@ -22,6 +22,8 @@ export const useToggleWatchlist = () => {
       return;
     }
 
+    console.log("RESULT TOGGLE: ", result);
+
     const activeUserId = user?.id || session?.user?.id;
     if (!activeUserId) return;
 

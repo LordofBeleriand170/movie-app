@@ -12,6 +12,7 @@ import "../app/nprogress.css";
 import ActorComponent from "./ActorComponent";
 import CommentSectionComponent from "./CommentSectionComponent";
 import ErrorPage from "@/libs/ErrorPage";
+import { useCollectionStore } from "@/features/collection/collectionStore";
 
 const InfoComponent = ({ option, type }) => {
   const [id, setId] = useState("");
@@ -24,6 +25,7 @@ const InfoComponent = ({ option, type }) => {
   const [currentUser, setCurrentUser] = useState(null);
 
   const fetchInfo = useContentStore((state) => state.fetchInfo);
+  const watchlist = useCollectionStore((state) => state.watchlist);
 
   const { data: session } = useSession();
   const user = session?.user;
