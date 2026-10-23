@@ -3,12 +3,18 @@
 import { ChevronRight, LogOut, Settings } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import React, { useEffect, useRef } from "react";
 
 const UserModal = ({ openSettings, setOpenSettings }) => {
   const { data: session } = useSession();
   const user = session?.user;
   const optionsRef = useRef(null);
+
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const fullUrl = `${pathname}?${searchParams.toString()}`;
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -84,7 +90,7 @@ const UserModal = ({ openSettings, setOpenSettings }) => {
               <button
                 onClick={async () => {
                   setOpenSettings(false);
-                  await signOut({ callbackUrl: "/" });
+                  await signOut({ callbackUrl: fullUrl });
                 }}
                 className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-medium text-red-500 hover:bg-red-500/10 transition cursor-pointer"
               >
