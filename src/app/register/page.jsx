@@ -307,7 +307,7 @@ const RegisterFormContent = () => {
                 disabled={loading}
                 className="w-2/3 py-2.5 bg-red-600 cursor-pointer hover:bg-red-500 disabled:bg-zinc-800 text-white font-semibold text-sm rounded-full transition shadow-lg shadow-red-950/40 active:scale-[0.98]"
               >
-                {loading ? "Registering..." : "Complete Registration"}
+                {loading ? "Registering..." : "Register"}
               </button>
             </div>
           </form>
