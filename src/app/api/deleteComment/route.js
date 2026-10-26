@@ -19,7 +19,7 @@ export async function POST(req) {
 
       if (!replyExists) {
         return NextResponse.json(
-          { error: "Odgovor na komentar nije pronađen" },
+          { error: "Comment answer not found" },
           { status: 404 },
         );
       }
