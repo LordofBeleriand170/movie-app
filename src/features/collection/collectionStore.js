@@ -223,7 +223,7 @@ export const useCollectionStore = create((set) => ({
 
       return data;
     } catch (err) {
-      console.error(`Failed to clear recently visited:`, err);
+      console.error(`Failed to clear notifications:`, err);
     }
   },
 
