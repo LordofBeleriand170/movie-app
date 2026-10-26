@@ -31,7 +31,7 @@ export async function POST(req) {
 
       return NextResponse.json({
         ok: true,
-        message: "Odgovor je uspešno obrisan",
+        message: "Answer is successfully deleted",
       });
     } else {
       const commentExists = await prisma.comment.findUnique({
@@ -40,7 +40,7 @@ export async function POST(req) {
 
       if (!commentExists) {
         return NextResponse.json(
-          { error: "Komentar nije pronađen" },
+          { error: "Comment not found" },
           { status: 404 },
         );
       }
@@ -53,12 +53,12 @@ export async function POST(req) {
 
     return NextResponse.json({
       ok: true,
-      message: "Komentar je uspešno obrisan",
+      message: "Comment successfully deleted",
     });
   } catch (err) {
-    console.error("Greška pri brisanju komentara:", err);
+    console.error("Error while deleting comment:", err);
     return NextResponse.json(
-      { error: err.message || "Greška na serveru" },
+      { error: err.message || "Server error" },
       { status: 500 },
     );
   }
