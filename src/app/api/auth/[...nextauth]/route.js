@@ -79,6 +79,7 @@ export const authOptions = {
         return {
           id: user?.id,
           email: user?.email,
+          role: user?.role,
           username: user?.name,
           createdAt: user?.createdAt,
         };
@@ -94,11 +95,14 @@ export const authOptions = {
 
   callbacks: {
     async session({ session, token }) {
+      console.log("USER AUTHORIZE: ", token);
+
       if (token) {
         session.user = {
           id: token.id,
           email: token.email,
           username: token.name,
+          role: token.role,
           createdAt: token?.createdAt,
         };
       }
@@ -108,10 +112,22 @@ export const authOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.email = user.email;
-        token.name = user.username || user.name;
-        token.createdAt = user?.createdAt;
       }
+
+      if (token.id) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id },
+        });
+
+        if (dbUser) {
+          token.id = dbUser.id;
+          token.email = dbUser.email;
+          token.username = dbUser.name;
+          token.role = dbUser.role;
+          token.createdAt = dbUser.createdAt;
+        }
+      }
+
       return token;
     },
 

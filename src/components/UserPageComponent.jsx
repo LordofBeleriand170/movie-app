@@ -1,28 +1,14 @@
 "use client";
 
-import LoadingPage from "@/app/LoadingPage";
 import { useCollectionStore } from "@/features/collection/collectionStore";
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import UserInfoComponent from "./UserInfoComponent";
 import IconComponent from "./IconComponent";
 import slugify from "@/libs/slugify";
-import {
-  Star,
-  Heart,
-  Bookmark,
-  MessageSquare,
-  Film,
-  Tv,
-  LucideClock2,
-} from "lucide-react";
+import { Heart, Bookmark, Film, Tv, LucideClock2 } from "lucide-react";
 import { GoClock } from "react-icons/go";
 
 const UserPageComponent = () => {
-  const { data: session, status } = useSession();
-  const user = session?.user;
-  const [loading, setLoading] = useState(true);
-
   const [activeTab, setActiveTab] = useState("watchlist");
 
   const [activeFavorite, setActiveFavorite] = useState("movies");
@@ -32,21 +18,6 @@ const UserPageComponent = () => {
   const watchlist = useCollectionStore((state) => state.watchlist);
   const favorite = useCollectionStore((state) => state.favorite);
   const bookmark = useCollectionStore((state) => state.bookmark);
-
-  const fetchUserCollections = useCollectionStore(
-    (state) => state.fetchUserCollections,
-  );
-
-  useEffect(() => {
-    if (!user?.email) return;
-
-    fetchUserCollections(user.email);
-    setLoading(false);
-  }, [user?.email]);
-
-  if (loading) {
-    return <LoadingPage />;
-  }
 
   const movieFavorite = favorite?.filter((item) => item.mediaType === "movie");
   const tvShowFavorite = favorite?.filter((item) => item.mediaType === "tv");
@@ -164,7 +135,7 @@ const UserPageComponent = () => {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 xs:grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 2xl:grid-cols-8 gap-2">
+              <div className="grid grid-cols-1 xs:grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 2xl:grid-cols-7 gap-2">
                 {isActiveFavorite?.map((item, idx) => {
                   const titleOrName = item.title || item.name || "untitled";
                   const slug = slugify(item.mediaId, titleOrName);
@@ -179,6 +150,7 @@ const UserPageComponent = () => {
                           result={item}
                           slug={slug}
                           watchDisplay={"no"}
+                          isUserPage={false}
                         />
                       </div>
                       <div className="p-2.5 flex flex-col justify-between flex-1 bg-neutral-950">
@@ -252,7 +224,7 @@ const UserPageComponent = () => {
               </div>
             ) : (
               <div className="relative">
-                <div className="grid grid-cols-1 xs:grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 2xl:grid-cols-8 gap-2">
+                <div className="grid grid-cols-1 xs:grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 2xl:grid-cols-7 gap-2">
                   {isActiveWatchlist?.map((item, idx) => {
                     const titleOrName = item.title || item.name || "untitled";
                     const slug = slugify(item.mediaId, titleOrName);
@@ -260,15 +232,17 @@ const UserPageComponent = () => {
                     return (
                       <div
                         key={idx}
-                        className="group relative w-[150px] min-w-[150px] flex flex-col bg-neutral-950 border border-white/10 hover:border-white/25 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-cyan-950/30"
+                        className="group relative flex flex-col bg-neutral-950 border border-white/10 hover:border-white/25 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-cyan-950/30"
                       >
                         <div className="group">
                           <IconComponent
                             result={item}
                             slug={slug}
                             watchDisplay={"no"}
+                            isUserPage={false}
                           />
                         </div>
+
                         <div className="p-2.5 flex flex-col justify-between flex-1 bg-neutral-950">
                           <span className="text-xs font-semibold text-neutral-200 group-hover:text-cyan-400 transition-colors line-clamp-1">
                             {item?.name || item?.title}
@@ -341,7 +315,7 @@ const UserPageComponent = () => {
               </div>
             ) : (
               <div className="relative">
-                <div className="grid grid-cols-1 xs:grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 2xl:grid-cols-8 gap-2">
+                <div className="grid grid-cols-1 xs:grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 2xl:grid-cols-7 gap-2">
                   {isActiveBookmark?.map((item, idx) => {
                     const titleOrName = item.title || item.name || "untitled";
                     const slug = slugify(item.mediaId, titleOrName);
@@ -356,6 +330,7 @@ const UserPageComponent = () => {
                             result={item}
                             slug={slug}
                             watchDisplay={"no"}
+                            isUserPage={false}
                           />
                         </div>
                         <div className="p-2.5 flex flex-col justify-between flex-1 bg-neutral-950">

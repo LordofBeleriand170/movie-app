@@ -1,14 +1,11 @@
 "use client";
 
 import { useCollectionStore } from "@/features/collection/collectionStore";
-import { useSession } from "next-auth/react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Calendar, Heart, Eye, LucideClock2 } from "lucide-react";
 
 const UserInfoComponent = () => {
-  const { data: session } = useSession();
-
-  const user = session?.user;
+  const { user } = useCollectionStore();
 
   let monthName = (monthNum) => {
     switch (monthNum) {
@@ -48,16 +45,6 @@ const UserInfoComponent = () => {
   const watchlist = useCollectionStore((state) => state.watchlist);
   const favorite = useCollectionStore((state) => state.favorite);
   const bookmark = useCollectionStore((state) => state.bookmark);
-  const fetchUserCollections = useCollectionStore(
-    (state) => state.fetchUserCollections,
-  );
-
-  useEffect(() => {
-    if (!user?.email) return;
-
-    fetchUserCollections(user.email);
-    setLoading(false);
-  }, [user?.email]);
 
   return (
     <div className="relative overflow-hidden rounded-2xl">

@@ -13,12 +13,24 @@ export const useCollectionStore = create((set) => ({
   bannedUntil: null,
   recently: [],
   comments: [],
-  loading: true,
+  loading: false,
   countries: [],
 
   fetchUserCollections: async (email) => {
+    set({
+      user: null,
+      favorite: [],
+      watchlist: [],
+      bookmark: [],
+      ratings: [],
+      recently: [],
+      notifications: [],
+      comments: [],
+      loading: true,
+    });
     if (!email) return;
 
+    console.log("EMAILHERE: ", email);
     try {
       const res = await fetch(`/api/user/collection`, {
         method: "POST",
@@ -26,10 +38,13 @@ export const useCollectionStore = create((set) => ({
         body: JSON.stringify({ email }),
       });
 
-      if (!res.ok) throw new Error("Failed to fetch collections");
+      if (!res.ok) {
+        set({ error: "Failed to fetch collections" });
+        throw new Error("Failed to fetch collections");
+      }
 
       const data = await res.json();
-      console.log("DATA USER: ", data?.user);
+      console.log("DATA USdsadasdasdasER: ", data?.user);
 
       set({
         user: data.user,

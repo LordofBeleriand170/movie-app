@@ -5,12 +5,13 @@ export async function POST(req) {
   try {
     const body = await req.json();
     const { email } = body;
+    console.log("EMAIL: ", email);
 
     if (!email) {
       return NextResponse.json({ error: "Email required" }, { status: 400 });
     }
 
-    const user = await prisma.user.findUnique({
+    const user = await prisma?.user?.findUnique({
       where: { email },
       include: {
         favorite: true,
@@ -39,7 +40,7 @@ export async function POST(req) {
 
     let recentlyVisited = [];
 
-    for (let i = 0; i < user.recentlyVisited.length; i++) {
+    for (let i = 0; i < user?.recentlyVisited?.length; i++) {
       const tmdbOptions = {
         method: "GET",
         headers: {
@@ -49,7 +50,7 @@ export async function POST(req) {
       };
 
       const infoResponse = await fetch(
-        `https://api.themoviedb.org/3/${user.recentlyVisited[i].mediaType}/${user.recentlyVisited[i].mediaId}`,
+        `https://api.themoviedb.org/3/${user?.recentlyVisited[i]?.mediaType}/${user?.recentlyVisited[i]?.mediaId}`,
         tmdbOptions,
       );
 
@@ -60,10 +61,10 @@ export async function POST(req) {
         name: infoData?.first_air_date ? infoData?.name : infoData?.title,
         poster_path: infoData?.poster_path,
         type: infoData?.first_air_date ? "tv" : "movie",
-        isWatched: user.recentlyVisited[i].isWatched,
+        isWatched: user?.recentlyVisited[i]?.isWatched,
       };
 
-      recentlyVisited.push(content);
+      recentlyVisited?.push(content);
     }
 
     if (!user) {
@@ -71,20 +72,20 @@ export async function POST(req) {
     }
 
     const ratingMap = new Map(
-      (user.ratings || []).map((r) => [
-        `${r.movieId}-${r.mediaType}`,
-        r.rating,
+      (user?.ratings || [])?.map((r) => [
+        `${r?.movieId}-${r?.mediaType}`,
+        r?.rating,
       ]),
     );
 
-    const watchlistWithRatings = (user.watchlist || []).map((item) => ({
+    const watchlistWithRatings = (user?.watchlist || [])?.map((item) => ({
       ...item,
-      userRating: ratingMap.get(`${item.mediaId}-${item.mediaType}`) ?? null,
+      userRating: ratingMap?.get(`${item?.mediaId}-${item?.mediaType}`) ?? null,
     }));
 
-    let isBanned = user.bannedUntil > new Date();
+    let isBanned = user?.bannedUntil > new Date();
 
-    if (!isBanned && user.bannedUntil) {
+    if (!isBanned && user?.bannedUntil) {
       await prisma.user.update({
         where: { email },
         data: {

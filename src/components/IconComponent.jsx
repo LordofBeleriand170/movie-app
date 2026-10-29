@@ -19,7 +19,7 @@ const IconComponent = ({
   watchDisplay,
   checked,
   isWatchedLoading,
-  onImageLoad,
+  isUserPage,
 }) => {
   const [watched, setWatched] = useState(checked);
   const { toggleWatchlist } = useToggleWatchlist();
@@ -123,14 +123,16 @@ const IconComponent = ({
         </button>
       )}
 
-      <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-        <p className="text-sm font-semibold text-white truncate">{title}</p>
-        {rawReleaseDate && (
-          <p className="text-xs text-neutral-400">
-            {new Date(rawReleaseDate).getFullYear()}
-          </p>
-        )}
-      </div>
+      {isUserPage && (
+        <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+          <p className="text-sm font-semibold text-white truncate">{title}</p>
+          {rawReleaseDate && (
+            <p className="text-xs text-neutral-400">
+              {new Date(rawReleaseDate).getFullYear()}
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 };

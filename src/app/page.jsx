@@ -10,11 +10,18 @@ import "./nprogress.css";
 import ErrorPage from "@/libs/ErrorPage";
 import RecommendedComponent from "@/components/RecommendedComponent";
 import RecentlyVisited from "@/components/RecentlyVisited";
+import { useCollectionStore } from "@/features/collection/collectionStore";
 
 export default function Home() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const loading = useCollectionStore((state) => state.loading);
+  const fetchUserCollections = useCollectionStore(
+    (state) => state.fetchUserCollections,
+  );
+
   const { data: session, status } = useSession();
-  const [loading, setLoading] = useState(true);
+  console.log("SESSION: ", session);
+
   const [errorComponent, setErrorComponent] = useState(false);
 
   /*useEffect(() => {
@@ -199,20 +206,23 @@ export default function Home() {
   }, []);*/
 
   useEffect(() => {
-    if (status === "loading") {
-      setLoading(true);
-    } else {
-      const timer = setTimeout(() => {
-        setLoading(false);
-      }, 1000);
+    // Don't do anything while NextAuth is still loading the session
+    if (status === "loading") return;
 
-      return () => {
-        clearTimeout(timer);
-      };
-    }
-  }, [status]);
+    const handleUserFetch = async () => {
+      if (!session?.user?.email) return;
 
-  if (status === "loading" || loading) {
+      try {
+        const email = decodeURIComponent(session.user.email);
+        await fetchUserCollections(email);
+      } catch (err) {
+        console.log("ERROR: ", err);
+      }
+    };
+    handleUserFetch();
+  }, [session?.user?.email, status]);
+
+  if (loading) {
     return <LoadingPage />;
   }
 

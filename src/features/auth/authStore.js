@@ -62,6 +62,7 @@ export const useAuthStore = create(
         set({
           isLoading: true,
           error: null,
+          user: null,
         });
 
         try {
@@ -77,6 +78,9 @@ export const useAuthStore = create(
           }
 
           const data = await res.json();
+          set({
+            user: data.user,
+          });
 
           return data.user;
         } catch (error) {

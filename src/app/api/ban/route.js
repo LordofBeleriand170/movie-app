@@ -20,6 +20,7 @@ export async function POST(req) {
       data: {
         banReason: bannedText,
         bannedUntil: bannedUntil ? new Date(bannedUntil) : null,
+        status: "SUSPENDED",
         receivedNotifications: {
           create: {
             text: `You are banned because of ${bannedText}. You will not be able to comment until ${formatDate(bannedUntil)}`,

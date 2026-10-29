@@ -11,6 +11,7 @@ import SideMenu from "./SideMenu";
 import UserModal from "./UserModal";
 
 const NavbarContent = () => {
+  const { user } = useCollectionStore();
   const [searchValue, setSearchValue] = useState("");
   const [openMenu, setOpenMenu] = useState(false);
   const [openSettings, setOpenSettings] = useState(false);
@@ -19,19 +20,6 @@ const NavbarContent = () => {
   const searchParams = useSearchParams();
 
   const router = useRouter();
-
-  const { data: session, status } = useSession();
-
-  const user = session?.user;
-
-  const fetchUserCollections = useCollectionStore(
-    (state) => state.fetchUserCollections,
-  );
-
-  useEffect(() => {
-    if (!user?.email) return;
-    fetchUserCollections(user.email);
-  }, [user?.email]);
 
   const fullUrl = `${pathname}?${searchParams.toString()}`;
 
@@ -107,7 +95,7 @@ const NavbarContent = () => {
           </div>
 
           <div className="hidden md:flex items-center gap-4 text-xs font-semibold">
-            {status !== "authenticated" ? (
+            {!user ? (
               <>
                 <Link
                   href={`/register?callbackUrl=${encodeURIComponent(fullUrl)}`}

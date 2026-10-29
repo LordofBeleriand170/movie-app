@@ -187,6 +187,8 @@ const PaginatedItems = ({
 
   const showLoading = page === 1 && (trendingLoading || !isImagesReady);
 
+  console.log("RESULT: ", trendingResult);
+
   return (
     <div className="flex flex-col items-center w-full">
       <div className="w-full">
@@ -214,7 +216,10 @@ const PaginatedItems = ({
                     result.id || result.mediaId || result.contentId;
 
                   return (
-                    <div key={result.id || i} className="group relative">
+                    <div
+                      key={result.id || i}
+                      className="group relative cursor-pointer"
+                    >
                       <div>
                         <IconComponent
                           result={result}
@@ -223,6 +228,7 @@ const PaginatedItems = ({
                           checked={watchedStatuses[contentId] ?? false}
                           isWatchedLoading={isWatchedLoading}
                           onImageLoad={() => handleImageLoad(result.id)}
+                          isUserPage={true}
                         />
                       </div>
                     </div>

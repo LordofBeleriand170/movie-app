@@ -1,6 +1,7 @@
 "use client";
 
-import { ChevronRight, LogOut, Settings } from "lucide-react";
+import { useAuthStore } from "@/features/auth/authStore";
+import { ChevronRight, LogOut, Settings, ShieldCheck } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -8,13 +9,25 @@ import React, { useEffect, useRef } from "react";
 
 const UserModal = ({ openSettings, setOpenSettings }) => {
   const { data: session } = useSession();
-  const user = session?.user;
+  const { user, getUser } = useAuthStore();
   const optionsRef = useRef(null);
 
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const fullUrl = `${pathname}?${searchParams.toString()}`;
+
+  useEffect(() => {
+    const handleUser = async () => {
+      try {
+        await getUser(session?.user?.username);
+      } catch (err) {
+        console.log("ERR: ", err);
+      }
+    };
+
+    handleUser();
+  }, [session]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -78,6 +91,15 @@ const UserModal = ({ openSettings, setOpenSettings }) => {
             <div className="h-px bg-neutral-800/80 mx-2" />
 
             <div className="p-2 space-y-1">
+              {user?.role === "ADMIN" && (
+                <Link
+                  href={`/admin/${user?.email}`}
+                  className="flex items-center gap-3 px-4 py-2 text-sm text-gray-200 hover:bg-zinc-800 transition-colors"
+                >
+                  <ShieldCheck className="w-4 h-4 text-red-500" />
+                  <span>Admin Dashboard</span>
+                </Link>
+              )}
               <Link
                 href="/settings/account"
                 onClick={() => setOpenSettings(false)}
