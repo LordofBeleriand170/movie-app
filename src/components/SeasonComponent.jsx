@@ -102,7 +102,7 @@ const SeasonComponent = ({ id }) => {
                 episodes.map((episode, index) => {
                   const imageUrl = episode.still_path
                     ? `https://image.tmdb.org/t/p/original${episode.still_path}`
-                    : "/image-not-found.jpg";
+                    : "/no-poster.webp";
 
                   const name = episode?.still_path;
 

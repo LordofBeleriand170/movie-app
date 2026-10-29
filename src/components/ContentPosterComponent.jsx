@@ -4,8 +4,8 @@ const ContentPosterComponent = ({ info }) => {
   const imageUrl = info?.poster_path
     ? info?.poster_path.includes(".jpg") || info?.poster_path.includes(".png")
       ? `https://image.tmdb.org/t/p/w342/${info?.poster_path}`
-      : `/image-not-found.jpg`
-    : `/image-not-found.jpg`;
+      : `/no-poster.webp`
+    : `/no-poster.webp`;
 
   const name = `${info?.title || info?.name} poster`;
 

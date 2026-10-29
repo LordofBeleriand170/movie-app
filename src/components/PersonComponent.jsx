@@ -55,84 +55,142 @@ const PersonComponent = () => {
 
   if (isLoading) {
     return (
-      <main>
+      <main className="min-h-screen bg-gray-950 flex items-center justify-center">
         <LoadingPage />
       </main>
     );
   }
 
   if (error) {
-    return <main className="px-30 py-4">Error fetching person data!</main>;
+    return (
+      <main className="min-h-screen bg-gray-950 flex items-center justify-center text-red-400 font-medium">
+        Error fetching person data!
+      </main>
+    );
   }
 
   if (!person) {
-    return <main className="px-30 py-4">Person not found!</main>;
+    return (
+      <main className="min-h-screen bg-gray-950 flex items-center justify-center text-gray-400 font-medium">
+        Person not found!
+      </main>
+    );
   }
 
-  /*2xl:px-82 xl:px-60 lg:px-40 md:px-20 sm:px-10*/
-
-  /*2xl:flex-row xl:flex-row lg:flex-row md:flex-row sm:flex-row*/
-
   return (
-    <main className="relative py-4 bg-gradient-to-t from-gray-950 to-gray-900 ">
-      <div className="flex flex-col m-auto  xs:flex-col gap-10 items-start w-[90%]">
-        <div className="flex flex-row items-start gap-10">
-          <div className="relative w-100 aspect-[2/3] ">
+    <main className="relative min-h-screen w-[86%] m-auto bg-gray-950 text-white overflow-hidden pb-16">
+      {/* Subtle background ambient glow */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
+
+      <div className=" space-y-12 relative z-10">
+        {/* Profile Hero Section */}
+        <div className="bg-gray-900/60 backdrop-blur-xl border border-gray-800/80 rounded-3xl p-6 md:p-10 shadow-2xl flex flex-col md:flex-row gap-8 items-start">
+          {/* Profile Image */}
+          <div className="relative w-48 sm:w-60 md:w-72 aspect-[2/3] flex-shrink-0 mx-auto md:mx-0 shadow-2xl rounded-2xl overflow-hidden border border-gray-700/50 group">
             <Image
-              src={`${!person.person.profile_path?.includes("jpg") && person.person.gender == 0 ? "/male-not-found.jpg" : !person.person.profile_path?.includes("jpg") && person.person.gender == 1 ? "/male-not-found.jpg" : `https://image.tmdb.org/t/p/original/${person.person.profile_path}`}`}
-              className="rounded-md border border-gray-800"
+              src={`${
+                !person.person.profile_path?.includes("jpg") &&
+                person.person.gender == 0
+                  ? "/male-not-found.jpg"
+                  : !person.person.profile_path?.includes("jpg") &&
+                      person.person.gender == 1
+                    ? "/male-not-found.jpg"
+                    : `https://image.tmdb.org/t/p/original/${person.person.profile_path}`
+              }`}
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
               fill
+              priority
               alt={person.person.name}
             />
           </div>
-          <div className="flex flex-col justify-between w-full gap-5 overflow-hidden">
-            <div className="flex flex-col gap-5">
-              <div>
-                <h1 className="text-2xl">{person.person.name}</h1>
-                <span className="text-sm">
-                  {person?.person?.known_for_department}
-                </span>
-              </div>
-              <div>
-                <span>{person?.person?.birthday?.split("-")[0]}-</span>
-                <span>{person?.person?.deathday?.split("-")[0]}</span>
-              </div>
-              {person.person.biography && (
-                <div
-                  className={`${!showMore && "h-30 overflow-hidden"} relative`}
-                >
-                  <span
-                    className={`transition-all ease-in-out duration-300 text-sm ${!showMore ? "line-clamp-5" : ""}`}
-                  >
-                    {person.person.biography}
+
+          {/* Profile Details */}
+          <div className="flex flex-col justify-between flex-grow space-y-6 w-full overflow-hidden">
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center gap-3">
+                <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white">
+                  {person.person.name}
+                </h1>
+                {person?.person?.known_for_department && (
+                  <span className="px-3 py-1 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold rounded-full uppercase tracking-wider">
+                    {person.person.known_for_department}
                   </span>
-                  {person.person.biography.split(" ").length > 100 && (
-                    <div
-                      className={
-                        !showMore ? "absolute bottom-0 w-2/3 right-0 h-5" : ""
-                      }
-                    >
-                      <div className="relative">
-                        {" "}
-                        <span
-                          className="pl-10 absolute overflow-hidden right-0 font-bold text-sm text-blue-400 cursor-pointer"
-                          onClick={handleShowMore}
-                        >
-                          {!showMore ? "View More" : "View Less"}
-                        </span>
-                      </div>
-                    </div>
+                )}
+              </div>
+
+              {/* Lifespan / Birthday */}
+              {(person?.person?.birthday || person?.person?.deathday) && (
+                <div className="flex items-center gap-2 text-sm text-gray-400 font-medium">
+                  <span>
+                    {person?.person?.birthday
+                      ? new Date(person.person.birthday).toLocaleDateString(
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          },
+                        )
+                      : ""}
+                  </span>
+                  {person?.person?.deathday && (
+                    <>
+                      <span>—</span>
+                      <span>
+                        {new Date(person.person.deathday).toLocaleDateString(
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          },
+                        )}
+                      </span>
+                    </>
                   )}
                 </div>
               )}
             </div>
+
+            {/* Biography */}
+            {person.person.biography && (
+              <div className="space-y-2 border-t border-gray-800/80 pt-4">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                  Biography
+                </h3>
+                <p
+                  className={`text-gray-300 text-sm md:text-base leading-relaxed transition-all duration-300 ${
+                    !showMore ? "line-clamp-4" : ""
+                  }`}
+                >
+                  {person.person.biography}
+                </p>
+                {person.person.biography.length > 200 && (
+                  <button
+                    onClick={handleShowMore}
+                    className="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors pt-1 flex items-center gap-1 focus:outline-none cursor-pointer"
+                  >
+                    {showMore ? "Show Less" : "Read More"}
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
         {person?.personContent?.length > 0 && (
-          <div className="flex flex-col w-full">
-            <h4 className="text-lg font-bold">Known For</h4>
-            <div className="grid 2xl:grid-cols-8 xl:grid-cols-8 lg:grid-cols-8 md:grid-cols-7 sm:grid-cols-6 xs:grid-cols-6 grid-cols-6 gap-3 scroll-smooth py-4">
+          <div className="space-y-6">
+            <div className="flex items-center justify-between border-b border-gray-800 pb-3">
+              <h2 className="text-xl md:text-2xl font-bold tracking-tight text-white flex items-center gap-3">
+                <span className="w-1.5 h-6 bg-red-500 rounded-full inline-block"></span>
+                Known For
+              </h2>
+              <span className="text-xl text-gray-400 font-medium">
+                {person.personContent.length} titles
+              </span>
+            </div>
+
+            <div className="grid 2xl:grid-cols-8 xl:grid-cols-8 lg:grid-cols-7 md:grid-cols-6 sm:grid-cols-4 xs:grid-cols-3 grid-cols-3 gap-4 py-2">
               {person?.personContent?.map((content, index) => {
                 const titleOrName = content.title || content.name || "untitled";
                 const slug = slugify(content.id, titleOrName);
@@ -140,14 +198,18 @@ const PersonComponent = () => {
                   content?.id || content.mediaId || content.contentId;
 
                 return (
-                  <IconComponent
+                  <div
                     key={index}
-                    result={content}
-                    slug={slug}
-                    watchDisplay={"true"}
-                    checked={watchedStatuses[contentId] ?? false}
-                    isWatchedLoading={isWatchedLoading}
-                  />
+                    className="transform hover:-translate-y-1 transition-transform duration-300"
+                  >
+                    <IconComponent
+                      result={content}
+                      slug={slug}
+                      watchDisplay={"true"}
+                      checked={watchedStatuses[contentId] ?? false}
+                      isWatchedLoading={isWatchedLoading}
+                    />
+                  </div>
                 );
               })}
             </div>

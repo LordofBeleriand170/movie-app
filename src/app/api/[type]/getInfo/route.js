@@ -8,7 +8,7 @@ export async function POST(req) {
 
     const mediaType = type === "tvshows" ? "tv" : "movie";
 
-    const mediaInWatchlist = await prisma.watchlist.findFirst({
+    const mediaInWatchlist = await prisma?.watchlist?.findFirst({
       where: {
         userId: user?.id,
         mediaId: parseInt(id),
@@ -31,17 +31,17 @@ export async function POST(req) {
       const now = new Date();
 
       await prisma.$transaction(async (tx) => {
-        await tx.userRecentlyVisited.deleteMany({
+        await tx?.userRecentlyVisited?.deleteMany({
           where: {
-            userId: user.id,
+            userId: user?.id,
             mediaId: String(id),
             mediaType: mediaType,
           },
         });
 
-        await tx.userRecentlyVisited.create({
+        await tx?.userRecentlyVisited?.create({
           data: {
-            userId: user.id,
+            userId: user?.id,
             mediaId: String(id),
             mediaType: mediaType,
             isWatched,
@@ -49,17 +49,17 @@ export async function POST(req) {
           },
         });
 
-        const extraItems = await tx.userRecentlyVisited.findMany({
-          where: { userId: user.id },
+        const extraItems = await tx?.userRecentlyVisited?.findMany({
+          where: { userId: user?.id },
           orderBy: [{ createdAt: "desc" }, { id: "desc" }],
           skip: 10,
           select: { id: true },
         });
 
         if (extraItems.length > 0) {
-          await tx.userRecentlyVisited.deleteMany({
+          await tx?.userRecentlyVisited?.deleteMany({
             where: {
-              id: { in: extraItems.map((e) => e.id) },
+              id: { in: extraItems?.map((e) => e?.id) },
             },
           });
         }
@@ -78,7 +78,7 @@ export async function POST(req) {
       `https://api.themoviedb.org/3/${mediaType}/${id}`,
       tmdbOptions,
     );
-    const infoData = await infoResponse.json();
+    let infoData = await infoResponse?.json();
     let seasonOne = infoData?.seasons?.find(
       (season) => season?.name === "Season 1" || season?.season_number === 1,
     );
@@ -88,7 +88,7 @@ export async function POST(req) {
         tmdbOptions,
       );
 
-      const seasonIndex = infoData.seasons.findIndex(
+      const seasonIndex = infoData?.seasons?.findIndex(
         (season) => season?.season_number === 1 || season?.name === "Season 1",
       );
 
@@ -97,13 +97,15 @@ export async function POST(req) {
 
         seasonOne = {
           ...seasonOne,
-          episodes: seasonData.episodes || [],
+          episodes: seasonData?.episodes || [],
         };
 
-        infoData.seasons[seasonIndex] = {
-          ...infoData.seasons[seasonIndex],
-          ...seasonData,
-        };
+        if (infoData) {
+          infoData.seasons[seasonIndex] = {
+            ...infoData.seasons[seasonIndex],
+            ...seasonData,
+          };
+        }
       }
     }
 
@@ -119,7 +121,9 @@ export async function POST(req) {
       }
     }
 
-    infoData.number_of_seasons = seasons;
+    if (infoData) {
+      infoData.number_of_seasons = seasons;
+    }
 
     const creditsUrl =
       mediaType === "tv"
@@ -144,31 +148,31 @@ export async function POST(req) {
     mainCreator = data?.created_by[0];
 
     if (mediaType === "movie") {
-      const director = creditsData.crew.find((c) => c.job === "Director");
-      mainDirector = director.length > 1 ? director[0] : director;
+      const director = creditsData?.crew?.find((c) => c?.job === "Director");
+      mainDirector = director?.length > 1 ? director[0] : director;
 
-      const writers = creditsData.crew.filter(
+      const writers = creditsData?.crew?.filter(
         (c) => c.job.includes("Writer") || c.job.includes("Screenplay"),
       );
       mainWriter = writers.length > 1 ? writers[0] : writers;
     } else if (mediaType === "tv") {
-      const directors = creditsData.crew
-        .filter((c) => c.jobs?.some((j) => j.job === "Director"))
+      const directors = creditsData?.crew
+        .filter((c) => c?.jobs?.some((j) => j?.job === "Director"))
         .map((c) => {
-          const directorJob = c.jobs.find((j) => j.job === "Director");
-          return { name: c.name, episode_count: directorJob.episode_count };
+          const directorJob = c?.jobs?.find((j) => j?.job === "Director");
+          return { name: c?.name, episode_count: directorJob?.episode_count };
         })
-        .sort((a, b) => b.episode_count - a.episode_count);
+        .sort((a, b) => b?.episode_count - a?.episode_count);
 
       mainDirector = directors;
 
       const writers = creditsData.crew
-        .filter((c) => c.jobs?.some((j) => j.job.includes("Writer")))
+        .filter((c) => c?.jobs?.some((j) => j?.job?.includes("Writer")))
         .map((c) => {
-          const writerJob = c.jobs.find((j) => j.job.includes("Writer"));
-          return { name: c.name, episode_count: writerJob.episode_count };
+          const writerJob = c?.jobs?.find((j) => j?.job?.includes("Writer"));
+          return { name: c?.name, episode_count: writerJob?.episode_count };
         })
-        .sort((a, b) => b.episode_count - a.episode_count);
+        .sort((a, b) => b?.episode_count - a?.episode_count);
 
       mainWriter = writers;
     }
@@ -194,7 +198,7 @@ export async function POST(req) {
 
     const externalIds = await externalIdsRes.json();
 
-    if (!externalIds.imdb_id) {
+    if (!externalIds?.imdb_id) {
       console.log("No IMDb ID found");
     }
 
@@ -202,7 +206,7 @@ export async function POST(req) {
 
     if (externalIds?.imdb_id) {
       const omdbRes = await fetch(
-        `https://www.omdbapi.com/?i=${externalIds.imdb_id}&apikey=${process.env.OMDB_KEY}`,
+        `https://www.omdbapi.com/?i=${externalIds?.imdb_id}&apikey=${process.env.OMDB_KEY}`,
       );
       omdbData = await omdbRes.json();
     }

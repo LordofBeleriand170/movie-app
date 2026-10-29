@@ -1,12 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-
 import { useMovieStore } from "@/features/movie/movieStore";
 import { useSession } from "next-auth/react";
 import { useCollectionStore } from "@/features/collection/collectionStore";
-import CommentComponent from "./CommentComponent";
-
 import { LoadingDots } from "@/app/LoadingDots";
 import { useContentStore } from "@/features/content/contentStore";
 import AddCommentComponent from "./AddCommentComponent";
@@ -14,6 +11,8 @@ import { toast } from "react-toastify";
 import { useSearchParams } from "next/navigation";
 import { ReviewHighlights } from "./ReviewHightlights";
 import CommentsOptions from "./CommentsOptions";
+import { MessageSquarePlus, Star } from "lucide-react";
+import CommentFormatComponent from "./CommentFormatComponent";
 
 const CommentSectionComponent = ({
   movieId,
@@ -58,7 +57,6 @@ const CommentSectionComponent = ({
   );
 
   const [loading, setLoading] = useState(true);
-
   const [currentRating, setCurrentRating] = useState(undefined);
 
   const { data: session } = useSession();
@@ -92,162 +90,193 @@ const CommentSectionComponent = ({
     }
   }, [error]);
 
-  useEffect(() => {}, [likes, comments]);
-
   const ratingCounts = [5, 4, 3, 2, 1].map((star) => ({
     star,
     count: ratings.filter((c) => c.rating === star).length,
   }));
 
-  const maxCount = Math.max(...ratingCounts.map((r) => r.count));
+  const maxCount = Math.max(...ratingCounts.map((r) => r.count), 1);
 
   let isBanned = new Date(user?.bannedUntil) > new Date();
 
   return (
-    <div className="flex flex-col m-auto gap-10 w-[90%] px-8 pb-20">
+    <div className="flex flex-col m-auto gap-8 pb-20 text-white w-[90%] px-8 sm:px-6 lg:px-8 ">
       {comments.length >= 3 && (
-        <>
-          <ReviewHighlights
-            movieId={movieId}
-            type={type}
-            contentTitle={contentTitle}
-          />
-        </>
+        <ReviewHighlights
+          movieId={movieId}
+          type={type}
+          contentTitle={contentTitle}
+        />
       )}
 
-      <div className="flex flex-col gap-3">
-        <div className="flex justify-between">
-          <div className="flex items-center gap-2.5">
-            <span className="h-5 w-1 bg-gradient-to-b from-red-500 to-rose-600 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
-            <h2 className="text-2xl font-bold tracking-tight text-white">
-              User reviews
-            </h2>
-          </div>
-
-          {isBanned ? (
-            <div className="bg-red-500/10 border border-red-500 text-red-400 p-3 rounded-lg text-sm">
-              You are banned from commenting until{" "}
-              <span className="font-semibold">
-                {new Date(user?.bannedUntil).toLocaleString()}
-              </span>
-            </div>
-          ) : (
-            <AddCommentComponent
-              movieId={movieId}
-              type={type}
-              newRate={newRate}
-              setNewRate={setNewRate}
-            />
-          )}
+      {/* Header & Write Review Action */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-800 pb-6">
+        <div className="flex items-center gap-3">
+          <span className="h-6 w-1.5 bg-gradient-to-b from-red-500 to-rose-600 rounded-full shadow-[0_0_12px_rgba(239,68,68,0.6)]" />
+          <h2 className="text-2xl md:text-2xl font-extrabold tracking-tight text-white">
+            User Reviews
+          </h2>
+          <span className="px-2.5 py-0.5 bg-gray-800 text-gray-300 text-xs font-semibold rounded-full">
+            {comments.length}
+          </span>
         </div>
 
-        <div className="flex flex-col items-center gap-6 w-full">
-          {comments.length > 0 && !loading ? (
-            <div className="w-full flex flex-col gap-2">
-              <div className="relative flex justify-between items-center px-5 py-6 bg-[#11161F] border border-[#222A36] gap-5 mb-6 rounded-lg">
-                <div className="flex flex-col items-center">
-                  {currentRating !== undefined && (
-                    <button
-                      onClick={() => setCurrentRating(undefined)}
-                      className="text-sm text-blue-400 mt-2 cursor-pointer"
-                    >
-                      Reset Filter
-                    </button>
-                  )}
-                </div>
+        {isBanned ? (
+          <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-2.5 rounded-xl text-sm">
+            You are banned from commenting until{" "}
+            <span className="font-semibold">
+              {new Date(user?.bannedUntil).toLocaleString()}
+            </span>
+          </div>
+        ) : (
+          <AddCommentComponent
+            movieId={movieId}
+            type={type}
+            newRate={newRate}
+            setNewRate={setNewRate}
+          />
+        )}
+      </div>
 
-                <div className="flex flex-col items-center">
-                  <span className="flex gap-2 text-5xl">{avg?.toFixed(1)}</span>
-
-                  <div className="text-xl text-yellow-400">
-                    {"★".repeat(avg)}
-                  </div>
-
-                  <span className="text-xs text-gray-500">
-                    {ratings?.length}{" "}
-                    {ratings?.length !== 1 ? "ratings" : "rating"}
-                  </span>
-                </div>
-
-                <span className="h-35 w-0.5 bg-gray-800" />
-
-                <div className="flex flex-col gap-1 w-full">
-                  {ratingCounts.map(({ star, count }) => (
-                    <div key={star} className="flex items-center gap-4">
-                      <div className="flex items-center gap-1">
-                        <span className="w-6 text-right tabular-nums text-xs">
-                          {star}
-                        </span>
-                        <span className="text-yellow-400">★</span>
-                      </div>
-
-                      <div className="w-[90%] h-2 rounded">
-                        <div className="w-full h-2 bg-gray-800 rounded cursor-pointer">
-                          <div
-                            className="h-2 bg-yellow-400 rounded cursor-pointer"
-                            style={{ width: `${(count / maxCount) * 50}%` }}
-                            onClick={() => setCurrentRating(star)}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="flex flex-nowrap gap-1 text-xs text-gray-300 w-6">
-                        <span>
-                          {count !== 0
-                            ? `${((count / comments.length) * 100).toFixed(1)}%`
-                            : "0%"}
-                        </span>
-                      </div>
-                    </div>
+      {/* Main Content Area */}
+      <div className="flex flex-col gap-6 w-full">
+        {loading ? (
+          <div className="flex justify-center py-16">
+            <LoadingDots />
+          </div>
+        ) : comments.length > 0 ? (
+          <div className="w-full flex flex-col gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center px-6 py-6 bg-gray-900/60 backdrop-blur-xl border border-gray-800/80 rounded-2xl shadow-xl">
+              <div className="lg:col-span-4 flex flex-col items-center justify-center text-center border-b lg:border-b-0 lg:border-r border-gray-800 pb-6 lg:pb-0 lg:pr-6">
+                <span className="text-5xl font-black tracking-tight text-white mb-2">
+                  {avg ? avg.toFixed(1) : "0.0"}
+                </span>
+                <div className="flex items-center gap-1 text-yellow-400 mb-2">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-5 h-5 ${
+                        i < Math.round(avg || 0)
+                          ? "fill-yellow-400 text-yellow-400"
+                          : "text-gray-700"
+                      }`}
+                    />
                   ))}
                 </div>
+                <span className="text-xs text-gray-400 font-medium">
+                  Based on {ratings?.length || 0}{" "}
+                  {ratings?.length === 1 ? "rating" : "ratings"}
+                </span>
+
+                {currentRating !== undefined && (
+                  <button
+                    onClick={() => setCurrentRating(undefined)}
+                    className="mt-4 text-xs font-semibold text-blue-400 hover:text-blue-300 transition-colors bg-blue-500/10 px-3 py-1.5 rounded-lg border border-blue-500/20 cursor-pointer"
+                  >
+                    Reset Filter ({currentRating} ★)
+                  </button>
+                )}
               </div>
 
-              <CommentsOptions
-                comments={comments}
-                currentRating={currentRating}
-                commentOptions={commentOptions}
-                setCommentOptions={setCommentOptions}
-              />
+              {/* Rating Histogram / Breakdown */}
+              <div className="lg:col-span-8 flex flex-col gap-2 w-full">
+                {ratingCounts.map(({ star, count }) => {
+                  const percentage =
+                    comments.length > 0 ? (count / comments.length) * 100 : 0;
+                  const isSelected = currentRating === star;
 
-              {comments.length === 0 ? (
-                <span>No reviews yet</span>
-              ) : (
-                [...comments]
-                  .sort((a, b) => {
-                    switch (commentOptions) {
-                      case "Newest":
-                        return new Date(a?.createdAt) - new Date(b?.createdAt);
-                      case "Oldest":
-                        return new Date(b?.createdAt) - new Date(a?.createdAt);
-                      case "Highest Rated":
-                        return b.rating - a.rating;
-                      case "Lowest Rated":
-                        return a.rating - b.rating;
-                      case "Most Likes":
-                        return b.likes - a.likes;
-                      case "Most Replies":
-                        return b.replies.length - a.replies.length;
-                      default:
-                        return 0;
-                    }
-                  })
-                  .filter(
-                    (comment) =>
-                      currentRating === undefined ||
-                      comment.rating === currentRating,
-                  )
-                  .map((comment) => (
-                    <CommentComponent key={comment.id} comment={comment} />
-                  ))
-              )}
+                  return (
+                    <div
+                      key={star}
+                      onClick={() =>
+                        setCurrentRating(isSelected ? undefined : star)
+                      }
+                      className={`flex items-center gap-4 group cursor-pointer p-1.5 rounded-lg transition-colors ${
+                        isSelected
+                          ? "bg-blue-600/10 border border-blue-500/30"
+                          : "hover:bg-gray-800/40"
+                      }`}
+                    >
+                      <div className="flex items-center gap-1 w-10 flex-shrink-0">
+                        <span className="text-xs font-bold text-gray-300">
+                          {star}
+                        </span>
+                        <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+                      </div>
+
+                      <div className="flex-grow h-2.5 bg-gray-800/80 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-yellow-500 to-amber-400 rounded-full transition-all duration-500 group-hover:brightness-110"
+                          style={{ width: `${percentage}%` }}
+                        />
+                      </div>
+
+                      <div className="w-16 text-right text-xs text-gray-400 tabular-nums font-medium">
+                        {count} ({percentage.toFixed(0)}%)
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          ) : loading ? (
-            <LoadingDots />
-          ) : (
-            <span>No comments yet.</span>
-          )}
-        </div>
+
+            {/* Comment Sorting and Filters Options */}
+            <CommentsOptions
+              comments={comments}
+              currentRating={currentRating}
+              commentOptions={commentOptions}
+              setCommentOptions={setCommentOptions}
+            />
+
+            {/* Comments List */}
+            <div className="flex flex-col gap-4">
+              {[...comments]
+                .sort((a, b) => {
+                  switch (commentOptions) {
+                    case "Newest":
+                      return new Date(b?.createdAt) - new Date(a?.createdAt);
+                    case "Oldest":
+                      return new Date(a?.createdAt) - new Date(b?.createdAt);
+                    case "Highest Rated":
+                      return b.rating - a.rating;
+                    case "Lowest Rated":
+                      return a.rating - b.rating;
+                    case "Most Likes":
+                      return b.likes - a.likes;
+                    case "Most Replies":
+                      return (
+                        (b.replies?.length || 0) - (a.replies?.length || 0)
+                      );
+                    default:
+                      return 0;
+                  }
+                })
+                .filter(
+                  (comment) =>
+                    currentRating === undefined ||
+                    comment.rating === currentRating,
+                )
+                .map((comment) => (
+                  <CommentFormatComponent key={comment.id} comment={comment} />
+                ))}
+            </div>
+          </div>
+        ) : (
+          /* Empty State */
+          <div className="flex flex-col items-center justify-center p-12 bg-gray-900/40 backdrop-blur-md border border-gray-800/80 rounded-2xl text-center space-y-4">
+            <div className="w-14 h-14 rounded-2xl bg-gray-800/80 flex items-center justify-center text-gray-400 shadow-inner">
+              <MessageSquarePlus className="w-7 h-7" />
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-lg font-semibold text-white">
+                No reviews yet
+              </h3>
+              <p className="text-sm text-gray-400 max-w-sm">
+                Be the first to share your thoughts and rate this content!
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

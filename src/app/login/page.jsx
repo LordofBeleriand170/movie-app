@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { toast } from "react-toastify";
 import { useAuthStore } from "@/features/auth/authStore";
@@ -16,6 +16,8 @@ const LoginForm = () => {
 
   const setUser = useAuthStore((state) => state.setUser);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -95,8 +97,13 @@ const LoginForm = () => {
             secondary: "#ffffff",
           },
         });
+
+        if (callbackUrl) {
+          router.push(decodeURIComponent(callbackUrl));
+        } else {
+          router.push("/");
+        }
         router.refresh();
-        router.replace("/");
       } else {
         const error = res?.error || "Login failed";
         toast.error(error, {

@@ -3,22 +3,34 @@
 import React from "react";
 import formattedDate from "@/libs/formattedDate";
 import { Trash2 } from "lucide-react";
+import { useContentStore } from "@/features/content/contentStore";
 
 const NotificationsPreview = ({
   notification,
   setSelectedNotifications,
   selectedNotifications,
+  onDeleteSuccess, // Add callback prop to handle state cleanup
 }) => {
   const isSelected = selectedNotifications?.id === notification?.id;
+
+  const deleteNotifications = useContentStore(
+    (state) => state.deleteNotifications,
+  );
 
   const handleDelete = async (e) => {
     e.stopPropagation();
     try {
-      await fetch("/api/notifications/delete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: notification.id }),
-      });
+      await deleteNotifications(notification?.id);
+
+      // If the deleted notification was currently selected, clear the reader view
+      if (isSelected) {
+        setSelectedNotifications(null);
+      }
+
+      // Trigger any parent list update if needed
+      if (onDeleteSuccess) {
+        onDeleteSuccess(notification?.id);
+      }
     } catch (err) {
       console.error("Error deleting notification:", err);
     }
@@ -28,7 +40,7 @@ const NotificationsPreview = ({
     <div
       onClick={() => setSelectedNotifications(notification)}
       className={`
-        group relative min-w-[280px] sm:min-w-[320px] max-w-[320px]
+        group relative w-full
         flex gap-3.5 p-4 rounded-2xl border transition-all duration-200 cursor-pointer
         ${
           isSelected
@@ -52,7 +64,7 @@ const NotificationsPreview = ({
           {notification?.sender?.name?.[0]?.toUpperCase() || "U"}
         </div>
 
-        {!isSelected && (
+        {!isSelected && !notification?.isRead && !notification?.read && (
           <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#16161a]" />
         )}
       </div>

@@ -36,7 +36,7 @@ const SeasonInfo = () => {
   const name = season?.name || tvShow?.name || "Season";
   const imageUrl = season?.poster_path
     ? `https://image.tmdb.org/t/p/original${season.poster_path}`
-    : "/image-not-found.jpg";
+    : "/no-poster.webp";
 
   const backdropUrl = tvShow?.backdrop_path
     ? `https://image.tmdb.org/t/p/original${tvShow.backdrop_path}`
@@ -101,10 +101,6 @@ const SeasonInfo = () => {
               className="rounded-lg bg-white px-6 py-2.5 font-semibold text-black transition hover:bg-zinc-200 cursor-pointer"
             >
               Episodes
-            </button>
-
-            <button className="rounded-lg border border-white/15 bg-white/5 px-6 py-2.5 backdrop-blur hover:bg-white/10 transition cursor-pointer">
-              More Details
             </button>
           </div>
         </div>

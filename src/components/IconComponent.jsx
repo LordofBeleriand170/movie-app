@@ -56,7 +56,7 @@ const IconComponent = ({
     ? rawPoster.startsWith("http")
       ? rawPoster
       : `https://image.tmdb.org/t/p/w500${rawPoster}`
-    : "/placeholder.png";
+    : "/no-poster.webp";
 
   /*<Image
           src={posterPath}

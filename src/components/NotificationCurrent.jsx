@@ -8,6 +8,9 @@ import { useRouter } from "next/navigation";
 const NotificationCurrent = ({ selectedNotifications }) => {
   const getCommentInfo = useContentStore((state) => state.getCommentInfo);
   const content = useContentStore((state) => state.content);
+  const deleteNotifications = useContentStore(
+    (state) => state.deleteNotifications,
+  );
   const router = useRouter();
 
   useEffect(() => {
@@ -33,10 +36,7 @@ const NotificationCurrent = ({ selectedNotifications }) => {
 
   const handleDelete = async () => {
     try {
-      await fetch("/api/notifications/delete", {
-        method: "POST",
-        body: JSON.stringify({ id: selectedNotifications.id }),
-      });
+      await deleteNotifications(selectedNotifications?.id);
     } catch (err) {
       console.log(err);
     }

@@ -72,6 +72,8 @@ const InfoComponent = ({ option, type }) => {
     return <LoadingPage />;
   }
 
+  console.log("INFO: ", info);
+
   return (
     <>
       {error ? (
@@ -127,19 +129,24 @@ const InfoComponent = ({ option, type }) => {
                 <Similar type={type} id={id} info={info} />
               </section>
 
-              <section className="relative bg-black text-white z-10">
-                <CommentSectionComponent
-                  movieId={Number(id)}
-                  type={type}
-                  newRate={newRate}
-                  setNewRate={setNewRate}
-                  avg={info?.ratingAvg?._avg?.rating || 0}
-                  voters={info?.ratingAvg?._count?.rating || 0}
-                  contentTitle={
-                    info?.info?.original_title || info?.info?.original_name
-                  }
-                />
-              </section>
+              {(info?.info?.status === "Released" ||
+                info?.info?.status === "Ended" ||
+                info?.info?.status === "Returning Series" ||
+                (info?.info?.status === "Canceled" && info?.info?.seasons)) && (
+                <section className="relative bg-black text-white z-10">
+                  <CommentSectionComponent
+                    movieId={Number(id)}
+                    type={type}
+                    newRate={newRate}
+                    setNewRate={setNewRate}
+                    avg={info?.ratingAvg?._avg?.rating || 0}
+                    voters={info?.ratingAvg?._count?.rating || 0}
+                    contentTitle={
+                      info?.info?.original_title || info?.info?.original_name
+                    }
+                  />
+                </section>
+              )}
             </main>
           </div>
         </div>

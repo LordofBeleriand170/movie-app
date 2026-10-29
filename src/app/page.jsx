@@ -6,13 +6,10 @@ import { useAuthStore } from "@/features/auth/authStore";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import LoadingPage from "./LoadingPage";
-import NProgress from "nprogress";
 import "./nprogress.css";
 import ErrorPage from "@/libs/ErrorPage";
 import RecommendedComponent from "@/components/RecommendedComponent";
 import RecentlyVisited from "@/components/RecentlyVisited";
-import { toast } from "react-toastify";
-import { useContentStore } from "@/features/content/contentStore";
 
 export default function Home() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -203,16 +200,14 @@ export default function Home() {
 
   useEffect(() => {
     if (status === "loading") {
-      NProgress.start();
+      setLoading(true);
     } else {
       const timer = setTimeout(() => {
         setLoading(false);
-        NProgress.done();
       }, 1000);
 
       return () => {
         clearTimeout(timer);
-        NProgress.done();
       };
     }
   }, [status]);

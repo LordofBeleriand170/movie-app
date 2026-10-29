@@ -12,6 +12,8 @@ export async function POST(req) {
       },
     });
 
+    console.log("RECEIVER: ", receiver);
+
     if (!receiver) {
       throw new Error("No admin found");
     }
@@ -30,6 +32,8 @@ export async function POST(req) {
         },
       },
     });
+
+    console.log("NOTIFICATION: ", notification);
 
     return NextResponse.json({ notification }, { status: 200 });
   } catch (err) {

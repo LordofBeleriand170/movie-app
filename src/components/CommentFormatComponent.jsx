@@ -92,8 +92,9 @@ const CommentFormatComponent = ({ comment, type }) => {
   const handleReport = async (id, user) => {
     try {
       const res = await report(id, user);
+      console.log("RES:", res);
 
-      if (res?.ok) {
+      if (res?.notification) {
         toast.success("Report has been sent!");
       } else {
         toast.error("Error occurred!");

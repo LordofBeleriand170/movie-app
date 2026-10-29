@@ -14,7 +14,7 @@ const SearchItemComponent = ({ result }) => {
       return `https://image.tmdb.org/t/p/w500/${posterPath}`;
     }
     if (gender === -1 || gender === undefined) {
-      return "/image-not-found.jpg";
+      return "/no-poster.webp";
     }
     return gender === 2 || gender === 0
       ? "/male-not-found.jpg"

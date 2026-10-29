@@ -24,6 +24,7 @@ export const useContentStore = create((set, get) => ({
   aiError: null,
   sentimentScore: 0,
   rating: [],
+  notifications: [],
 
   addComment: async (user, movieId, commentText, rating, type, spoiler) => {
     set({ error: null });
@@ -489,6 +490,32 @@ export const useContentStore = create((set, get) => ({
       });
 
       const data = res.json();
+
+      return data;
+    } catch (error) {
+      set({ error: error.message || "Unexpected error", loading: false });
+      return [];
+    }
+  },
+  deleteNotifications: async (id) => {
+    set({ error: null });
+    try {
+      const res = await fetch("/api/notifications/delete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id,
+        }),
+      });
+
+      const data = res.json();
+
+      set({
+        error: false,
+        notifications: state.notifications.filter((not) => not.id !== id),
+      });
 
       return data;
     } catch (error) {

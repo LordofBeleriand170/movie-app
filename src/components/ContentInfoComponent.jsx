@@ -21,13 +21,6 @@ const ContentInfoComponent = ({ type, newRate, setNewRate, info }) => {
   const ratings = useCollectionStore((state) => state.ratings);
   const content = useContentStore((state) => state.content);
 
-  const releaseDate = new Date(
-    info?.info?.release_date || info?.info?.first_air_date,
-  );
-  const now = new Date();
-
-  const checkDate = releaseDate <= now;
-
   const [rate, setRate] = useState(0);
   const [trailer, setTrailer] = useState(false);
   const [media, setMedia] = useState("movies");
@@ -109,7 +102,7 @@ const ContentInfoComponent = ({ type, newRate, setNewRate, info }) => {
                   href={`/media/tvshows/${info?.info?.id}-${info?.info?.name
                     ?.toLowerCase()
                     .replaceAll(" ", "-")}/seasons`}
-                  className="group flex gap-2 items-center justify-between py-1.5 rounded-lg text-white transition-colors"
+                  className="group flex gap-2 items-center cursor-pointer justify-between py-1.5 rounded-lg text-white transition-colors"
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-extrabold uppercase tracking-wider">
@@ -212,9 +205,9 @@ const ContentInfoComponent = ({ type, newRate, setNewRate, info }) => {
                           }`}
                           className="hover:text-white transition-colors"
                         >
-                          {!checkDate
-                            ? "Coming soon"
-                            : info?.info?.release_date?.split("-")[0]}
+                          {info?.info?.status === "Released"
+                            ? info?.info?.release_date?.split("-")[0]
+                            : info?.info?.status}
                         </Link>
                         {info?.info?.runtime > 0 && (
                           <>
@@ -229,18 +222,37 @@ const ContentInfoComponent = ({ type, newRate, setNewRate, info }) => {
                     ) : (
                       <>
                         <span>
-                          {info?.info?.first_air_date?.split("-")[0]}
+                          {["Canceled", "Coming Soon", "Rumoured"].includes(
+                            info?.info?.status,
+                          )
+                            ? info?.info?.status
+                            : info?.info?.first_air_date?.split("-")[0]}
                           {info?.info?.status === "Ended"
                             ? `-${info?.info?.last_air_date?.split("-")[0]}`
-                            : "-"}
+                            : ""}
                         </span>
-                        <span className="text-gray-600">•</span>
-                        <span>
-                          {info?.info?.number_of_seasons}{" "}
-                          {info?.info?.number_of_seasons > 1
-                            ? "Seasons"
-                            : "Season"}
-                        </span>
+                        {info?.info?.status === "Canceled" &&
+                          info?.info?.seasons && (
+                            <>
+                              <span className="text-gray-600">•</span>
+                              {info?.info?.first_air_date?.split("-")[0]}-
+                              {info?.info?.last_air_date?.split("-")[0]}
+                            </>
+                          )}
+                        {info?.info?.status !== "Canceled" &&
+                          info?.info?.status !== "Coming Soon" &&
+                          info?.info?.status !== "Rumoured" && (
+                            <>
+                              <span className="text-gray-600">•</span>
+
+                              <span>
+                                {info?.info?.number_of_seasons}{" "}
+                                {info?.info?.number_of_seasons > 1
+                                  ? "Seasons"
+                                  : "Season"}
+                              </span>
+                            </>
+                          )}
                       </>
                     )}
                   </div>
@@ -286,7 +298,10 @@ const ContentInfoComponent = ({ type, newRate, setNewRate, info }) => {
                 </div>
               </div>
 
-              {checkDate && (
+              {(info?.info?.status === "Released" ||
+                info?.info?.status === "Ended" ||
+                info?.info?.status === "Returning Series" ||
+                (info?.info?.status === "Canceled" && info?.info?.seasons)) && (
                 <div className="flex flex-wrap justify-center items-stretch gap-4 max-w-3xl mt-auto pt-6">
                   {content?.awards !== "N/A" && (
                     <div className="flex-1 min-w-[220px] max-w-xs flex items-center justify-center p-4 rounded-xl bg-[#0f1522]/90 border border-gray-800/80">
