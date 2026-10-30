@@ -1,275 +1,477 @@
 "use client";
 
+import React, { useEffect, useState } from "react";
 import {
-  Activity,
-  AlertTriangle,
-  ArrowUpRight,
-  Film,
-  MoreVertical,
-  Search,
   Users,
+  FileText,
+  Server,
+  TrendingUp,
+  TrendingDown,
+  ArrowUpRight,
+  ShieldAlert,
+  RefreshCw,
 } from "lucide-react";
-import React, { useState } from "react";
+import { useAdminStore } from "@/features/admin/adminStore";
+
+// Metric Card Component
+const MetricCard = ({ title, value, change, isPositive, icon: Icon }) => (
+  <div className="rounded-xl border border-neutral-800 bg-neutral-900/80 p-5 shadow-sm transition-all hover:border-neutral-700">
+    <div className="flex items-center justify-between">
+      <span className="text-sm font-medium text-neutral-400">{title}</span>
+      <div className="rounded-lg border border-neutral-800 bg-neutral-950 p-2 text-red-500">
+        <Icon className="h-5 w-5" />
+      </div>
+    </div>
+    <div className="mt-4 flex items-baseline justify-between">
+      <h3 className="text-2xl font-bold tracking-tight text-white">{value}</h3>
+      <span
+        className={`flex items-center text-xs font-semibold ${
+          isPositive ? "text-emerald-500" : "text-rose-500"
+        }`}
+      >
+        {isPositive ? (
+          <TrendingUp className="mr-1 h-3 w-3" />
+        ) : (
+          <TrendingDown className="mr-1 h-3 w-3" />
+        )}
+        {change}
+      </span>
+    </div>
+  </div>
+);
 
 const AdminOverviewTab = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [usersData, setUsersData] = useState([
-    {
-      id: 1,
-      name: "User0",
-      email: "test0@gmail.com",
-      role: "ADMIN",
-      status: "Active",
-      joined: "May 12, 2026",
-      lastActive: "2 mins ago",
-      reviewsCount: 142,
-      listsCount: 12,
-    },
-    {
-      id: 2,
-      name: "Marko Petrović",
-      email: "marko@example.com",
-      role: "MODERATOR",
-      status: "Active",
-      joined: "Jun 1, 2026",
-      lastActive: "1 hour ago",
-      reviewsCount: 89,
-      listsCount: 5,
-    },
-    {
-      id: 3,
-      name: "Ana Jovanović",
-      email: "ana@example.com",
-      role: "USER",
-      status: "Active",
-      joined: "Jul 15, 2026",
-      lastActive: "Yesterday",
-      reviewsCount: 24,
-      listsCount: 3,
-    },
-    {
-      id: 4,
-      name: "Nikola Milić",
-      email: "nikola@example.com",
-      role: "USER",
-      status: "Suspended",
-      joined: "Aug 20, 2026",
-      lastActive: "5 days ago",
-      reviewsCount: 2,
-      listsCount: 0,
-    },
-    {
-      id: 5,
-      name: "Elena Popović",
-      email: "elena@example.com",
-      role: "USER",
-      status: "Active",
-      joined: "Sep 5, 2026",
-      lastActive: "3 hours ago",
-      reviewsCount: 61,
-      listsCount: 8,
-    },
-  ]);
-  const [activeTab, setActiveTab] = useState("overview");
-  const [roleFilter, setRoleFilter] = useState("ALL");
-  const [statusFilter, setStatusFilter] = useState("ALL");
+  const { users, fetchUsers } = useAdminStore();
 
-  const stats = [
+  const [interval, setInterval] = useState("year");
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [chartData, setChartData] = useState([]);
+
+  useEffect(() => {
+    async function fetchUsersFunction() {
+      try {
+        await fetchUsers();
+      } catch (error) {
+        console.error("Failed to fetch users", error);
+      }
+    }
+    fetchUsersFunction();
+  }, [fetchUsers]);
+
+  // Dynamically group and filter users based on selected interval
+  useEffect(() => {
+    if (!users || users.length === 0) return;
+
+    const now = new Date();
+    let processedData = [];
+
+    if (interval === "today") {
+      // Group by 4-hour slots for today
+      const slots = Array.from({ length: 6 }, (_, i) => ({
+        label: `${String(i * 4).padStart(2, "0")}:00`,
+        count: 0,
+        index: i,
+      }));
+
+      users.forEach((user) => {
+        const date = new Date(user.createdAt);
+        if (date.toDateString() === now.toDateString()) {
+          const hour = date.getHours();
+          const slotIndex = Math.floor(hour / 4);
+          if (slots[slotIndex]) slots[slotIndex].count += 1;
+        }
+      });
+      processedData = slots;
+    } else if (interval === "week") {
+      // Group by days of the week (Mon - Sun)
+      const days = [
+        { label: "Mon", count: 0, index: 0 },
+        { label: "Tue", count: 0, index: 1 },
+        { label: "Wed", count: 0, index: 2 },
+        { label: "Thu", count: 0, index: 3 },
+        { label: "Fri", count: 0, index: 4 },
+        { label: "Sat", count: 0, index: 5 },
+        { label: "Sun", count: 0, index: 6 },
+      ];
+
+      users.forEach((user) => {
+        const date = new Date(user.createdAt);
+        const diffDays = Math.abs(now - date) / (1000 * 60 * 60 * 24);
+        if (diffDays <= 7) {
+          let dayIndex = date.getDay() - 1; // Mon = 0, Sun = 6
+          if (dayIndex === -1) dayIndex = 6;
+          if (days[dayIndex]) days[dayIndex].count += 1;
+        }
+      });
+      processedData = days;
+    } else if (interval === "year") {
+      // Group by Months (Jan - Dec)
+      const months = Array.from({ length: 12 }, (_, i) => {
+        const d = new Date(0, i);
+        return {
+          label: d.toLocaleString("default", { month: "short" }),
+          count: 0,
+          index: i,
+        };
+      });
+
+      users.forEach((user) => {
+        const date = new Date(user.createdAt);
+        if (date.getFullYear() === now.getFullYear()) {
+          const mIndex = date.getMonth();
+          months[mIndex].count += 1;
+        }
+      });
+      processedData = months;
+    } else if (interval === "alltime") {
+      // Group by Years available in user records
+      const countsByYear = {};
+      users.forEach((user) => {
+        const year = new Date(user.createdAt).getFullYear();
+        if (!countsByYear[year]) {
+          countsByYear[year] = { label: String(year), count: 0, index: year };
+        }
+        countsByYear[year].count += 1;
+      });
+      processedData = Object.values(countsByYear).sort(
+        (a, b) => a.index - b.index,
+      );
+      if (processedData.length === 0) {
+        processedData = [
+          {
+            label: String(now.getFullYear()),
+            count: 0,
+            index: now.getFullYear(),
+          },
+        ];
+      }
+    }
+
+    setChartData(processedData);
+  }, [users, interval]);
+
+  const metrics = [
     {
-      title: "Total Users",
-      value: "12,450",
-      change: "+12%",
+      title: "Total Active Users",
+      value: users.length,
+      change: "+12.5%",
       isPositive: true,
       icon: Users,
     },
     {
-      title: "Active Sessions",
-      value: "1,205",
-      change: "+5%",
+      title: "Published Content",
+      value: "1,420",
+      change: "+8.2%",
       isPositive: true,
-      icon: Activity,
+      icon: FileText,
     },
     {
-      title: "Movies & TV Shows",
-      value: "8,920",
-      change: "+180 this week",
+      title: "System Load",
+      value: "42.8%",
+      change: "-3.1%",
       isPositive: true,
-      icon: Film,
+      icon: Server,
     },
     {
-      title: "Reported Reviews",
-      value: "14",
-      change: "+3 new",
+      title: "Error Rate",
+      value: "0.12%",
+      change: "+0.04%",
       isPositive: false,
-      icon: AlertTriangle,
+      icon: ShieldAlert,
     },
   ];
 
-  const recentLogs = [
+  const recentActivities = [
     {
       id: 1,
-      user: "User0",
-      action: "Changed role for marko@example.com to MODERATOR",
-      time: "10 minutes ago",
+      user: "Alex Rivera",
+      action: "Created new publication post",
+      time: "5 mins ago",
+      status: "Success",
     },
     {
       id: 2,
-      user: "System",
-      action: "Automated database backup completed successfully",
-      time: "1 hour ago",
+      user: "System Admin",
+      action: "Updated security policy guidelines",
+      time: "18 mins ago",
+      status: "Notice",
     },
     {
       id: 3,
-      user: "Marko Petrović",
-      action: "Removed reported review #482",
-      time: "3 hours ago",
+      user: "Elena Rostova",
+      action: "Deleted account #38291",
+      time: "1 hour ago",
+      status: "Warning",
+    },
+    {
+      id: 4,
+      user: "Database Service",
+      action: "Automated daily backup completed",
+      time: "2 hours ago",
+      status: "Success",
     },
   ];
 
-  const filteredUsers = usersData.filter((u) => {
-    const matchesSearch =
-      u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      u.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = roleFilter === "ALL" || u.role === roleFilter;
-    const matchesStatus = statusFilter === "ALL" || u.status === statusFilter;
-    return matchesSearch && matchesRole && matchesStatus;
+  // Derive graph coordinates from chartData
+  const graphPoints =
+    chartData.length > 0 ? chartData.map((d) => d.count) : [0, 0, 0, 0];
+  const maxVal = Math.max(...graphPoints, 1);
+  const minVal = Math.min(...graphPoints);
+  const range = maxVal - minVal || 1;
+  const width = 600;
+  const height = 160;
+
+  const coordinates = graphPoints.map((val, index) => {
+    const x = (index / (graphPoints.length - 1 || 1)) * width;
+    const y = height - ((val - minVal) / range) * (height - 20) - 10;
+    return { x, y, val };
   });
 
+  const pointsString = coordinates.map((p) => `${p.x},${p.y}`).join(" ");
+  const areaString = `0,${height} ${pointsString} ${width},${height}`;
+
   return (
-    <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat, idx) => {
-          const Icon = stat.icon;
-          return (
-            <div
-              key={idx}
-              className="bg-zinc-900/60 border border-zinc-800 p-5 rounded-xl space-y-3"
-            >
-              <div className="flex items-center justify-between text-zinc-400">
-                <span className="text-xs font-medium uppercase tracking-wider">
-                  {stat.title}
-                </span>
-                <Icon className="w-4 h-4 text-zinc-400" />
-              </div>
-              <div className="flex items-baseline justify-between">
-                <span className="text-2xl font-bold tracking-tight">
-                  {stat.value}
-                </span>
-                <span
-                  className={`text-xs font-medium ${
-                    stat.isPositive ? "text-emerald-400" : "text-amber-400"
-                  }`}
-                >
-                  {stat.change}
-                </span>
-              </div>
-            </div>
-          );
-        })}
+    <div className="space-y-6 text-neutral-200">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <select
+            value={interval}
+            onChange={(e) => {
+              setInterval(e.target.value);
+              setHoveredIndex(null);
+            }}
+            className="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-1.5 text-xs text-zinc-300 focus:outline-none focus:border-red-500/50 cursor-pointer"
+          >
+            <option value="today">Today</option>
+            <option value="week">This week</option>
+            <option value="year">This year</option>
+            <option value="alltime">All time</option>
+          </select>
+        </div>
+        <button
+          onClick={() => window.location.reload()}
+          className="inline-flex items-center gap-2 rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-xs font-medium text-neutral-300 transition-colors hover:border-neutral-700 hover:bg-neutral-800 hover:text-white"
+        >
+          <RefreshCw className="h-3.5 w-3.5" />
+          Refresh Data
+        </button>
       </div>
 
-      {/* USERS PREVIEW TABLE */}
-      <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl overflow-hidden space-y-4 p-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-base font-semibold">User Accounts</h2>
-            <p className="text-xs text-zinc-400">
-              View and manage registered users
-            </p>
+      {/* Metric Cards Grid */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {metrics.map((metric, idx) => (
+          <MetricCard key={idx} {...metric} />
+        ))}
+      </div>
+
+      {/* Main Section Grid: Interactive Line Graph & System Health */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {/* Main Analytics Card */}
+        <div className="rounded-xl border border-neutral-800 bg-neutral-900/80 p-5 lg:col-span-2">
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <h3 className="text-base font-semibold text-white">
+                Traffic & Usage Trends
+              </h3>
+              <p className="text-xs text-neutral-400">
+                Daily API throughput and active sessions
+              </p>
+            </div>
+            <span className="rounded-md bg-red-950/60 px-2.5 py-1 text-xs font-medium text-red-400 border border-red-800/40">
+              Live Feed
+            </span>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Search by name or email..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-zinc-950 border border-zinc-800 rounded-lg pl-9 pr-4 py-1.5 text-sm text-zinc-200 focus:outline-none focus:border-red-500/50 w-64"
-              />
-            </div>
+          {/* Interactive SVG Line Graph Container */}
+          <div
+            className="relative h-52 w-full pt-4"
+            onMouseLeave={() => setHoveredIndex(null)}
+          >
+            {/* Floating Tooltip Bubble */}
+            {hoveredIndex !== null && coordinates[hoveredIndex] && (
+              <div
+                className="absolute z-10 -translate-x-1/2 -translate-y-full rounded-md border border-neutral-800 bg-neutral-950 px-2.5 py-1 text-[11px] shadow-xl text-white pointer-events-none transition-all duration-75"
+                style={{
+                  left: `${(hoveredIndex / (graphPoints.length - 1 || 1)) * 100}%`,
+                  top: `${(coordinates[hoveredIndex].y / height) * 100}%`,
+                  marginTop: "-10px",
+                }}
+              >
+                <span className="text-neutral-400 font-medium">
+                  {chartData[hoveredIndex]?.label}:{" "}
+                </span>
+                <span className="text-red-400 font-bold">
+                  {coordinates[hoveredIndex].val} users
+                </span>
+              </div>
+            )}
 
-            <select
-              value={roleFilter}
-              onChange={(e) => setRoleFilter(e.target.value)}
-              className="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-1.5 text-sm text-zinc-200 focus:outline-none focus:border-red-500/50 cursor-pointer"
+            <svg
+              viewBox={`0 0 ${width} ${height}`}
+              className="h-full w-full overflow-visible"
+              preserveAspectRatio="none"
             >
-              <option value="ALL">All Roles</option>
-              <option value="ADMIN">ADMIN</option>
-              <option value="MODERATOR">MODERATOR</option>
-              <option value="USER">USER</option>
-            </select>
+              <defs>
+                <linearGradient id="lineGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#ef4444" stopOpacity="0.4" />
+                  <stop offset="100%" stopColor="#ef4444" stopOpacity="0.0" />
+                </linearGradient>
+              </defs>
+
+              {/* Background Gradient Fill */}
+              <polygon points={areaString} fill="url(#lineGradient)" />
+
+              {/* Main Line Path */}
+              <polyline
+                fill="none"
+                stroke="#ef4444"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                points={pointsString}
+              />
+
+              {/* Invisible Hover Hitboxes + Visible Interactive Points */}
+              {coordinates.map((coord, idx) => (
+                <g key={idx}>
+                  <circle
+                    cx={coord.x}
+                    cy={coord.y}
+                    r="18"
+                    fill="transparent"
+                    className="cursor-pointer"
+                    onMouseEnter={() => setHoveredIndex(idx)}
+                  />
+                  {hoveredIndex === idx && (
+                    <circle
+                      cx={coord.x}
+                      cy={coord.y}
+                      r="5"
+                      fill="#ffffff"
+                      stroke="#ef4444"
+                      strokeWidth="3"
+                      className="transition-all duration-150 pointer-events-none"
+                    />
+                  )}
+                </g>
+              ))}
+            </svg>
+          </div>
+
+          {/* Dynamic Footer Labels based on chartData */}
+          <div className="mt-4 flex justify-between text-[11px] text-neutral-500 border-t border-neutral-800 pt-3">
+            {chartData.length > 0 ? (
+              chartData.map((item, i) => <span key={i}>{item.label}</span>)
+            ) : (
+              <span>No data available</span>
+            )}
           </div>
         </div>
 
+        {/* System Health Status */}
+        <div className="flex flex-col justify-between rounded-xl border border-neutral-800 bg-neutral-900/80 p-5">
+          <div>
+            <h3 className="text-base font-semibold text-white">
+              System Infrastructure
+            </h3>
+            <p className="text-xs text-neutral-400">Node health checks</p>
+
+            <div className="mt-5 space-y-4">
+              <div>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="text-neutral-300">CPU Utilization</span>
+                  <span className="font-semibold text-white">42%</span>
+                </div>
+                <div className="h-2 w-full rounded-full bg-neutral-800">
+                  <div
+                    className="h-2 rounded-full bg-red-500"
+                    style={{ width: "42%" }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="text-neutral-300">Memory Allocated</span>
+                  <span className="font-semibold text-white">68%</span>
+                </div>
+                <div className="h-2 w-full rounded-full bg-neutral-800">
+                  <div
+                    className="h-2 rounded-full bg-red-500"
+                    style={{ width: "68%" }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="text-neutral-300">Database Storage</span>
+                  <span className="font-semibold text-white">28%</span>
+                </div>
+                <div className="h-2 w-full rounded-full bg-neutral-800">
+                  <div
+                    className="h-2 rounded-full bg-emerald-500"
+                    style={{ width: "28%" }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 border-t border-neutral-800 pt-4 flex items-center justify-between text-xs">
+            <span className="flex items-center gap-2 text-emerald-400">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              All Clusters Operational
+            </span>
+            <span className="text-neutral-500">v2.4.0</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Recent System Logs Table */}
+      <div className="rounded-xl border border-neutral-800 bg-neutral-900/80 p-5">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-base font-semibold text-white">
+            Recent System Activity
+          </h3>
+          <button className="flex items-center text-xs font-medium text-red-400 transition-colors hover:text-red-300">
+            View All Logs <ArrowUpRight className="ml-1 h-3.5 w-3.5" />
+          </button>
+        </div>
+
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-zinc-950 text-zinc-400 border-b border-zinc-800 text-xs uppercase tracking-wider">
+          <table className="w-full text-left text-xs text-neutral-300">
+            <thead className="border-b border-neutral-800 bg-neutral-950/50 text-neutral-400">
               <tr>
-                <th className="p-3">User</th>
-                <th className="p-3">Role</th>
-                <th className="p-3">Status</th>
-                <th className="p-3">Join Date</th>
-                <th className="p-3 text-right">Actions</th>
+                <th className="px-4 py-3 font-medium">User / Service</th>
+                <th className="px-4 py-3 font-medium">Action Description</th>
+                <th className="px-4 py-3 font-medium">Timestamp</th>
+                <th className="px-4 py-3 font-medium text-right">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-800/60">
-              {filteredUsers.slice(0, 3).map((user) => (
+            <tbody className="divide-y divide-neutral-800/60">
+              {recentActivities.map((act) => (
                 <tr
-                  key={user.id}
-                  className="hover:bg-zinc-800/30 transition-colors"
+                  key={act.id}
+                  className="transition-colors hover:bg-neutral-800/40"
                 >
-                  <td className="p-3 flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-bold text-red-500">
-                      {user.name.charAt(0)}
-                    </div>
-                    <div>
-                      <div className="font-medium text-zinc-200">
-                        {user.name}
-                      </div>
-                      <div className="text-xs text-zinc-400">{user.email}</div>
-                    </div>
+                  <td className="px-4 py-3 font-medium text-white">
+                    {act.user}
                   </td>
-                  <td className="p-3">
+                  <td className="px-4 py-3 text-neutral-400">{act.action}</td>
+                  <td className="px-4 py-3 text-neutral-500">{act.time}</td>
+                  <td className="px-4 py-3 text-right">
                     <span
-                      className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${
-                        user.role === "ADMIN"
-                          ? "bg-red-500/10 text-red-400 border-red-500/30"
-                          : user.role === "MODERATOR"
-                            ? "bg-amber-500/10 text-amber-400 border-amber-500/30"
-                            : "bg-zinc-800 text-zinc-400 border-zinc-700"
+                      className={`inline-block rounded px-2 py-0.5 text-[10px] font-semibold ${
+                        act.status === "Success"
+                          ? "bg-emerald-950/80 text-emerald-400 border border-emerald-800/50"
+                          : act.status === "Warning"
+                            ? "bg-rose-950/80 text-rose-400 border border-rose-800/50"
+                            : "bg-amber-950/80 text-amber-400 border border-amber-800/50"
                       }`}
                     >
-                      {user.role}
+                      {act.status}
                     </span>
-                  </td>
-                  <td className="p-3">
-                    <span
-                      className={`inline-flex items-center gap-1.5 text-xs font-medium ${
-                        user.status === "Active"
-                          ? "text-emerald-400"
-                          : "text-zinc-500"
-                      }`}
-                    >
-                      <span
-                        className={`w-1.5 h-1.5 rounded-full ${
-                          user.status === "Active"
-                            ? "bg-emerald-400"
-                            : "bg-zinc-500"
-                        }`}
-                      />
-                      {user.status}
-                    </span>
-                  </td>
-                  <td className="p-3 text-zinc-400 text-xs">{user.joined}</td>
-                  <td className="p-3 text-right">
-                    <button
-                      onClick={() => setActiveTab("users")}
-                      className="p-1 hover:bg-zinc-800 rounded text-zinc-400 hover:text-white transition"
-                    >
-                      <MoreVertical className="w-4 h-4" />
-                    </button>
                   </td>
                 </tr>
               ))}
@@ -277,35 +479,7 @@ const AdminOverviewTab = () => {
           </table>
         </div>
       </div>
-
-      {/* RECENT ADMIN ACTIVITY LOGS */}
-      <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold">Recent Admin Activity</h2>
-          <button
-            onClick={() => setActiveTab("logs")}
-            className="text-xs text-red-500 hover:underline flex items-center gap-1"
-          >
-            View All Logs <ArrowUpRight className="w-3 h-3" />
-          </button>
-        </div>
-        <div className="space-y-3">
-          {recentLogs.map((log) => (
-            <div
-              key={log.id}
-              className="flex items-center justify-between text-xs p-3 bg-zinc-950/50 rounded-lg border border-zinc-800/50"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-red-500" />
-                <span className="font-semibold text-zinc-200">{log.user}:</span>
-                <span className="text-zinc-400">{log.action}</span>
-              </div>
-              <span className="text-zinc-500">{log.time}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </>
+    </div>
   );
 };
 

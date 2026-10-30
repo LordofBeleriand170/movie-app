@@ -38,7 +38,6 @@ const NavbarContent = () => {
     { name: "TV Shows", href: "/media/tvshows/popular" },
     { name: "Explore", href: "/media/explore" },
   ];
-
   return (
     <>
       {openMenu && <SideMenu setOpenMenu={setOpenMenu} />}

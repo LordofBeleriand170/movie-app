@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
 const SearchItemComponent = ({ result }) => {
   let avgVote = result?.ratingAvg?._avg?.rating || result?.vote_average / 2;
@@ -26,8 +27,11 @@ const SearchItemComponent = ({ result }) => {
     return name.toLowerCase().replaceAll(" ", "-");
   };
 
-  const isPerson = result.media_type === "person";
-  const isMovie = result.media_type === "movie";
+  const params = useParams();
+  console.log("PARAMS: ", params);
+
+  const isMovie = params?.movie === "movies";
+  const isPerson = params?.movie === "person";
 
   const href = `${!isPerson ? "/media" : ""}/${
     isMovie ? "movies" : isPerson ? "person" : "tvshows"

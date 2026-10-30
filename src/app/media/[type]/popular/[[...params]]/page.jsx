@@ -8,6 +8,7 @@ import LoadingPage from "@/app/LoadingPage";
 import PaginatedItems from "@/components/PaginatedItems";
 import FilterComponent from "@/components/FilterComponent";
 import ErrorPage from "@/libs/ErrorPage";
+import { useAuthStore } from "@/features/auth/authStore";
 
 const TypePage = ({ option }) => {
   const params = useParams();
@@ -16,6 +17,7 @@ const TypePage = ({ option }) => {
   const [category, setCategory] = useState(null);
   const [trendingLoading, setTrendingLoading] = useState(true);
   const [trendingResult, setTrendingResult] = useState(null);
+  const user = useAuthStore((state) => state.user);
 
   const [categories, setCategories] = useState([]);
   const [trendings, setTrendings] = useState(false);
@@ -70,7 +72,7 @@ const TypePage = ({ option }) => {
     }
   }, [status]);
 
-  if (loading || status === "loading") return <LoadingPage />;
+  if ((loading || status === "loading") && user) return <LoadingPage />;
 
   if (errorComponent) {
     return <ErrorPage />;

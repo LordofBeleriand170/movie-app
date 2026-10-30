@@ -154,6 +154,7 @@ export const useAuthStore = create(
               ...data.user,
               role: data.user.role,
             },
+            isLoading: false,
           });
 
           return data.user;

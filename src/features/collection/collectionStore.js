@@ -8,6 +8,8 @@ export const useCollectionStore = create((set, get) => ({
   watchlist: [],
   bookmark: [],
   ratings: [],
+  list: null,
+  lists: [],
   notifications: [],
   banReason: null,
   bannedUntil: null,
@@ -127,6 +129,57 @@ export const useCollectionStore = create((set, get) => ({
       });
     } catch (err) {
       console.error(`Failed to add rating:`, err);
+    }
+  },
+
+  getLists: async () => {
+    set({ lists: [] });
+    try {
+      const res = await fetch(`/api/list`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const data = await res.json();
+
+      set({ lists: data?.lists });
+
+      return data;
+    } catch (err) {
+      set({ error: err });
+      console.error(`Failed to handle report:`, err);
+    }
+  },
+
+  createList: async (userId, text, description) => {
+    try {
+      const res = await fetch(`/api/list/createList`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, text, description }),
+      });
+
+      const data = await res.json();
+
+      return data;
+    } catch (err) {
+      console.error(`Failed to handle report:`, err);
+    }
+  },
+
+  addToList: async (content, listId) => {
+    try {
+      const res = await fetch(`/api/list/addToList`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content, listId }),
+      });
+
+      const data = await res.json();
+
+      return data;
+    } catch (err) {
+      console.error(`Failed to handle report:`, err);
     }
   },
 

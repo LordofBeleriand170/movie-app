@@ -43,9 +43,9 @@ const RateComponent = ({ rate, media, newRate, setNewRate }) => {
     }
   };
   return (
-    <div className="flex gap-1 pr-5 items-end">
-      <div className="w-4 flex items-center justify-center pb-3">
-        {isAuthenticated && (newRate > 0 || rate > 0) && !clearRating ? (
+    <div className="flex w-full gap-1">
+      {isAuthenticated && (newRate > 0 || rate > 0) && !clearRating ? (
+        <div className="w-4 flex items-center justify-center pb-3">
           <button
             type="button"
             onClick={() => {
@@ -57,55 +57,48 @@ const RateComponent = ({ rate, media, newRate, setNewRate }) => {
           >
             ✕
           </button>
-        ) : null}
-      </div>
-      <div className="flex flex-col">
-        <span className="text-xs text-gray-400 tracking-wide text-center">
-          {!newRate && !rate ? "Rate" : "Rated"}
-        </span>
-        <div className="flex flex-col gap-2 backdrop-blur-md py-2 rounded-xl">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-3 w-fit h-6">
-              <div className="flex items-center gap-3">
-                {[1, 2, 3, 4, 5].map((star) => {
-                  const active = hover
-                    ? star <= hover
-                    : star <= (clearRating ? 0 : newRate > 0 ? newRate : rate);
+        </div>
+      ) : null}
 
-                  return (
-                    <FaStar
-                      key={star}
-                      size={20}
-                      onClick={() => {
-                        if (!isAuthenticated) {
-                          router.push(
-                            `/login?callbackUrl=${encodeURIComponent(fullUrl)}`,
-                          );
-                          return;
-                        } else {
-                          setClearRating(false);
-                          setNewRate(star);
+      <div className="relative flex flex-col w-full">
+        {/* Dodat je 'justify-between' umesto 'justify-stretch' i 'w-full' */}
+        <div className="flex justify-between items-center w-full gap-1">
+          {[1, 2, 3, 4, 5].map((star) => {
+            const active = hover
+              ? star <= hover
+              : star <= (clearRating ? 0 : newRate > 0 ? newRate : rate);
 
-                          if (star !== rate) {
-                            handleRating(star);
-                          }
-                        }
-                      }}
-                      onMouseEnter={() => {
-                        setHover(star);
-                      }}
-                      onMouseLeave={() => {
-                        setHover(null);
-                      }}
-                      className={`cursor-pointer transition-all duration-200 shrink-0 ${
-                        active ? "text-yellow-400 scale-110" : "text-gray-400"
-                      }`}
-                    />
-                  );
-                })}
+            return (
+              <div
+                key={star}
+                className="flex-1 flex items-center justify-center cursor-pointer aspect-square"
+                onMouseEnter={() => setHover(star)}
+                onMouseLeave={() => setHover(null)}
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    router.push(
+                      `/login?callbackUrl=${encodeURIComponent(fullUrl)}`,
+                    );
+                    return;
+                  } else {
+                    setClearRating(false);
+                    setNewRate(star);
+
+                    if (star !== rate) {
+                      handleRating(star);
+                    }
+                  }
+                }}
+              >
+                <FaStar
+                  // Uklonjen je fiksni size={20}, a kontroliše se preko w-full h-full unutar fleksibilnog omotača
+                  className={`w-full h-full max-w-[32px] max-h-[32px] cursor-pointer transition-all duration-200 ${
+                    active ? "text-yellow-400 scale-110" : "text-gray-400"
+                  }`}
+                />
               </div>
-            </div>
-          </div>
+            );
+          })}
         </div>
       </div>
     </div>

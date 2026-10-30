@@ -117,6 +117,30 @@ model Bookmark{
   @@unique([userId, mediaId, mediaType])
 }
 
+model List {
+  id          String     @id @default(cuid())
+  userId      String
+  text        String     @default("")
+  description String     @default("")
+  visits      Int        @default(0)
+  likes       Int        @default(0)
+  items       ListItem[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model ListItem {
+  id        String    @id @default(cuid())
+  listId    String
+  mediaId   Int
+  mediaType MediaType @default(movie)
+  title     String    @default("Unknown")
+  poster    String    @default("")
+  list      List      @relation(fields: [listId], references: [id], onDelete: Cascade)
+
+  @@index([listId])
+}
+
 model Comment {
   id        String   @id @default(cuid())
   userId    String
@@ -193,6 +217,24 @@ model Voter {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   ratingId  String
   ratingRef Rating   @relation(fields: [ratingId], references: [id], onDelete: Cascade)
+}
+
+enum LogLevel {
+  SUCCESS
+  NOTICE
+  WARNING
+  ERROR
+}
+
+model SystemLog {
+  id        String   @id @default(cuid())
+  user      String   
+  action    String   
+  status    LogLevel @default(SUCCESS)
+  timestamp DateTime @default(now())
+  metadata  Json?    
+
+  @@index([timestamp])
 }
 
 enum MediaType {

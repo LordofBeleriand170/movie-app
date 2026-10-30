@@ -1,42 +1,5 @@
 import React, { useState } from "react";
-import {
-  Users,
-  Film,
-  Tv,
-  TrendingUp,
-  AlertTriangle,
-  Search,
-  Filter,
-  MoreVertical,
-  ShieldAlert,
-  UserCheck,
-  UserX,
-  Activity,
-  Database,
-  ArrowUpRight,
-  RefreshCw,
-  Bell,
-  SlidersHorizontal,
-  ChevronDown,
-  Trash2,
-  Mail,
-  Shield,
-  Clock,
-  CheckCircle2,
-  XCircle,
-  Download,
-  Plus,
-  X,
-  Eye,
-  Star,
-  Tag,
-  Terminal,
-  Info,
-  AlertOctagon,
-  FileText,
-  Server,
-  Globe,
-} from "lucide-react";
+import { Bell } from "lucide-react";
 import AdminOverviewTab from "./AdminOverviewTab";
 import AdminUserTab from "./AdminUserTab";
 import AdminContentTab from "./AdminContentTab";
@@ -597,35 +560,8 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-black text-zinc-100 flex flex-col font-sans">
-      {/* Top Navigation */}
-      <header className="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur px-6 py-4 flex items-center justify-between sticky top-0 z-10">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-red-600/20 border border-red-500/40 flex items-center justify-center text-red-500 font-bold">
-            A
-          </div>
-          <div>
-            <h1 className="text-base font-semibold leading-none">
-              Admin Dashboard
-            </h1>
-            <p className="text-xs text-zinc-400 mt-1">
-              System and User Management
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <button className="p-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white transition">
-            <Bell className="w-4 h-4" />
-          </button>
-          <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg text-sm">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-zinc-300 text-xs">System Stable</span>
-          </div>
-        </div>
-      </header>
-
       {/* Main Content */}
-      <main className="flex-1 p-6 max-w-7xl w-full mx-auto space-y-6">
+      <main className="flex-1 px-8 py-6 w-[90%] mx-auto space-y-6">
         {/* Tabs */}
         <div className="flex border-b border-zinc-800 gap-6">
           {["overview", "users", "content", "logs"].map((tab) => (

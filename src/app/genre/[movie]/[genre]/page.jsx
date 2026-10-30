@@ -43,8 +43,8 @@ const Genre = () => {
       ) : (
         <>
           <Navbar />
-          <main className="py-4 bg-gradient-to-t from-gray-950 to-gray-900 2xl:px-82 xl:px-60 lg:px-40 md:px-20 sm:px-10">
-            <div className="flex flex-col gap-5">
+          <main className="py-4 bg-gradient-to-t flex justify-center from-gray-950 to-gray-900 w-full">
+            <div className="flex flex-col gap-5 w-[90%] px-8">
               {movies.map((movie, index) => {
                 return <SearchItemComponent key={index} result={movie} />;
               })}

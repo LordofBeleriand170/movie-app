@@ -15,29 +15,63 @@ import ContentPosterComponent from "./ContentPosterComponent";
 import RatingsComponents from "./RatingsComponents";
 import AwardsComponent from "./AwardsComponent";
 import { useContentStore } from "@/features/content/contentStore";
+import OptionModal from "./OptionModal";
+import RatingsComponent from "./RatingsComponents";
 
-const ContentInfoComponent = ({ type, newRate, setNewRate, info }) => {
+const ContentInfoComponent = ({
+  type,
+  newRate,
+  setNewRate,
+  info,
+  media,
+  isModalOpen,
+  setIsModalOpen,
+}) => {
   const { data: session } = useSession();
   const ratings = useCollectionStore((state) => state.ratings);
-  const content = useContentStore((state) => state.content);
 
   const [rate, setRate] = useState(0);
   const [trailer, setTrailer] = useState(false);
-  const [media, setMedia] = useState("movies");
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
   const overviewRef = useRef(null);
 
+  const modalContentRef = useRef(null);
+
   const params = useParams();
 
+  /*{info?.video ? (
+                      <button
+                        onClick={() => setTrailer(true)}
+                        className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-xs uppercase tracking-wider transition-all shadow-lg shadow-red-600/20 cursor-pointer"
+                      >
+                        <FaPlay className="text-[10px]" />
+                        Play Trailer
+                      </button>
+                    ) : (
+                      <div className="text-xs text-neutral-500 text-center py-1">
+                        Trailer not available
+                      </div>
+                    )}     */
+
   useEffect(() => {
-    if (params?.type === "movies") {
-      setMedia("movies");
-    } else {
-      setMedia("tv");
+    const handleClickOutside = (event) => {
+      if (
+        modalContentRef.current &&
+        !modalContentRef.current.contains(event.target)
+      ) {
+        setIsModalOpen(false);
+      }
+    };
+
+    if (isModalOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
     }
-  }, [params]);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isModalOpen]);
 
   useEffect(() => {
     if (!session?.user?.email) return;
@@ -68,7 +102,7 @@ const ContentInfoComponent = ({ type, newRate, setNewRate, info }) => {
       : info?.info?.vote_count;
 
   return (
-    <div className="relative w-full text-white pb-10">
+    <div className="relative w-full text-white pb-15">
       {info?.info?.backdrop_path && (
         <div
           style={{
@@ -124,7 +158,15 @@ const ContentInfoComponent = ({ type, newRate, setNewRate, info }) => {
               <div className="w-[200px] md:w-[220px] flex flex-col items-stretch gap-3 flex-shrink-0 mx-auto md:mx-0">
                 <ContentPosterComponent info={info?.info} />
 
-                {info?.video && (
+                <div>
+                  <RateComponent
+                    rate={rate}
+                    media={media}
+                    newRate={newRate}
+                    setNewRate={setNewRate}
+                  />
+                </div>
+                {info?.video ? (
                   <button
                     onClick={() => setTrailer(true)}
                     className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-xs uppercase tracking-wider transition-all shadow-lg shadow-red-600/20 cursor-pointer"
@@ -132,64 +174,15 @@ const ContentInfoComponent = ({ type, newRate, setNewRate, info }) => {
                     <FaPlay className="text-[10px]" />
                     Play Trailer
                   </button>
+                ) : (
+                  <div className="text-xs text-neutral-500 text-center py-1">
+                    Trailer not available
+                  </div>
                 )}
-
-                <div className="bg-[#111623]/80 backdrop-blur-md rounded-xl p-3 border border-gray-800 flex flex-col gap-2 text-xs w-full">
-                  {media === "movies" ? (
-                    <>
-                      {info?.director?.length !== 0 && (
-                        <div className="flex justify-between items-center gap-2">
-                          <span className="text-gray-400">Director:</span>
-                          <Link
-                            href={`/person/${
-                              info?.director?.id || info?.director?.[0]?.id
-                            }-${(
-                              info?.director?.[0]?.name || info?.director?.name
-                            )
-                              ?.toLowerCase()
-                              .replace(" ", "-")}`}
-                            className="font-medium text-white hover:text-red-400 transition-colors truncate"
-                          >
-                            {info?.director?.[0]?.name || info?.director?.name}
-                          </Link>
-                        </div>
-                      )}
-                      {info?.writer?.length !== 0 && (
-                        <div className="flex justify-between items-center gap-2 border-t border-gray-800/60 pt-2">
-                          <span className="text-gray-400">Writer:</span>
-                          <Link
-                            href={`/person/${
-                              info?.writer?.id || info?.writer?.[0]?.id
-                            }-${(info?.writer?.[0]?.name || info?.writer?.name)
-                              ?.toLowerCase()
-                              .replace(" ", "-")}`}
-                            className="font-medium text-white hover:text-red-400 transition-colors truncate"
-                          >
-                            {info?.writer?.[0]?.name || info?.writer?.name}
-                          </Link>
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    info?.creator && (
-                      <div className="flex justify-between items-center gap-2">
-                        <span className="text-gray-400">Creator:</span>
-                        <Link
-                          href={`/person/${info?.creator?.id}-${info?.creator?.name
-                            ?.toLowerCase()
-                            .replace(" ", "-")}`}
-                          className="font-medium text-white hover:text-red-400 transition-colors truncate"
-                        >
-                          {info?.creator?.name}
-                        </Link>
-                      </div>
-                    )
-                  )}
-                </div>
               </div>
             </div>
 
-            <div className="flex-1 flex flex-col pt-8 w-full">
+            <div className="flex-1 flex flex-col justify-between pt-8 w-full">
               <div className="flex flex-col items-start gap-4">
                 <h1 className="text-3xl md:text-4xl lg:text-4xl font-extrabold tracking-tight text-white leading-tight">
                   {info?.info?.title || info?.info?.name}
@@ -297,33 +290,94 @@ const ContentInfoComponent = ({ type, newRate, setNewRate, info }) => {
                   )}
                 </div>
               </div>
-
-              {(info?.info?.status === "Released" ||
-                info?.info?.status === "Ended" ||
-                info?.info?.status === "Returning Series" ||
-                (info?.info?.status === "Canceled" && info?.info?.seasons)) && (
-                <div className="flex flex-wrap justify-center items-stretch gap-4 max-w-3xl mt-auto pt-6">
-                  {content?.awards !== "N/A" && (
-                    <div className="flex-1 min-w-[220px] max-w-xs flex items-center justify-center p-4 rounded-xl bg-[#0f1522]/90 border border-gray-800/80">
-                      <AwardsComponent />
+              <div>
+                {(info?.info?.status === "Released" ||
+                  info?.info?.status === "Ended" ||
+                  info?.info?.status === "Returning Series" ||
+                  (info?.info?.status === "Canceled" &&
+                    info?.info?.seasons)) && (
+                  <div className="flex flex-col lg:flex-row items-stretch gap-4 max-w-4xl mt-auto pt-6">
+                    {/* KARTICA 1: Director / Writer / Creator (Fixed gap using justify-start and gap-6) */}
+                    <div className="bg-[#111623]/80 backdrop-blur-md rounded-2xl p-5 border border-gray-800/80 flex flex-col justify-center gap-3 flex-1 shadow-lg">
+                      <div className="flex flex-col gap-2.5 text-xs w-full">
+                        {media === "movies" ? (
+                          <>
+                            {info?.director?.length !== 0 && (
+                              <div className="flex justify-start items-center gap-6">
+                                <span className="text-gray-400 font-medium tracking-wide w-16 shrink-0">
+                                  Director:
+                                </span>
+                                <Link
+                                  href={`/person/${
+                                    info?.director?.id ||
+                                    info?.director?.[0]?.id
+                                  }-${(
+                                    info?.director?.[0]?.name ||
+                                    info?.director?.name
+                                  )
+                                    ?.toLowerCase()
+                                    .replace(" ", "-")}`}
+                                  className="font-semibold text-white hover:text-red-400 transition-colors truncate"
+                                >
+                                  {info?.director?.[0]?.name ||
+                                    info?.director?.name}
+                                </Link>
+                              </div>
+                            )}
+                            {info?.writer?.length !== 0 && (
+                              <div className="flex justify-start items-center gap-6 border-t border-gray-800/60 pt-2.5">
+                                <span className="text-gray-400 font-medium tracking-wide w-16 shrink-0">
+                                  Writer:
+                                </span>
+                                <Link
+                                  href={`/person/${
+                                    info?.writer?.id || info?.writer?.[0]?.id
+                                  }-${(
+                                    info?.writer?.[0]?.name ||
+                                    info?.writer?.name
+                                  )
+                                    ?.toLowerCase()
+                                    .replace(" ", "-")}`}
+                                  className="font-semibold text-white hover:text-red-400 transition-colors truncate"
+                                >
+                                  {info?.writer?.[0]?.name ||
+                                    info?.writer?.name}
+                                </Link>
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          info?.creator && (
+                            <div className="flex justify-start items-center gap-6">
+                              <span className="text-gray-400 font-medium tracking-wide w-16 shrink-0">
+                                Creator:
+                              </span>
+                              <Link
+                                href={`/person/${info?.creator?.id}-${info?.creator?.name
+                                  ?.toLowerCase()
+                                  .replace(" ", "-")}`}
+                                className="font-semibold text-white hover:text-red-400 transition-colors truncate"
+                              >
+                                {info?.creator?.name}
+                              </Link>
+                            </div>
+                          )
+                        )}
+                      </div>
                     </div>
-                  )}
 
-                  <div className="flex-1 min-w-[240px] max-w-xs flex flex-col justify-center items-center gap-3 p-4 rounded-xl bg-[#0f1522]/90 border border-gray-800/80">
-                    <ContentActionsComponent media={media} />
-                    <RateComponent
-                      rate={rate}
-                      media={media}
-                      newRate={newRate}
-                      setNewRate={setNewRate}
-                    />
-                  </div>
+                    <RatingsComponent avg={avgRating} count={count} />
 
-                  <div className="flex-1 min-w-[220px] max-w-xs flex flex-col justify-between p-4 rounded-xl bg-[#0f1522]/90 border border-gray-800/80">
-                    <RatingsComponents avg={avgRating} count={count || 0} />
+                    {/* KARTICA 2: Actions */}
+                    <div className="bg-[#111623]/80 backdrop-blur-md rounded-2xl p-5 border border-gray-800/80 flex items-center justify-center flex-1 shadow-lg">
+                      <ContentActionsComponent
+                        media={media}
+                        setIsModalOpen={setIsModalOpen}
+                      />
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
         )}

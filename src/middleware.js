@@ -10,8 +10,6 @@ export async function middleware(request) {
     secret: process.env.SECRET, // Proverite da li vam je u .env fajlu varijabla SECRET ili NEXTAUTH_SECRET
   });
 
-  console.log("DEKODIRANI TOKEN U MIDDLEWARE-U:", token);
-
   // 1. Provera da li je korisnik uopšte ulogovan
   if (pathname.startsWith("/admin")) {
     if (!token) {
@@ -30,5 +28,5 @@ export async function middleware(request) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/api/admin/:path*"],
 };

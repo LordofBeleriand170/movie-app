@@ -13,12 +13,17 @@ import ActorComponent from "./ActorComponent";
 import CommentSectionComponent from "./CommentSectionComponent";
 import ErrorPage from "@/libs/ErrorPage";
 import { useCollectionStore } from "@/features/collection/collectionStore";
+import OptionModal from "./OptionModal";
+import { useParams } from "next/navigation";
+import AwardsComponent from "./AwardsComponent";
 
 const InfoComponent = ({ option, type }) => {
   const [id, setId] = useState("");
   const [loading, setLoading] = useState(true);
   const [newRate, setNewRate] = useState(0);
   const [error, setError] = useState(null);
+  const [media, setMedia] = useState("movies");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [info, setInfo] = useState();
   const [openMedia, setOpenMedia] = useState(false);
@@ -26,6 +31,16 @@ const InfoComponent = ({ option, type }) => {
 
   const fetchInfo = useContentStore((state) => state.fetchInfo);
   const watchlist = useCollectionStore((state) => state.watchlist);
+
+  const params = useParams();
+
+  useEffect(() => {
+    if (params?.type === "movies") {
+      setMedia("movies");
+    } else {
+      setMedia("tv");
+    }
+  }, [params]);
 
   const { data: session } = useSession();
   const user = session?.user;
@@ -86,7 +101,9 @@ const InfoComponent = ({ option, type }) => {
       ) : (
         <div>
           <Navbar background={"no"} />
-
+          {isModalOpen && (
+            <OptionModal media={media} setIsModalOpen={setIsModalOpen} />
+          )}
           <div className="relative">
             <section className="relative w-full bg-[#09090b] min-h-[60vh] border-b border-zinc-900">
               <div className="absolute inset-0 z-0 w-[86%] mx-auto h-full pointer-events-none overflow-hidden">
@@ -113,6 +130,9 @@ const InfoComponent = ({ option, type }) => {
                   newRate={newRate}
                   setNewRate={setNewRate}
                   info={info}
+                  media={media}
+                  isModalOpen={isModalOpen}
+                  setIsModalOpen={setIsModalOpen}
                 />
               </div>
             </section>
@@ -126,6 +146,7 @@ const InfoComponent = ({ option, type }) => {
             >
               <section className="flex flex-col m-auto gap-10 pt-10 w-[90%]">
                 <ActorComponent />
+                <AwardsComponent />
                 <Similar type={type} id={id} info={info} />
               </section>
 
