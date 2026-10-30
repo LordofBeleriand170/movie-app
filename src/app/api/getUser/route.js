@@ -3,16 +3,39 @@ import { prisma } from "@/libs/prisma";
 
 export async function POST(req) {
   const body = await req.json();
-  const { username } = body;
+  const { email } = body;
 
   try {
-    if (!username) {
-      throw new Error("No username delivered");
+    if (!email) {
+      throw new Error("No email delivered");
     }
 
     const user = await prisma.user.findFirst({
       where: {
-        name: username,
+        email: email,
+      },
+      include: {
+        favorite: true,
+        watchlist: true,
+        bookmark: true,
+        ratings: true,
+        recentlyVisited: {
+          orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+          take: 10,
+        },
+        receivedNotifications: {
+          include: {
+            sender: true,
+          },
+        },
+        comments: {
+          include: {
+            replies: true,
+            commentLikes: true,
+          },
+        },
+        commentLikes: true,
+        replyLikes: true,
       },
     });
 

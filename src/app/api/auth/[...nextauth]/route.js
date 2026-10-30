@@ -95,8 +95,6 @@ export const authOptions = {
 
   callbacks: {
     async session({ session, token }) {
-      console.log("USER AUTHORIZE: ", token);
-
       if (token) {
         session.user = {
           id: token.id,

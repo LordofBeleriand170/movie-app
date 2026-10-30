@@ -4,13 +4,14 @@ import { useAuthStore } from "@/features/auth/authStore";
 import { ChevronRight, LogOut, Settings, ShieldCheck } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useRef } from "react";
 
 const UserModal = ({ openSettings, setOpenSettings }) => {
   const { data: session } = useSession();
-  const { user, getUser } = useAuthStore();
+  const { user, getUser, logout } = useAuthStore();
   const optionsRef = useRef(null);
+  const router = useRouter();
 
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -20,7 +21,7 @@ const UserModal = ({ openSettings, setOpenSettings }) => {
   useEffect(() => {
     const handleUser = async () => {
       try {
-        await getUser(session?.user?.username);
+        await getUser(session?.user?.email);
       } catch (err) {
         console.log("ERR: ", err);
       }
@@ -112,7 +113,8 @@ const UserModal = ({ openSettings, setOpenSettings }) => {
               <button
                 onClick={async () => {
                   setOpenSettings(false);
-                  await signOut({ callbackUrl: fullUrl });
+                  await logout();
+                  window.location.reload();
                 }}
                 className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-medium text-red-500 hover:bg-red-500/10 transition cursor-pointer"
               >

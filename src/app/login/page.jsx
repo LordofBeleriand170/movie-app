@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
 import { toast } from "react-toastify";
 import { useAuthStore } from "@/features/auth/authStore";
 
@@ -13,8 +12,8 @@ const LoginForm = () => {
     password: "",
   });
   const [loading, setLoading] = useState(false);
+  const { login, user, error } = useAuthStore();
 
-  const setUser = useAuthStore((state) => state.setUser);
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl");
@@ -46,67 +45,10 @@ const LoginForm = () => {
 
     try {
       setLoading(true);
-      const res = await signIn("credentials", {
-        username,
-        password,
-        redirect: false,
-      });
+      await login(username, password, callbackUrl);
 
-      if (res?.ok) {
-        const sessionRes = await fetch("/api/auth/session");
-        const updatedSession = await sessionRes.json();
-
-        if (!updatedSession?.user) {
-          toast.error("Failed to load session after login", {
-            style: {
-              background: "#121212",
-              color: "#ffffff",
-              border: "1px solid #2a2a2a",
-              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
-            },
-            iconTheme: {
-              primary: "#E50914",
-              secondary: "#ffffff",
-            },
-          });
-          return;
-        }
-
-        setUser({
-          id: updatedSession.user.id,
-          username: updatedSession.user.username,
-          email: updatedSession.user.email,
-          moviesUserId: updatedSession.user.moviesUserId,
-          password: "",
-          isVerified: false,
-          favorite: [],
-          watchlist: [],
-          ratings: [],
-          reviews: [],
-        });
-
-        toast.success("Logged in successfully", {
-          style: {
-            background: "#121212",
-            color: "#ffffff",
-            border: "1px solid #2a2a2a",
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
-          },
-          iconTheme: {
-            primary: "#22c55e",
-            secondary: "#ffffff",
-          },
-        });
-
-        if (callbackUrl) {
-          router.push(decodeURIComponent(callbackUrl));
-        } else {
-          router.push("/");
-        }
-        router.refresh();
-      } else {
-        const error = res?.error || "Login failed";
-        toast.error(error, {
+      if (!user) {
+        toast.error("Failed to load session after login", {
           style: {
             background: "#121212",
             color: "#ffffff",
@@ -118,16 +60,45 @@ const LoginForm = () => {
             secondary: "#ffffff",
           },
         });
-
-        if (
-          error === "User not verified" ||
-          error === "Verification code expired and new code has been sent"
-        ) {
-          router.push("/verify");
-        }
+        return;
       }
-    } catch {
-      toast.error("An unexpected error occurred", {
+
+      toast.success("Logged in successfully", {
+        style: {
+          background: "#121212",
+          color: "#ffffff",
+          border: "1px solid #2a2a2a",
+          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
+        },
+        iconTheme: {
+          primary: "#22c55e",
+          secondary: "#ffffff",
+        },
+      });
+      router.refresh();
+
+      toast.error(error, {
+        style: {
+          background: "#121212",
+          color: "#ffffff",
+          border: "1px solid #2a2a2a",
+          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
+        },
+        iconTheme: {
+          primary: "#E50914",
+          secondary: "#ffffff",
+        },
+      });
+
+      if (
+        error === "User not verified" ||
+        error === "Verification code expired and new code has been sent"
+      ) {
+        router.push("/verify");
+      }
+    } catch (err) {
+      console.log("ERR", err);
+      toast.error(error, {
         style: {
           background: "#121212",
           color: "#ffffff",

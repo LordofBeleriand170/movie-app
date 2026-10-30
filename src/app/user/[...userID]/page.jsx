@@ -3,39 +3,28 @@
 import LoadingPage from "@/app/LoadingPage";
 import Navbar from "@/components/Navbar";
 import UserPageComponent from "@/components/UserPageComponent";
+import { useAuthStore } from "@/features/auth/authStore";
 import { useCollectionStore } from "@/features/collection/collectionStore";
 import { useParams } from "next/navigation";
 import React, { useEffect } from "react";
 
 const User = () => {
-  const pathname = useParams();
+  const params = useParams();
+  const { loading, fetchUserCollections } = useCollectionStore();
 
-  const { loading } = useCollectionStore();
-
-  const fetchUserCollections = useCollectionStore(
-    (state) => state.fetchUserCollections,
-  );
+  const email = decodeURIComponent(params?.userId[0]);
 
   useEffect(() => {
-    const handleUserFetch = async () => {
+    const handleUserCollection = async () => {
       try {
-        const userIdParam = pathname?.userId;
-        const rawEmail = Array.isArray(userIdParam)
-          ? userIdParam[0]
-          : userIdParam;
-
-        if (!rawEmail) return;
-
-        const email = decodeURIComponent(rawEmail);
-
         await fetchUserCollections(email);
       } catch (err) {
-        console.log("ERROR: ", err);
+        console.log("ERR: ", err);
       }
     };
-    handleUserFetch();
-  }, [pathname]);
 
+    handleUserCollection();
+  }, [email]);
   return (
     <>
       {loading ? (

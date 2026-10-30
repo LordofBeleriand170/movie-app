@@ -5,7 +5,6 @@ export async function POST(req) {
   try {
     const body = await req.json();
     const { id, result } = body;
-    console.log("RESULT: ", result);
 
     const rawId = result?.info?.id || result?.id || body?.mediaId;
     const itemId = typeof rawId === "string" ? parseInt(rawId, 10) : rawId;

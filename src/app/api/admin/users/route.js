@@ -1,38 +1,27 @@
+import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
-import { prisma } from "@/libs/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
-export async function GET() {
-  try {
-    const session = await getServerSession(authOptions);
-    console.log("HERE", session);
-    if (!session || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+export default withAuth(
+  function middleware(req) {
+    const token = req.nextauth.token;
+    const path = req.nextUrl.pathname;
+
+    console.log("ADMIN: ", path.startsWith("/admin"), token?.role !== "ADMIN");
+
+    // If logged in, but not an admin -> send to /unauthorized
+    if (path.startsWith("/admin") && token?.role !== "ADMIN") {
+      return NextResponse.redirect(new URL("/unauthorized", req.url));
     }
+  },
+  {
+    callbacks: {
+      authorized: ({ token }) => !!token,
+    },
+    // This matches what you have in your authOptions configuration
+    secret: process.env.SECRET,
+  },
+);
 
-    const users = await prisma.user.findMany({
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        status: true,
-        createdAt: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-
-    console.log("USERS: ", users);
-
-    return NextResponse.json({ users }, { status: 200 });
-  } catch (err) {
-    console.error("Error fetching users:", err);
-    return NextResponse.json(
-      { error: err.message || "Server error" },
-      { status: 500 },
-    );
-  }
-}
+export const config = {
+  matcher: ["/admin/:path*"],
+};

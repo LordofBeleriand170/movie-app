@@ -6,6 +6,7 @@ import { Calendar, Heart, Eye, LucideClock2 } from "lucide-react";
 
 const UserInfoComponent = () => {
   const { user } = useCollectionStore();
+  console.log("USER: ", user?.createdAt);
 
   let monthName = (monthNum) => {
     switch (monthNum) {

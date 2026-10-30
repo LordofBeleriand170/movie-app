@@ -12,7 +12,7 @@ export async function POST(req) {
     }
 
     const user = await prisma?.user?.findUnique({
-      where: { email },
+      where: { email: email },
       include: {
         favorite: true,
         watchlist: true,
@@ -110,6 +110,7 @@ export async function POST(req) {
       bannedUntil: isBanned ? user.bannedUntil : null,
       banReason: isBanned ? user.banReason : null,
       role: user.role,
+      createdAt: user.createdAt,
     };
 
     return NextResponse.json({ user: formattedUser }, { status: 200 });

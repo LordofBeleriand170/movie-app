@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export const useCollectionStore = create((set) => ({
+export const useCollectionStore = create((set, get) => ({
   user: null,
   watched: false,
   likes: [],
@@ -17,20 +17,8 @@ export const useCollectionStore = create((set) => ({
   countries: [],
 
   fetchUserCollections: async (email) => {
-    set({
-      user: null,
-      favorite: [],
-      watchlist: [],
-      bookmark: [],
-      ratings: [],
-      recently: [],
-      notifications: [],
-      comments: [],
-      loading: true,
-    });
-    if (!email) return;
+    set({ loading: true });
 
-    console.log("EMAILHERE: ", email);
     try {
       const res = await fetch(`/api/user/collection`, {
         method: "POST",
@@ -39,7 +27,7 @@ export const useCollectionStore = create((set) => ({
       });
 
       if (!res.ok) {
-        set({ error: "Failed to fetch collections" });
+        set({ error: "Failed to fetch collections", loading: false });
         throw new Error("Failed to fetch collections");
       }
 
@@ -62,6 +50,7 @@ export const useCollectionStore = create((set) => ({
       });
     } catch (error) {
       console.error("Error fetching user collections:", error);
+      set({ loading: false }); // Ensure loading is cleared on error so it doesn't stay stuck
     }
   },
 

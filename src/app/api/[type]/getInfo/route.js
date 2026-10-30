@@ -16,8 +16,6 @@ export async function POST(req) {
       },
     });
 
-    console.log("sddssds", mediaInWatchlist);
-
     const isWatched = mediaInWatchlist ? true : false;
 
     if (!id || !type) {

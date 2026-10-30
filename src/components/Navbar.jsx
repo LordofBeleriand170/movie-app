@@ -11,10 +11,12 @@ import SideMenu from "./SideMenu";
 import UserModal from "./UserModal";
 
 const NavbarContent = () => {
-  const { user } = useCollectionStore();
+  const user = useCollectionStore((state) => state.user);
   const [searchValue, setSearchValue] = useState("");
   const [openMenu, setOpenMenu] = useState(false);
   const [openSettings, setOpenSettings] = useState(false);
+
+  const { data: session, status } = useSession();
 
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -95,7 +97,7 @@ const NavbarContent = () => {
           </div>
 
           <div className="hidden md:flex items-center gap-4 text-xs font-semibold">
-            {!user ? (
+            {status !== "authenticated" ? (
               <>
                 <Link
                   href={`/register?callbackUrl=${encodeURIComponent(fullUrl)}`}
