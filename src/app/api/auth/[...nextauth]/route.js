@@ -82,6 +82,7 @@ export const authOptions = {
           role: user?.role,
           username: user?.name,
           createdAt: user?.createdAt,
+          image: user?.image,
         };
       },
     }),
@@ -95,6 +96,7 @@ export const authOptions = {
 
   callbacks: {
     async session({ session, token }) {
+      console.log("TOKEN: ", token);
       if (token) {
         session.user = {
           id: token.id,
@@ -102,6 +104,7 @@ export const authOptions = {
           username: token.name,
           role: token.role,
           createdAt: token?.createdAt,
+          image: token?.image,
         };
       }
       return session;
@@ -116,6 +119,8 @@ export const authOptions = {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.id },
         });
+
+        console.log("dbUser: ", dbUser);
 
         if (dbUser) {
           token.id = dbUser.id;

@@ -150,7 +150,7 @@ const UserPageComponent = () => {
                           result={item}
                           slug={slug}
                           watchDisplay={"no"}
-                          isUserPage={false}
+                          isUserPage={true}
                         />
                       </div>
                       <div className="p-2.5 flex flex-col justify-between flex-1 bg-neutral-950">
@@ -239,7 +239,7 @@ const UserPageComponent = () => {
                             result={item}
                             slug={slug}
                             watchDisplay={"no"}
-                            isUserPage={false}
+                            isUserPage={true}
                           />
                         </div>
 
@@ -330,7 +330,7 @@ const UserPageComponent = () => {
                             result={item}
                             slug={slug}
                             watchDisplay={"no"}
-                            isUserPage={false}
+                            isUserPage={true}
                           />
                         </div>
                         <div className="p-2.5 flex flex-col justify-between flex-1 bg-neutral-950">

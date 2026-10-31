@@ -128,7 +128,7 @@ export const useAuthStore = create(
         }
       },
 
-      getUser: async (email) => {
+      getUser: async (id) => {
         set({
           isLoading: true,
           error: null,
@@ -139,7 +139,7 @@ export const useAuthStore = create(
           const res = await fetch("/api/getUser", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email }),
+            body: JSON.stringify({ id }),
           });
 
           if (!res.ok) {

@@ -30,6 +30,8 @@ const PaginatedItems = ({
 
   const loadMoreRef = useRef(null);
 
+  const [hasMore, setHasMore] = useState(true);
+
   const [loadedImageIds, setLoadedImageIds] = useState(new Set());
   const [isImagesReady, setIsImagesReady] = useState(false);
   const [isWatchedLoading, setIsWatchedLoading] = useState(true);
@@ -46,6 +48,7 @@ const PaginatedItems = ({
     if (page === 1) {
       setLoadedImageIds(new Set());
       setIsImagesReady(false);
+      setHasMore(true);
     }
   }, [page, category, mediaType, option, year, decade, rating]);
 
@@ -105,7 +108,7 @@ const PaginatedItems = ({
         setPage((prev) => prev + 1);
       }
     },
-    [trendingLoading, setPage],
+    [trendingLoading, hasMore, setPage],
   );
 
   useEffect(() => {
@@ -118,12 +121,12 @@ const PaginatedItems = ({
     const observer = new IntersectionObserver(handleObserver, observerOption);
     const current = loadMoreRef.current;
 
-    if (current) observer.observe(current);
+    if (current && hasMore) observer.observe(current);
 
     return () => {
       if (current) observer.unobserve(current);
     };
-  }, [handleObserver]);
+  }, [handleObserver, hasMore]);
 
   useEffect(() => {
     console.log("WATCHED STATUSES: ", watchedStatuses);
@@ -152,6 +155,7 @@ const PaginatedItems = ({
       rating !== null;
 
     const fetchData = async () => {
+      if (!hasMore && page > 1) return;
       try {
         setTrendingLoading(true);
 
@@ -161,6 +165,10 @@ const PaginatedItems = ({
           data = await optionFetch(filter);
         } else if (option === undefined || trendings) {
           data = await trending(mediaType, page, { signal });
+        }
+
+        if (!data || data.length === 0) {
+          setHasMore(false);
         }
 
         setTrendingResult((prev) => {
@@ -228,7 +236,7 @@ const PaginatedItems = ({
                           checked={watchedStatuses[contentId] ?? false}
                           isWatchedLoading={isWatchedLoading}
                           onImageLoad={() => handleImageLoad(result.id)}
-                          isUserPage={true}
+                          isUserPage={false}
                         />
                       </div>
                     </div>
@@ -247,17 +255,19 @@ const PaginatedItems = ({
           </div>
         )}
 
-        <div
-          ref={loadMoreRef}
-          className="h-16 w-full flex justify-center items-center mt-6"
-        >
-          {page > 1 && trendingLoading && (
-            <div className="flex items-center gap-2.5 text-xs text-neutral-400 font-medium">
-              <span className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
-              <span>Loading additional titles...</span>
-            </div>
-          )}
-        </div>
+        {hasMore && (
+          <div
+            ref={loadMoreRef}
+            className="h-16 w-full flex justify-center items-center mt-6"
+          >
+            {page > 1 && trendingLoading && (
+              <div className="flex items-center gap-2.5 text-xs text-neutral-400 font-medium">
+                <span className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+                <span>Loading additional titles...</span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

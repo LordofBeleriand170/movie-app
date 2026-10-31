@@ -9,6 +9,7 @@ import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import IconComponent from "./IconComponent";
 import { useBatchWatched } from "@/app/utils/useBatchWatched";
+import { useAuthStore } from "@/features/auth/authStore";
 
 const PersonComponent = () => {
   const { slug } = useParams();

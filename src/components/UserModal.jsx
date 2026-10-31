@@ -3,6 +3,7 @@
 import { useAuthStore } from "@/features/auth/authStore";
 import { ChevronRight, LogOut, Settings, ShieldCheck } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useRef } from "react";
@@ -12,20 +13,24 @@ const UserModal = ({ openSettings, setOpenSettings }) => {
   const { user, getUser, logout, isLoading } = useAuthStore();
   const optionsRef = useRef(null);
 
-  const email = session?.user?.email;
+  const id = session?.user?.id;
 
   useEffect(() => {
     const handleUser = async () => {
-      if (!email) return;
+      if (!id) return;
       try {
-        await getUser(email);
+        await getUser(id);
       } catch (err) {
         console.log("ERR: ", err);
       }
     };
 
     handleUser();
-  }, [email]);
+  }, [id]);
+
+  useEffect(() => {
+    console.log("USER: ", user);
+  }, [user]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -48,15 +53,33 @@ const UserModal = ({ openSettings, setOpenSettings }) => {
         <></>
       ) : (
         <>
-          <button
-            id="user-avatar"
-            onClick={() => setOpenSettings(!openSettings)}
-            className="flex items-center justify-center w-9 h-9 rounded-full bg-[#16161a] text-white font-bold text-sm border border-neutral-700/80 hover:border-neutral-500 transition-all duration-200 outline-none cursor-pointer"
-          >
-            {user?.username?.[0]?.toUpperCase() ||
-              user?.email?.[0]?.toUpperCase() ||
-              ""}
-          </button>
+          {user?.image ? (
+            <div
+              className="w-9 h-9 rounded-full"
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenSettings((prev) => !prev);
+              }}
+            >
+              <Image
+                src={user?.image}
+                fill
+                alt={"Profile image"}
+                className="rounded-full cursor-pointer"
+              />
+            </div>
+          ) : (
+            <button
+              id="user-avatar"
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenSettings((prev) => !prev);
+              }}
+              className="flex items-center justify-center w-9 h-9 rounded-full bg-[#16161a] text-white font-bold text-sm border border-neutral-700/80 hover:border-neutral-500 transition-all duration-200 outline-none cursor-pointer"
+            >
+              {user?.name?.[0]?.toUpperCase() || ""}
+            </button>
+          )}
 
           {openSettings && (
             <div
@@ -69,11 +92,33 @@ const UserModal = ({ openSettings, setOpenSettings }) => {
                   onClick={() => setOpenSettings(false)}
                   className="flex items-center gap-3 p-4 hover:bg-neutral-800/40 transition-colors cursor-pointer group"
                 >
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-500/10 border border-red-500/20 text-base font-bold text-[#ff0015]">
-                    {user?.username?.[0]?.toUpperCase() ||
-                      user?.email?.[0]?.toUpperCase() ||
-                      "?"}
-                  </div>
+                  {user?.image ? (
+                    <div
+                      className="relative w-9 h-9 rounded-full overflow-hidden shrink-0"
+                      onClick={(e) => {
+                        e.preventDefault(); // Prevents the Link from triggering when clicking just the avatar if desired
+                        setOpenSettings(!openSettings);
+                      }}
+                    >
+                      <Image
+                        src={user?.image}
+                        fill
+                        alt="Profile image"
+                        className="object-cover rounded-full"
+                      />
+                    </div>
+                  ) : (
+                    <button
+                      id="user-avatar"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setOpenSettings(!openSettings);
+                      }}
+                      className="flex items-center justify-center w-9 h-9 rounded-full bg-[#16161a] text-white font-bold text-sm border border-neutral-700/80 hover:border-neutral-500 transition-all duration-200 outline-none cursor-pointer shrink-0"
+                    >
+                      {user?.name?.[0]?.toUpperCase() || ""}
+                    </button>
+                  )}
 
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-sm text-white truncate group-hover:text-red-400 transition-colors">

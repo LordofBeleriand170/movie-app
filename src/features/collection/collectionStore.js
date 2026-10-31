@@ -48,6 +48,7 @@ export const useCollectionStore = create((set, get) => ({
         comments: data.user.comments || [],
         banReason: data.user.banReason || null,
         bannedUntil: data.user.bannedUntil || null,
+        image: data.user.image || null,
         loading: false,
       });
     } catch (error) {
@@ -307,6 +308,40 @@ export const useCollectionStore = create((set, get) => ({
     } catch (err) {
       console.error("isWatchedBatch error:", err);
       return {};
+    }
+  },
+
+  updateUser: async (userData) => {
+    try {
+      const res = await fetch(`/api/user/updateUser`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userData }),
+      });
+
+      const data = await res.json();
+
+      set({ user: data?.user });
+
+      return data;
+    } catch (err) {
+      console.error(`Failed to update user:`, err);
+    }
+  },
+
+  deleteUser: async (userId) => {
+    try {
+      const res = await fetch(`/api/user/deleteUser`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      });
+
+      const data = await res.json();
+
+      return data;
+    } catch (err) {
+      console.error(`Failed to delete user:`, err);
     }
   },
 }));

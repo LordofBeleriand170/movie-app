@@ -38,6 +38,8 @@ export async function POST(req) {
       },
     });
 
+    console.log("USER: ", user?.image);
+
     let recentlyVisited = [];
 
     for (let i = 0; i < user?.recentlyVisited?.length; i++) {
@@ -99,6 +101,7 @@ export async function POST(req) {
       id: user.id,
       username: user.name,
       email: user.email,
+      image: user.image,
       favorite: user.favorite || [],
       watchlist: watchlistWithRatings || [],
       bookmark: user.bookmark || [],

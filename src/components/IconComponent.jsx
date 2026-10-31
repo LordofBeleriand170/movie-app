@@ -123,7 +123,7 @@ const IconComponent = ({
         </button>
       )}
 
-      {isUserPage && (
+      {!isUserPage && (
         <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
           <p className="text-sm font-semibold text-white truncate">{title}</p>
           {rawReleaseDate && (
