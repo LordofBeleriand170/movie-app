@@ -1,8 +1,6 @@
 import React, { useState } from "react";
-import { Bell } from "lucide-react";
 import AdminOverviewTab from "./AdminOverviewTab";
 import AdminUserTab from "./AdminUserTab";
-import AdminContentTab from "./AdminContentTab";
 import AdminLogsTab from "./AdminLogsTab";
 
 /*{selectedLogDetail && (
@@ -564,7 +562,7 @@ const AdminDashboard = () => {
       <main className="flex-1 px-8 py-6 w-[90%] mx-auto space-y-6">
         {/* Tabs */}
         <div className="flex border-b border-zinc-800 gap-6">
-          {["overview", "users", "content", "logs"].map((tab) => (
+          {["overview", "users", "logs"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -576,7 +574,6 @@ const AdminDashboard = () => {
             >
               {tab === "overview" && "Overview"}
               {tab === "users" && "Users"}
-              {tab === "content" && "Content"}
               {tab === "logs" && "System Logs"}
             </button>
           ))}
@@ -585,8 +582,6 @@ const AdminDashboard = () => {
         {activeTab === "overview" && <AdminOverviewTab />}
 
         {activeTab === "users" && <AdminUserTab />}
-
-        {activeTab === "content" && <AdminContentTab />}
 
         {activeTab === "logs" && <AdminLogsTab />}
       </main>

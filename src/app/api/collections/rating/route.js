@@ -11,6 +11,9 @@ export async function POST(req) {
 
     let mediaType = media === "movies" ? "movie" : "tv";
 
+    const ipAddress =
+      req.headers.get("x-forwarded-for") || req.ip || "127.0.0.1";
+
     const user = await prisma.user.findUnique({
       where: isEmail ? { email: id } : { id },
       include: {
@@ -28,6 +31,8 @@ export async function POST(req) {
       (r) => r.movieId === itemId && r.mediaType === mediaType,
     );
 
+    let actionMessage = "";
+
     if (!userRatingExists && rating > 0) {
       await prisma.rating.create({
         data: {
@@ -37,6 +42,8 @@ export async function POST(req) {
           mediaType: result?.first_air_date ? "tv" : "movie",
         },
       });
+
+      actionMessage = `Rating for ${itemId} (${mediaType}) added`;
     } else if (userRatingExists) {
       if (rating === 0) {
         await prisma.rating.deleteMany({
@@ -48,7 +55,20 @@ export async function POST(req) {
           data: { rating },
         });
       }
+
+      actionMessage = `Rating for ${itemId} (${mediaType}) removed`;
     }
+
+    await prisma.systemLog.create({
+      data: {
+        level: "SUCCESS",
+        userId: user.id,
+        ipAddress,
+        action: actionMessage,
+        endpoint: "POST /api/collections/rating",
+        metadata: { mediaId: itemId, mediaType, title: actionMessage },
+      },
+    });
 
     const updatedUser = await prisma.user.findUnique({
       where: isEmail ? { email: id } : { id },
@@ -63,6 +83,20 @@ export async function POST(req) {
     return NextResponse.json({ user: updatedUser }, { status: 200 });
   } catch (err) {
     console.error(err);
+
+    try {
+      await prisma.systemLog.create({
+        data: {
+          level: "ERROR",
+          action: "Internal server error during rating modification",
+          endpoint: "POST /api/collections/rating",
+          metadata: { message: err.message },
+        },
+      });
+    } catch (logErr) {
+      console.error("Failed to write to SystemLog:", logErr);
+    }
+
     return NextResponse.json(
       { error: err.message || "Server error" },
       { status: 500 },

@@ -1,9 +1,14 @@
 "use client";
 
+import { formatDate } from "@/app/utils/formatDate";
+import { useLogsStore } from "@/features/logs/logsStore";
 import { Download, Eye, Filter, Search, Terminal, Trash2 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const AdminLogsTab = () => {
+  const fetchLogs = useLogsStore((state) => state.fetchLogs);
+  const logs = useLogsStore((state) => state.logs);
+
   const [logSearch, setLogSearch] = useState("");
   const [logLevelFilter, setLogLevelFilter] = useState("ALL");
   const [logsData, setLogsData] = useState([
@@ -58,7 +63,8 @@ const AdminLogsTab = () => {
       details: "HTTP 504 Gateway Timeout when synchronizing movie metadata.",
     },
   ]);
-  const filteredLogs = logsData.filter((log) => {
+
+  const filteredLogs = logs.filter((log) => {
     const matchesSearch =
       log.action.toLowerCase().includes(logSearch.toLowerCase()) ||
       log.actor.toLowerCase().includes(logSearch.toLowerCase()) ||
@@ -68,6 +74,20 @@ const AdminLogsTab = () => {
       logLevelFilter === "ALL" || log.level === logLevelFilter;
     return matchesSearch && matchesLevel;
   });
+
+  useEffect(() => {
+    const handleLogs = async () => {
+      try {
+        await fetchLogs();
+        console.log("LOGS: ", logs);
+      } catch (err) {
+        console.log("ERR: ", err);
+      }
+    };
+
+    handleLogs();
+  }, []);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -102,14 +122,14 @@ const AdminLogsTab = () => {
           <p className="text-xs font-medium text-zinc-400 uppercase tracking-wider">
             Total Events
           </p>
-          <p className="text-2xl font-bold mt-1">{logsData.length}</p>
+          <p className="text-2xl font-bold mt-1">{logs.length}</p>
         </div>
         <div className="bg-zinc-900/60 border border-zinc-800 p-4 rounded-xl">
           <p className="text-xs font-medium text-zinc-400 uppercase tracking-wider">
             Security Alerts
           </p>
           <p className="text-2xl font-bold mt-1 text-red-400">
-            {logsData.filter((l) => l.level === "SECURITY").length}
+            {logs.filter((l) => l.level === "SECURITY").length}
           </p>
         </div>
         <div className="bg-zinc-900/60 border border-zinc-800 p-4 rounded-xl">
@@ -117,7 +137,7 @@ const AdminLogsTab = () => {
             Errors
           </p>
           <p className="text-2xl font-bold mt-1 text-rose-500">
-            {logsData.filter((l) => l.level === "ERROR").length}
+            {logs.filter((l) => l.level === "ERROR").length}
           </p>
         </div>
         <div className="bg-zinc-900/60 border border-zinc-800 p-4 rounded-xl">
@@ -125,7 +145,7 @@ const AdminLogsTab = () => {
             Warnings
           </p>
           <p className="text-2xl font-bold mt-1 text-amber-400">
-            {logsData.filter((l) => l.level === "WARNING").length}
+            {logs.filter((l) => l.level === "WARNING").length}
           </p>
         </div>
       </div>
@@ -174,45 +194,58 @@ const AdminLogsTab = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-800/60 font-mono text-xs">
-              {filteredLogs.map((log) => (
-                <tr
-                  key={log.id}
-                  className="hover:bg-zinc-800/30 transition-colors"
-                >
-                  <td className="p-3">
-                    <span
-                      className={`px-2 py-0.5 rounded font-bold border text-[10px] ${
-                        log.level === "SECURITY"
-                          ? "bg-red-500/10 text-red-400 border-red-500/30"
-                          : log.level === "ERROR"
-                            ? "bg-rose-500/10 text-rose-400 border-rose-500/30"
-                            : log.level === "WARNING"
-                              ? "bg-amber-500/10 text-amber-400 border-amber-500/30"
-                              : "bg-blue-500/10 text-blue-400 border-blue-500/30"
-                      }`}
-                    >
-                      {log.level}
-                    </span>
-                  </td>
-                  <td className="p-3 text-zinc-400 font-sans">
-                    {log.timestamp}
-                  </td>
-                  <td className="p-3 text-zinc-200">
-                    <div>{log.actor}</div>
-                    <div className="text-[10px] text-zinc-500">{log.ip}</div>
-                  </td>
-                  <td className="p-3 text-zinc-300 font-sans">{log.action}</td>
-                  <td className="p-3 text-zinc-400">{log.method}</td>
-                  <td className="p-3 text-right">
-                    <button
-                      onClick={() => setSelectedLogDetail(log)}
-                      className="p-1 hover:bg-zinc-800 rounded text-zinc-400 hover:text-white transition font-sans text-xs"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </button>
+              {filteredLogs?.length > 0 ? (
+                filteredLogs.map((log) => (
+                  <tr
+                    key={log.id}
+                    className="hover:bg-zinc-800/30 transition-colors"
+                  >
+                    <td className="p-3">
+                      <span
+                        className={`px-2 py-0.5 rounded font-bold border text-[10px] ${
+                          log.level === "SECURITY"
+                            ? "bg-red-500/10 text-red-400 border-red-500/30"
+                            : log.level === "ERROR"
+                              ? "bg-rose-500/10 text-rose-400 border-rose-500/30"
+                              : log.level === "WARNING"
+                                ? "bg-amber-500/10 text-amber-400 border-amber-500/30"
+                                : "bg-blue-500/10 text-blue-400 border-blue-500/30"
+                        }`}
+                      >
+                        {log.level}
+                      </span>
+                    </td>
+                    <td className="p-3 text-zinc-400 font-sans">
+                      {formatDate(log.timestamp)}
+                    </td>
+                    <td className="p-3 text-zinc-200">
+                      <div>{log.actor}</div>
+                      <div className="text-[10px] text-zinc-500">{log.ip}</div>
+                    </td>
+                    <td className="p-3 text-zinc-300 font-sans">
+                      {log.action}
+                    </td>
+                    <td className="p-3 text-zinc-400">{log.endpoint}</td>
+                    <td className="p-3 text-right">
+                      <button
+                        onClick={() => setSelectedLogDetail(log)}
+                        className="p-1 hover:bg-zinc-800 rounded text-zinc-400 hover:text-white transition font-sans text-xs"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="6"
+                    className="p-4 text-center text-zinc-500 text-sm"
+                  >
+                    No logs found.
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

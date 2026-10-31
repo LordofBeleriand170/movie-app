@@ -227,14 +227,19 @@ enum LogLevel {
 }
 
 model SystemLog {
-  id        String   @id @default(cuid())
-  user      String   
-  action    String   
-  status    LogLevel @default(SUCCESS)
-  timestamp DateTime @default(now())
-  metadata  Json?    
+  id          String   @id @default(cuid())
+  level       LogLevel
+  timestamp   DateTime @default(now())
+  userId       String?  
+  ipAddress   String?  
+  action      String   
+  endpoint    String?  
+  metadata    Json?    
+  createdAt   DateTime @default(now())
 
+  @@index([level])
   @@index([timestamp])
+  @@index([userId])
 }
 
 enum MediaType {

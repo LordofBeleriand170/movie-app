@@ -7,6 +7,9 @@ export async function POST(req) {
     const { id, result, media } = body;
     const itemId = result?.info?.id || result?.id;
 
+    const ipAddress =
+      req.headers.get("x-forwarded-for") || req.ip || "127.0.0.1";
+
     if (!itemId) {
       return NextResponse.json(
         { error: "mediaId is required" },
@@ -38,7 +41,7 @@ export async function POST(req) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const type = result?.first_air_date ? "tv" : "movie";
+    const type = media === "movies" ? "movie" : "tv";
 
     const currentNumber = user.favorite.filter(
       (favorite) => favorite.mediaType === type,
@@ -55,6 +58,8 @@ export async function POST(req) {
       (f) => f.mediaId === itemId && f.mediaType === type,
     );
 
+    let actionMessage = "";
+
     if (favoriteExists) {
       await prisma?.favorite?.deleteMany({
         where: {
@@ -63,6 +68,8 @@ export async function POST(req) {
           mediaType: type,
         },
       });
+
+      actionMessage = `Media ID ${itemId} (${type}) removed from favorites`;
     } else {
       await prisma?.favorite?.create({
         data: {
@@ -74,7 +81,20 @@ export async function POST(req) {
           releaseDate: result?.release_date || result?.first_air_date,
         },
       });
+
+      actionMessage = `Media ID ${itemId} (${type}) added to favorites`;
     }
+
+    await prisma.systemLog.create({
+      data: {
+        level: "SUCCESS",
+        userId: user.id,
+        ipAddress,
+        action: actionMessage,
+        endpoint: "POST /api/collections/favorite",
+        metadata: { mediaId: itemId, type, title: actionMessage },
+      },
+    });
 
     const updatedUser = await prisma.user.findUnique({
       where: isEmail ? { email: id } : { id },
@@ -90,6 +110,20 @@ export async function POST(req) {
     return NextResponse.json({ user: updatedUser }, { status: 200 });
   } catch (err) {
     console.error(err);
+
+    try {
+      await prisma.systemLog.create({
+        data: {
+          level: "ERROR",
+          action: "Internal server error during favorites modification",
+          endpoint: "POST /api/collections/favorite",
+          metadata: { message: err.message },
+        },
+      });
+    } catch (logErr) {
+      console.error("Failed to write to SystemLog:", logErr);
+    }
+
     return NextResponse.json(
       { error: err.message || "Server error" },
       { status: 500 },

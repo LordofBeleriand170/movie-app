@@ -9,6 +9,9 @@ export async function POST(req) {
     const rawId = result?.info?.id || result?.id || body?.mediaId;
     const itemId = typeof rawId === "string" ? parseInt(rawId, 10) : rawId;
 
+    const ipAddress =
+      req.headers.get("x-forwarded-for") || req.ip || "127.0.0.1";
+
     if (!itemId) {
       return NextResponse.json({ error: "Invalid Media ID" }, { status: 400 });
     }
@@ -26,32 +29,20 @@ export async function POST(req) {
 
     const mediaType = result?.type || (result?.first_air_date ? "tv" : "movie");
 
-    const watchlistExists = user.watchlist.some(
-      (w) => Number(w.mediaId) === Number(itemId) && w.mediaType === mediaType,
-    );
-
     const recentlyExists = user.recentlyVisited.some(
       (w) => Number(w.mediaId) === Number(itemId) && w.mediaType === mediaType,
     );
 
     let isWatchedNextState = false;
+    let actionMessage = "";
 
-    if (watchlistExists) {
-      await prisma.watchlist.deleteMany({
-        where: {
-          userId: user.id,
-          mediaId: itemId,
-          mediaType: mediaType,
-        },
-      });
+    let poster = result?.poster_path || "";
+    let title = result?.title || result?.name || "Untitled";
+    let releaseDate = result?.release_date || result?.first_air_date || "";
 
-      isWatchedNextState = false;
-    } else {
-      let poster = result?.poster_path || "";
-      let title = result?.title || result?.name || "Untitled";
-      let releaseDate = result?.release_date || result?.first_air_date || "";
-
-      if (!result) {
+    // If result details are missing, fetch from TMDB
+    if (!result || (!result.title && !result.name && !result.poster_path)) {
+      try {
         const tmdbOptions = {
           method: "GET",
           headers: {
@@ -69,8 +60,14 @@ export async function POST(req) {
         poster = infoData?.poster_path || "";
         title = infoData?.title || infoData?.name || "Untitled";
         releaseDate = infoData?.release_date || infoData?.first_air_date || "";
+      } catch (tmdbErr) {
+        console.warn("Failed to fetch extra metadata from TMDB:", tmdbErr);
       }
+    }
 
+    // Attempt to create the watchlist item. If it fails with P2002 (already exists),
+    // we seamlessly toggle it off by deleting it instead of crashing.
+    try {
       await prisma.watchlist.create({
         data: {
           userId: user.id,
@@ -81,10 +78,25 @@ export async function POST(req) {
           releaseDate,
         },
       });
-
       isWatchedNextState = true;
+      actionMessage = `"${title}" (${mediaType}) added to watchlist`;
+    } catch (createErr) {
+      if (createErr.code === "P2002") {
+        await prisma.watchlist.deleteMany({
+          where: {
+            userId: user.id,
+            mediaId: itemId,
+            mediaType: mediaType,
+          },
+        });
+        isWatchedNextState = false;
+        actionMessage = `"${title}" (${mediaType}) removed from watchlist`;
+      } else {
+        throw createErr;
+      }
     }
 
+    // Update recently visited state if it exists
     if (recentlyExists) {
       await prisma.userRecentlyVisited.update({
         where: {
@@ -100,6 +112,18 @@ export async function POST(req) {
       });
     }
 
+    // Log the successful action
+    await prisma.systemLog.create({
+      data: {
+        level: "SUCCESS",
+        userId: user.id,
+        ipAddress,
+        action: actionMessage,
+        endpoint: "POST /api/collections/watchlist",
+        metadata: { mediaId: itemId, mediaType, title },
+      },
+    });
+
     const updatedUser = await prisma.user.findUnique({
       where: { id: user.id },
       include: {
@@ -113,7 +137,21 @@ export async function POST(req) {
 
     return NextResponse.json({ user: updatedUser }, { status: 200 });
   } catch (err) {
-    console.error(err);
+    console.error("Watchlist error:", err);
+
+    try {
+      await prisma.systemLog.create({
+        data: {
+          level: "ERROR",
+          action: "Internal server error during watchlist modification",
+          endpoint: "POST /api/collections/watchlist",
+          metadata: { message: err.message },
+        },
+      });
+    } catch (logErr) {
+      console.error("Failed to write to SystemLog:", logErr);
+    }
+
     return NextResponse.json(
       { error: err.message || "Server error" },
       { status: 500 },

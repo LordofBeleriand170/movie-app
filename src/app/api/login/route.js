@@ -8,6 +8,9 @@ export async function POST(req) {
     const body = await req.json();
     const { username, password } = body;
 
+    const ipAddress =
+      req.headers.get("x-forwarded-for") || req.ip || "127.0.0.1";
+
     if (!username || !password) {
       return NextResponse.json(
         { error: "Required fields missing" },
@@ -21,12 +24,31 @@ export async function POST(req) {
         favorite: true,
         watchlist: true,
         rating: true,
-        reviews: true,
       },
     });
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Check if user is banned or suspended
+    if (user.status === "SUSPENDED") {
+      await prisma.systemLog.create({
+        data: {
+          level: "WARNING",
+          userId: user.id,
+          ipAddress,
+          action: `Login attempted on ${user.status.toLowerCase()} account`,
+          endpoint: "POST /api/login",
+        },
+      });
+
+      return NextResponse.json(
+        {
+          error: `Account is ${user.status.toLowerCase()}. Reason: ${user.banReason || "Violation of terms"}`,
+        },
+        { status: 403 },
+      );
     }
 
     if (
@@ -61,7 +83,23 @@ export async function POST(req) {
       return NextResponse.json({ error: "Invalid password" }, { status: 401 });
     }
 
-    sponse.json({
+    try {
+      await prisma.systemLog.create({
+        data: {
+          level: "SUCCESS",
+          userId: user.id,
+          ipAddress,
+          action: "User logged in successfully",
+          endpoint: "POST /api/login",
+        },
+      });
+      console.log("SystemLog created successfully!");
+    } catch (logErr) {
+      console.error("FAILED TO CREATE SYSTEM LOG:", logErr);
+    }
+
+    // Create the response object
+    const res = NextResponse.json({
       user: {
         id: user.id,
         username: user.username,
@@ -70,15 +108,29 @@ export async function POST(req) {
         favorite: user.favorite,
         watchlist: user.watchlist,
         ratings: user.rating,
-        reviews: user.reviews,
       },
     });
 
+    // Attach token/cookie helper function
     generateTokenAndSetCookie(res, user.id);
 
     return res;
   } catch (err) {
     console.error("Login error:", err);
+
+    try {
+      await prisma.systemLog.create({
+        data: {
+          level: "ERROR",
+          action: "Internal server error during login",
+          endpoint: "POST /api/login",
+          metadata: { message: err.message },
+        },
+      });
+    } catch (logErr) {
+      console.error("Failed to write to SystemLog:", logErr);
+    }
+
     return NextResponse.json(
       { error: err.message || "Server error" },
       { status: 500 },

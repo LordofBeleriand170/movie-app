@@ -96,7 +96,6 @@ export const authOptions = {
 
   callbacks: {
     async session({ session, token }) {
-      console.log("TOKEN: ", token);
       if (token) {
         session.user = {
           id: token.id,
@@ -119,8 +118,6 @@ export const authOptions = {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.id },
         });
-
-        console.log("dbUser: ", dbUser);
 
         if (dbUser) {
           token.id = dbUser.id;

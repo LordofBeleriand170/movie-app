@@ -6,6 +6,9 @@ export async function GET(req) {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("userId");
 
+    const ipAddress =
+      req.headers.get("x-forwarded-for") || req.ip || "127.0.0.1";
+
     const rawContentIds =
       searchParams.get("contentIds") || searchParams.get("contentId");
     const defaultMediaType = searchParams.get("mediaType") || "movie";

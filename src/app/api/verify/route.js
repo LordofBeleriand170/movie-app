@@ -8,6 +8,9 @@ export async function POST(req) {
 
     const code = String(verificationCode);
 
+    const ipAddress =
+      req.headers.get("x-forwarded-for") || req.ip || "127.0.0.1";
+
     if (!verificationCode) {
       return NextResponse.json(
         { error: "Verification code required" },
@@ -45,6 +48,16 @@ export async function POST(req) {
       },
     });
 
+    await prisma.systemLog.create({
+      data: {
+        level: "SUCCESS",
+        userId: updatedUser.id,
+        ipAddress,
+        action: "User account verified successfully",
+        endpoint: "POST /api/verify",
+      },
+    });
+
     const res = NextResponse.json({
       user: {
         id: updatedUser.id,
@@ -57,6 +70,20 @@ export async function POST(req) {
     return res;
   } catch (err) {
     console.error(err);
+
+    try {
+      await prisma.systemLog.create({
+        data: {
+          level: "ERROR",
+          action: "Internal server error during account verification",
+          endpoint: "POST /api/verify",
+          metadata: { message: err.message },
+        },
+      });
+    } catch (logErr) {
+      console.error("Failed to write to SystemLog:", logErr);
+    }
+
     return NextResponse.json(
       { error: err.message || "Server error" },
       { status: 500 },

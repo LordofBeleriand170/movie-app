@@ -6,6 +6,9 @@ export async function POST(req) {
     const body = await req.json();
     const { id, result } = body;
 
+    const ipAddress =
+      req.headers.get("x-forwarded-for") || req.ip || "127.0.0.1";
+
     const rawId = result?.info?.id || result?.id || body?.mediaId;
     const itemId = typeof rawId === "string" ? parseInt(rawId, 10) : rawId;
 
@@ -30,6 +33,8 @@ export async function POST(req) {
       (w) => Number(w.mediaId) === Number(itemId) && w.mediaType === mediaType,
     );
 
+    let actionMessage = "";
+
     if (bookmarkExists) {
       await prisma.bookmark.deleteMany({
         where: {
@@ -37,6 +42,7 @@ export async function POST(req) {
           mediaId: itemId,
         },
       });
+      actionMessage = `Removed bookmark for media ID ${itemId} (${mediaType})`;
     } else {
       let poster = result?.poster_path || "";
       let title = result?.title || result?.name || "Untitled";
@@ -72,7 +78,19 @@ export async function POST(req) {
           releaseDate,
         },
       });
+      actionMessage = `Added bookmark for "${title}" (${mediaType})`;
     }
+
+    await prisma.systemLog.create({
+      data: {
+        level: "SUCCESS",
+        userId: user.id,
+        ipAddress,
+        action: actionMessage,
+        endpoint: "POST /api/collections/bookmark",
+        metadata: { mediaId: itemId, mediaType, title: actionMessage },
+      },
+    });
 
     const updatedUser = await prisma.user.findUnique({
       where: { id: user.id },
@@ -88,6 +106,20 @@ export async function POST(req) {
     return NextResponse.json({ user: updatedUser }, { status: 200 });
   } catch (err) {
     console.error(err);
+
+    try {
+      await prisma.systemLog.create({
+        data: {
+          level: "ERROR",
+          action: "Internal server error during bookmark modification",
+          endpoint: "POST /api/collections/bookmark",
+          metadata: { message: err.message },
+        },
+      });
+    } catch (logErr) {
+      console.error("Failed to write to SystemLog:", logErr);
+    }
+
     return NextResponse.json(
       { error: err.message || "Server error" },
       { status: 500 },

@@ -19,10 +19,32 @@ export async function POST(req) {
     const body = await req.json();
     const { username, email, password } = body;
 
+    const ipAddress =
+      req.headers.get("x-forwarded-for") || req.ip || "127.0.0.1";
+
     if (!username || !email || !password) {
       return NextResponse.json(
         { error: "Required fields missing" },
         { status: 400 },
+      );
+    }
+
+    if (user.status === "BANNED" || user.status === "SUSPENDED") {
+      await prisma.systemLog.create({
+        data: {
+          level: "WARNING",
+          userId: user.id,
+          ipAddress,
+          action: `Register attempted on ${user.status.toLowerCase()} account`,
+          endpoint: "POST /api/register",
+        },
+      });
+
+      return NextResponse.json(
+        {
+          error: `Account is ${user.status.toLowerCase()}. Reason: ${user.banReason || "Violation of terms"}`,
+        },
+        { status: 403 },
       );
     }
 
@@ -59,6 +81,16 @@ export async function POST(req) {
       },
     });
 
+    await prisma.systemLog.create({
+      data: {
+        level: "SUCCESS",
+        userId: user.id,
+        ipAddress,
+        action: "User registered successfully",
+        endpoint: "POST /api/register",
+      },
+    });
+
     const res = NextResponse.json({
       user: {
         id: user.id,
@@ -89,7 +121,18 @@ export async function POST(req) {
 
     return res;
   } catch (err) {
-    console.error("Registration error:", err);
+    try {
+      await prisma.systemLog.create({
+        data: {
+          level: "ERROR",
+          action: "Internal server error during register",
+          endpoint: "POST /api/register",
+          metadata: { message: err.message },
+        },
+      });
+    } catch (logErr) {
+      console.error("Failed to write to SystemLog:", logErr);
+    }
     return NextResponse.json(
       { error: err.message || "Something went wrong" },
       { status: 500 },
