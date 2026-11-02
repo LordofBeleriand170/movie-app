@@ -1,14 +1,14 @@
 "use client";
 
-import TrendingLoading from "@/app/TrendingLoading";
-import VideoLoadingSkeleton from "@/app/LoadingVideoSkeleton";
-import { useMovieStore } from "@/features/movie/movieStore";
+import TrendingLoading from "@/components/loadingComponents/TrendingLoading";
+import VideoLoadingSkeleton from "@/components/loadingComponents/LoadingVideoSkeleton";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import IconComponent from "./IconComponent";
 import { useAuthStore } from "@/features/auth/authStore";
 import slugify from "@/libs/slugify";
 import { useBatchWatched } from "@/app/utils/useBatchWatched";
+import { useContentStore } from "@/features/content/contentStore";
 
 const Trending = ({ setErrorComponent }) => {
   const [videoLoading, setVideoLoading] = useState(true);
@@ -30,10 +30,10 @@ const Trending = ({ setErrorComponent }) => {
     loading: isWatchedLoading,
   } = useBatchWatched();
 
-  const trending = useMovieStore((state) => state.trending);
-  const trendingVideos = useMovieStore((state) => state.trendingVideos);
+  const trending = useContentStore((state) => state.trending);
+  const trendingVideos = useContentStore((state) => state.trendingVideos);
 
-  const videos = useMovieStore((state) => state.videos);
+  const videos = useContentStore((state) => state.videos);
   const error = useAuthStore((state) => state.error);
 
   const currentList = activeTab === "movies" ? trendingMovie : trendingShow;

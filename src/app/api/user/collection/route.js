@@ -38,8 +38,6 @@ export async function POST(req) {
       },
     });
 
-    console.log("USER: ", user?.image);
-
     let recentlyVisited = [];
 
     for (let i = 0; i < user?.recentlyVisited?.length; i++) {
@@ -115,6 +113,8 @@ export async function POST(req) {
       role: user.role,
       createdAt: user.createdAt,
     };
+
+    
 
     return NextResponse.json({ user: formattedUser }, { status: 200 });
   } catch (err) {

@@ -18,6 +18,7 @@ import { FaRegHeart } from "react-icons/fa";
 import { useToggleWatchlist } from "@/app/utils/handleToggleWatchlist";
 import { useCollectionStore } from "@/features/collection/collectionStore";
 import { useContentStore } from "@/features/content/contentStore";
+import { showToast } from "./ToastComponent";
 
 const OptionModal = ({ media, setIsModalOpen }) => {
   const user = useCollectionStore((state) => state.user);
@@ -77,7 +78,6 @@ const OptionModal = ({ media, setIsModalOpen }) => {
     );
   };
 
-  // Placeholder for your list addition logic
   const handleCreateList = async () => {
     setListAdded(!listAdded);
 
@@ -152,7 +152,6 @@ const OptionModal = ({ media, setIsModalOpen }) => {
         ref={modalContentRef}
         className="relative w-full max-w-sm rounded-2xl bg-gray-900 border border-white/10 shadow-2xl p-6 flex flex-col gap-5"
       >
-        {/* Modal Header */}
         <div className="flex items-center justify-between pb-3 border-b border-white/10">
           <div className="flex items-center gap-2">
             {modalView !== "main" && (
@@ -181,10 +180,8 @@ const OptionModal = ({ media, setIsModalOpen }) => {
           </button>
         </div>
 
-        {/* View 1: Main Options Menu */}
         {modalView === "main" && (
           <div className="flex flex-col gap-2.5">
-            {/* Watch Button */}
             <button
               onClick={() => {
                 if (isAuthenticated) {
@@ -207,7 +204,6 @@ const OptionModal = ({ media, setIsModalOpen }) => {
               <span>Watch</span>
             </button>
 
-            {/* Like Button */}
             <button
               onClick={() => {
                 if (isAuthenticated) {
@@ -216,7 +212,8 @@ const OptionModal = ({ media, setIsModalOpen }) => {
                     setFavorites(!favorites);
                     handleFavorite();
                   } else {
-                    toast.error(
+                    showToast(
+                      "error",
                       `You can only add 5 favorite ${media === "tv" ? "tv shows" : "movies"}`,
                     );
                   }
@@ -236,7 +233,6 @@ const OptionModal = ({ media, setIsModalOpen }) => {
               <span>Like</span>
             </button>
 
-            {/* Watchlist Button */}
             <button
               onClick={() => {
                 if (isAuthenticated) {
@@ -259,7 +255,6 @@ const OptionModal = ({ media, setIsModalOpen }) => {
               <span>Watchlist</span>
             </button>
 
-            {/* Add to List Button -> Switches to List Selection View */}
             <button
               onClick={() => {
                 if (isAuthenticated) {
@@ -278,10 +273,8 @@ const OptionModal = ({ media, setIsModalOpen }) => {
           </div>
         )}
 
-        {/* View 2: List Selection / List of Lists View */}
         {modalView === "select-list" && (
           <div className="flex flex-col gap-3">
-            {/* Create New List Shortcut Button */}
             <button
               onClick={() => setModalView("create-list")}
               className="flex items-center justify-between w-full px-4 py-3 rounded-xl text-xs font-semibold bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 border border-purple-500/30 transition-all cursor-pointer"
@@ -297,7 +290,6 @@ const OptionModal = ({ media, setIsModalOpen }) => {
               Your Existing Lists:
             </div>
 
-            {/* Scrollable list of user's lists */}
             <div className="flex flex-col gap-2 max-h-56 overflow-y-auto pr-1">
               {lists.length === 0 ? (
                 <div className="text-center py-6 text-xs text-neutral-500">
@@ -328,7 +320,6 @@ const OptionModal = ({ media, setIsModalOpen }) => {
           </div>
         )}
 
-        {/* View 3: Create List Form */}
         {modalView === "create-list" && (
           <form onSubmit={handleCreateList} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
@@ -357,7 +348,6 @@ const OptionModal = ({ media, setIsModalOpen }) => {
               />
             </div>
 
-            {/* Public / Private Selector */}
             <div className="flex flex-col gap-1.5">
               <label className="text-[11px] font-medium text-neutral-400">
                 Visibility

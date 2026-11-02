@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import IconComponent from "./IconComponent";
 import slugify from "@/libs/slugify";
-import TrendingLoading from "@/app/TrendingLoading";
+import TrendingLoading from "@/components/loadingComponents/TrendingLoading";
 import { useBatchWatched } from "@/app/utils/useBatchWatched";
 
 const RecentlyVisited = () => {
@@ -85,13 +85,10 @@ const RecentlyVisited = () => {
         <div className="relative">
           <div className="flex overflow-x-auto gap-3.5 py-3 scrollbar-thin scrollbar-thumb-neutral-700 scrollbar-track-transparent">
             {[...recently]?.map((recent) => {
-              console.log("RECENT: ", recent);
               const titleOrName = recent.title || recent.name || "untitled";
               const slug = slugify(recent.id, titleOrName);
               const recentType = recent?.type || recent?.mediaType;
               const id = recentType + "-" + recent?.id;
-
-              console.log("RECENTLYY: ", recent);
 
               return (
                 <div

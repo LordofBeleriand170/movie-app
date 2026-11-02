@@ -14,12 +14,12 @@ export const useCollectionStore = create((set, get) => ({
   banReason: null,
   bannedUntil: null,
   recently: [],
-  comments: [],
-  loading: false,
+  loading: true,
   countries: [],
 
   fetchUserCollections: async (email) => {
     set({ loading: true });
+    console.log("1. Poziv je krenuo za email:", email);
 
     try {
       const res = await fetch(`/api/user/collection`, {
@@ -28,32 +28,33 @@ export const useCollectionStore = create((set, get) => ({
         body: JSON.stringify({ email }),
       });
 
+      console.log("2. Status odgovora sa servera:", res.status);
+
       if (!res.ok) {
-        set({ error: "Failed to fetch collections", loading: false });
-        throw new Error("Failed to fetch collections");
+        throw new Error(`Server error: ${res.status}`);
       }
 
       const data = await res.json();
-      console.log("DATA USdsadasdasdasER: ", data?.user);
+      console.log("3. Uspešno preuzeti podaci:", data);
 
       set({
         user: data.user,
-        likes: [],
-        favorite: data.user.favorite || [],
-        watchlist: data.user.watchlist || [],
-        bookmark: data.user.bookmark || [],
-        ratings: data.user.ratings || [],
-        recently: data.user.recently || [],
-        notifications: data.user.notifications || [],
-        comments: data.user.comments || [],
-        banReason: data.user.banReason || null,
-        bannedUntil: data.user.bannedUntil || null,
-        image: data.user.image || null,
+        favorite: data.user?.favorite || [],
+        watchlist: data.user?.watchlist || [],
+        bookmark: data.user?.bookmark || [],
+        ratings: data.user?.ratings || [],
+        recently: data.user?.recently || [],
+        notifications: data.user?.notifications || [],
+        comments: data.user?.comments || [],
+        banReason: data.user?.banReason || null,
+        bannedUntil: data.user?.bannedUntil || null,
+        image: data.user?.image || null,
         loading: false,
       });
+      console.log("4. Loading uspešno postavljen na false");
     } catch (error) {
-      console.error("Error fetching user collections:", error);
-      set({ loading: false }); // Ensure loading is cleared on error so it doesn't stay stuck
+      console.error("GREŠKA U CATCH BLOKU:", error);
+      set({ loading: false });
     }
   },
 
@@ -221,26 +222,10 @@ export const useCollectionStore = create((set, get) => ({
 
   ban: async (receiverId, senderId, bannedText, bannedUntil) => {
     try {
-      const res = await fetch(`/api/ban`, {
+      const res = await fetch(`/api/admin/ban`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ receiverId, senderId, bannedText, bannedUntil }),
-      });
-
-      const data = await res.json();
-
-      return data;
-    } catch (err) {
-      console.error(`Failed to handle ban:`, err);
-    }
-  },
-
-  deleteComment: async (id, isComment) => {
-    try {
-      const res = await fetch(`/api/deleteComment`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, isComment }),
       });
 
       const data = await res.json();
@@ -271,7 +256,7 @@ export const useCollectionStore = create((set, get) => ({
 
   clearNotifications: async (userId) => {
     try {
-      const res = await fetch(`/api/clearNotifications`, {
+      const res = await fetch(`/api/notifications/clearNotifications`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId }),
@@ -287,8 +272,6 @@ export const useCollectionStore = create((set, get) => ({
 
   isWatchedBatch: async (userId, contentIds) => {
     if (!userId || !contentIds?.length) return {};
-
-    console.log("CONTENTIDS: ", contentIds);
 
     try {
       const idsParam = contentIds

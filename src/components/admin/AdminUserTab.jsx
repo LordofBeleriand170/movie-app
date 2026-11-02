@@ -1,6 +1,6 @@
 "use client";
 
-import LoadingAdminTab from "@/app/LoadingAdminTab";
+import LoadingAdminTab from "@/components/loadingComponents/LoadingAdminTab";
 import { formatDate } from "@/app/utils/formatDate";
 import { useAdminStore } from "@/features/admin/adminStore";
 import {

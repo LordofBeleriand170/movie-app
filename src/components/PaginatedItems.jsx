@@ -1,11 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useMovieStore } from "@/features/movie/movieStore";
-import ContentLoading from "@/app/ContentLoading";
 import IconComponent from "./IconComponent";
 import slugify from "@/libs/slugify";
 import { useBatchWatched } from "@/app/utils/useBatchWatched";
+import { useContentStore } from "@/features/content/contentStore";
 
 const PaginatedItems = ({
   category,
@@ -17,19 +16,17 @@ const PaginatedItems = ({
   page,
   setPage,
   mediaType,
-  trendings,
   year,
   decade,
   rating,
 }) => {
-  const trending = useMovieStore((state) => state.trending);
-  const optionFetch = useMovieStore((state) => state.optionFetch);
-  const error = useMovieStore((state) => state.error);
+  const trending = useContentStore((state) => state.trending);
+  const optionFetch = useContentStore((state) => state.optionFetch);
+  const error = useContentStore((state) => state.error);
 
   const { watchedStatuses, checkBatch } = useBatchWatched();
 
   const loadMoreRef = useRef(null);
-
   const [hasMore, setHasMore] = useState(true);
 
   const [loadedImageIds, setLoadedImageIds] = useState(new Set());
@@ -45,12 +42,12 @@ const PaginatedItems = ({
   }, [watchedStatuses]);
 
   useEffect(() => {
-    if (page === 1) {
-      setLoadedImageIds(new Set());
-      setIsImagesReady(false);
-      setHasMore(true);
-    }
-  }, [page, category, mediaType, option, year, decade, rating]);
+    setLoadedImageIds(new Set());
+    setIsImagesReady(false);
+    setHasMore(true);
+    setPage(1);
+    setTrendingResult(null);
+  }, [category, mediaType, option, year, decade, rating]);
 
   const handleImageLoad = useCallback((id) => {
     if (!id) return;
@@ -104,7 +101,7 @@ const PaginatedItems = ({
   const handleObserver = useCallback(
     (entries) => {
       const target = entries[0];
-      if (target.isIntersecting && !trendingLoading) {
+      if (target.isIntersecting && !trendingLoading && hasMore) {
         setPage((prev) => prev + 1);
       }
     },
@@ -126,15 +123,19 @@ const PaginatedItems = ({
     return () => {
       if (current) observer.unobserve(current);
     };
-  }, [handleObserver, hasMore]);
-
-  useEffect(() => {
-    console.log("WATCHED STATUSES: ", watchedStatuses);
-  }, [watchedStatuses]);
+  }, [handleObserver, hasMore, trendingResult?.length, page]);
 
   useEffect(() => {
     const controller = new AbortController();
     const { signal } = controller;
+
+    const useFilters = Boolean(
+      (category && category !== "") ||
+        (option && option !== "") ||
+        year !== null ||
+        (decade !== null && decade !== "") ||
+        rating !== null,
+    );
 
     const filter = {
       mediaType,
@@ -147,34 +148,32 @@ const PaginatedItems = ({
       signal,
     };
 
-    const useFilters =
-      category ||
-      option !== undefined ||
-      year !== null ||
-      (decade !== null && decade !== "") ||
-      rating !== null;
-
     const fetchData = async () => {
-      if (!hasMore && page > 1) return;
       try {
         setTrendingLoading(true);
 
-        let data = [];
+        let rawData = null;
 
         if (useFilters) {
-          data = await optionFetch(filter);
-        } else if (option === undefined || trendings) {
-          data = await trending(mediaType, page, { signal });
+          rawData = await optionFetch(filter);
+        } else {
+          rawData = await trending(mediaType, page, { signal });
         }
+
+        const data = Array.isArray(rawData)
+          ? rawData
+          : (rawData?.results ?? []);
 
         if (!data || data.length === 0) {
           setHasMore(false);
+        } else {
+          setHasMore(true);
         }
 
         setTrendingResult((prev) => {
-          if (page === 1) return data ?? [];
+          if (page === 1 || !prev) return data;
           const baseMap = new Map((prev ?? []).map((item) => [item.id, item]));
-          (data ?? []).forEach((item) => baseMap.set(item.id, item));
+          data.forEach((item) => baseMap.set(item.id, item));
           return Array.from(baseMap.values());
         });
       } catch (err) {
@@ -193,10 +192,6 @@ const PaginatedItems = ({
     return () => controller.abort();
   }, [page, category, mediaType, option, year, decade, rating]);
 
-  const showLoading = page === 1 && (trendingLoading || !isImagesReady);
-
-  console.log("RESULT: ", trendingResult);
-
   return (
     <div className="flex flex-col items-center w-full">
       <div className="w-full">
@@ -211,8 +206,6 @@ const PaginatedItems = ({
               No results found matching your criteria.
             </span>
           </div>
-        ) : showLoading ? (
-          <ContentLoading />
         ) : (
           <div className="w-full">
             <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">

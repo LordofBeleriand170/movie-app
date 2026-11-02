@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma";
 
 export async function POST(req) {
-  try {
-    const body = await req.json();
-    const { id, result } = body;
+  const body = await req.json();
+  const { id, result } = body;
 
+  try {
     const rawId = result?.info?.id || result?.id || body?.mediaId;
     const itemId = typeof rawId === "string" ? parseInt(rawId, 10) : rawId;
 
@@ -40,7 +40,6 @@ export async function POST(req) {
     let title = result?.title || result?.name || "Untitled";
     let releaseDate = result?.release_date || result?.first_air_date || "";
 
-    // If result details are missing, fetch from TMDB
     if (!result || (!result.title && !result.name && !result.poster_path)) {
       try {
         const tmdbOptions = {
@@ -65,8 +64,6 @@ export async function POST(req) {
       }
     }
 
-    // Attempt to create the watchlist item. If it fails with P2002 (already exists),
-    // we seamlessly toggle it off by deleting it instead of crashing.
     try {
       await prisma.watchlist.create({
         data: {
@@ -96,7 +93,6 @@ export async function POST(req) {
       }
     }
 
-    // Update recently visited state if it exists
     if (recentlyExists) {
       await prisma.userRecentlyVisited.update({
         where: {
@@ -112,11 +108,10 @@ export async function POST(req) {
       });
     }
 
-    // Log the successful action
     await prisma.systemLog.create({
       data: {
         level: "SUCCESS",
-        userId: user.id,
+        username: user.name,
         ipAddress,
         action: actionMessage,
         endpoint: "POST /api/collections/watchlist",
@@ -139,10 +134,18 @@ export async function POST(req) {
   } catch (err) {
     console.error("Watchlist error:", err);
 
+    const isEmail = id?.includes("@");
+
+    const user = await prisma.user.findUnique({
+      where: isEmail ? { email: id } : { id },
+      include: { watchlist: true, recentlyVisited: true },
+    });
+
     try {
       await prisma.systemLog.create({
         data: {
           level: "ERROR",
+          username: user.name,
           action: "Internal server error during watchlist modification",
           endpoint: "POST /api/collections/watchlist",
           metadata: { message: err.message },

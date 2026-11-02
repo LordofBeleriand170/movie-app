@@ -1,66 +1,33 @@
 import { create } from "zustand";
-import Sentiment from "sentiment";
-const sentimentAnalyzer = new Sentiment();
 
 export const useContentStore = create((set, get) => ({
   results: [],
   movies: [],
   tvShows: [],
+  tvShow: null,
+  season: null,
   category: [],
   content: [],
   tvShow: null,
   season: null,
   episodes: null,
   movie: null,
-  loading: true,
+  loading: null,
   total_pages: 0,
   total_results: 0,
   input: null,
   error: null,
-  comments: [],
   ratings: [],
-  aiSummary: null,
-  aiLoading: false,
-  aiError: null,
-  sentimentScore: 0,
   rating: [],
   notifications: [],
-
-  addComment: async (user, movieId, commentText, rating, type, spoiler) => {
-    set({ error: null });
-    try {
-      const res = await fetch(`/api/comments`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: user.id,
-          username: user.username,
-          movieId,
-          text: commentText,
-          mediaType: type,
-          rating: rating,
-          spoiler,
-        }),
-      });
-
-      const data = await res.json();
-      console.log(data);
-
-      if (!res.ok) throw new Error(data.error);
-      else {
-        set((state) => ({
-          comments: [
-            ...state.comments,
-            { ...data.comment, username: user.username },
-          ],
-        }));
-      }
-    } catch (err) {
-      set({ error: err instanceof Error ? err.message : "Unknown error" });
-    }
-  },
+  casts: [],
+  avg: null,
+  voters: null,
+  director: [],
+  writer: [],
+  creator: [],
+  video: [],
+  cast: [],
 
   addLike: async (user, commentId, isReply, mediaId) => {
     try {
@@ -107,83 +74,11 @@ export const useContentStore = create((set, get) => ({
     }
   },
 
-  addRespond: async (user, commentId, respond, rating) => {
-    try {
-      const res = await fetch(`/api/comments/respond`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          commentId,
-          text: respond,
-          id: user.id,
-          username: user.username,
-          rating,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) throw new Error("Failed to add comment");
-      else {
-        const latestReply =
-          data.comment.replies[data.comment.replies.length - 1];
-
-        set((state) => ({
-          comments: state.comments.map((comment) =>
-            comment._id === commentId
-              ? {
-                  ...comment,
-                  replies: [...(comment.replies || []), latestReply],
-                }
-              : comment,
-          ),
-        }));
-      }
-    } catch (err) {
-      console.error("Add comment error:", err);
-    }
-  },
-
-  fetchComments: async (movieId, mediaType) => {
-    set({ comments: [], aiSummary: null, aiLoading: true, aiError: null });
-    mediaType = mediaType === "movies" ? "movie" : "tv";
-    try {
-      const res = await fetch(`/api/comments/contentComments`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ movieId, mediaType }),
-      });
-      if (!res.ok) throw new Error("Failed to fetch comments");
-
-      const data = await res.json();
-
-      const fetchedComments = data.contentComments || [];
-
-      let totalScore = 0;
-      fetchedComments.forEach((c) => {
-        const result = sentimentAnalyzer.analyze(c.text || "");
-        totalScore += result.score;
-      });
-      const avgScore =
-        fetchedComments.length > 0 ? totalScore / fetchedComments.length : 0;
-
-      set({
-        comments: fetchedComments,
-        sentimentScore: avgScore,
-      });
-    } catch (err) {
-      console.error("Fetch comments error:", err);
-      set({ comments: [], aiLoading: false, aiSummary: null });
-    }
-  },
-
   fetchRating: async (movieId, mediaType) => {
     set({ ratings: [] });
     mediaType = mediaType === "movies" ? "movie" : "tv";
     try {
-      const res = await fetch(`/api/rating`, {
+      const res = await fetch(`/api/collections/getRatings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ movieId, mediaType }),
@@ -244,8 +139,17 @@ export const useContentStore = create((set, get) => ({
   },
 
   fetchInfo: async (id, type, user) => {
-    set({ error: null });
-
+    set({
+      error: null,
+      loading: true,
+      avg: 0,
+      voters: 0,
+      director: [],
+      writer: [],
+      creator: [],
+      video: [],
+      cast: [],
+    });
     try {
       const res = await fetch(`/api/${type}/getInfo`, {
         method: "POST",
@@ -261,15 +165,35 @@ export const useContentStore = create((set, get) => ({
       }
 
       const data = await res.json();
+      console.log("DATA: ", data);
+
+      const currentSeason =
+        data?.info?.seasons?.find(
+          (season) =>
+            season?.name === "Season 1" || season?.season_number === 1,
+        ) || null;
 
       set({
-        content: data?.results || data || [],
+        season: currentSeason || [],
+        loading: false,
+        content: data?.info || [],
+        director: data?.director || [],
+        writer: data?.writer || [],
+        creator: data?.creator || [],
+        cast: data?.credits?.cast || [],
+        avg:
+          data?.ratingAvg?._avg?.rating !== false
+            ? data?.ratingAvg?._avg?.rating
+            : data?.info?.vote_average,
+        voters:
+          data?.ratingAvg?._count?.rating !== 0
+            ? data?.ratingAvg?._count?.rating
+            : data?.info?.vote_count,
+        video: data?.video || [],
         error: null,
       });
-
-      return data?.results || data || [];
     } catch (error) {
-      set({ error: error.message || "Unexpected error" });
+      set({ error: error.message || "Unexpected error", loading: false });
       throw error;
     }
   },
@@ -413,38 +337,6 @@ export const useContentStore = create((set, get) => ({
     }
   },
 
-  getCommentInfo: async (commentId) => {
-    set({ content: [], loading: true, error: null });
-
-    try {
-      const res = await fetch(`/api/getComment`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ commentId }),
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || "Error fetching comment");
-      }
-
-      const data = await res.json();
-
-      set({
-        content: data,
-        error: null,
-        loading: false,
-      });
-
-      return data || [];
-    } catch (error) {
-      set({ error: error.message || "Unexpected error", loading: false });
-      return [];
-    }
-  },
-
   fetchAiSummary: async (movieId, mediaType, contentTitle) => {
     const { comments } = get();
     if (!comments || comments.length < 3) return;
@@ -500,7 +392,7 @@ export const useContentStore = create((set, get) => ({
   deleteNotifications: async (id) => {
     set({ error: null });
     try {
-      const res = await fetch("/api/notifications/delete", {
+      const res = await fetch("/api/notifications/deleteNotification", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -520,6 +412,221 @@ export const useContentStore = create((set, get) => ({
       return data;
     } catch (error) {
       set({ error: error.message || "Unexpected error", loading: false });
+      return [];
+    }
+  },
+  trending: async (mediaType, page, options) => {
+    set({ movies: [], error: null });
+
+    try {
+      const res = await fetch("/api/trending", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ mediaType, page }),
+        signal: options?.signal,
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Error fetching trending items");
+      }
+
+      const data = await res.json();
+
+      set({
+        movies: data?.results || [],
+        total_pages: data?.total_pages || 0,
+        total_results: data?.total_results || 0,
+        error: null,
+      });
+
+      return data.results || [];
+    } catch (err) {
+      if (err.name === "AbortError") return [];
+
+      console.error("Failed to fetch trending:", err);
+      set({ error: err?.message || "Unknown error" });
+      return [];
+    }
+  },
+
+  trendingVideos: async (mediaType, page, options) => {
+    set({ videos: [], error: null });
+
+    try {
+      const res = await fetch("/api/trending", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ mediaType, page }),
+        signal: options?.signal,
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Error fetching trending items");
+      }
+
+      const data = await res.json();
+
+      set({
+        videos: data?.results || [],
+        total_pages: data?.total_pages || 0,
+        total_results: data?.total_results || 0,
+        error: null,
+      });
+
+      return data.results || [];
+    } catch (err) {
+      if (err.name === "AbortError") return [];
+
+      console.error("Failed to fetch trending:", err);
+      set({ error: err?.message || "Unknown error" });
+      return [];
+    }
+  },
+
+  search: async (input, page) => {
+    set({ error: null });
+
+    try {
+      const res = await fetch("/api/search", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ input, page }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Error searching movies");
+      }
+
+      const data = await res.json();
+
+      set({
+        movies: data?.result || [],
+        total_pages: data?.total_pages || 0,
+        total_results: data?.total_results || 0,
+        error: null,
+      });
+
+      return data?.result || [];
+    } catch (error) {
+      set({ error: error.message || "Unexpected error" });
+      return [];
+    }
+  },
+
+  genre: async (filter) => {
+    set({ error: null });
+    try {
+      const res = await fetch(`/api/genre`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ filter }),
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Error fetching filtered options");
+      }
+
+      const data = await res.json();
+
+      set({
+        movies: data?.result || [],
+        total_pages: data?.total_pages || 0,
+        total_results: data?.total_results || 0,
+        error: null,
+      });
+
+      return data?.result?.results || [];
+    } catch (error) {
+      set({ error: error.message || "Unexpected error" });
+      return [];
+    }
+  },
+  fetchSeason: async (id, season) => {
+    set({ error: null });
+
+    let type = "tv";
+
+    try {
+      const res = await fetch(`/api/${type}/fetchSeason`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, season }),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.message || "Failed to fetch season data");
+      }
+
+      const data = await res.json();
+
+      set({
+        season: {
+          id: data.id,
+          name: data.name,
+          overview: data.overview,
+          season_number: data.season_number,
+          episode_count: data.episode_count,
+          episodes: data.episodes,
+          poster_path: data.poster_path,
+        },
+        error: null,
+      });
+
+      return data || null;
+    } catch (error) {
+      set({ error: error.message || "Failed to fetch season data" });
+      return null;
+    }
+  },
+
+  fetchEpisodes: async (tvId, seasonNumber) => {
+    set({ error: null });
+
+    let type = "tv";
+
+    try {
+      const res = await fetch(
+        `https://api.themoviedb.org/3/${type}/${tvId}/season/${seasonNumber}/episodes?api_key=YOUR_API_KEY`,
+      );
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(
+          errData.status_message || "Failed to fetch episode data",
+        );
+      }
+
+      const data = await res.json();
+
+      set({
+        season: {
+          id: data.id,
+          name: data.name,
+          overview: data.overview,
+          season_number: data.season_number,
+          episode_count: data.episode_count,
+          episodes: data.episodes,
+        },
+        error: null,
+      });
+
+      return data.episodes || [];
+    } catch (error) {
+      set({ error: error.message || "Failed to fetch episode data" });
       return [];
     }
   },

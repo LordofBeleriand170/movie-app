@@ -13,7 +13,6 @@ export async function POST(req) {
       );
     }
 
-    // Provera da li korisnik postoji
     const existingUser = await prisma.user.findUnique({
       where: { id: userData.id },
     });
@@ -22,7 +21,6 @@ export async function POST(req) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Ažuriranje korisnika u bazi
     const updatedUser = await prisma.user.update({
       where: { id: userData.id },
       data: {

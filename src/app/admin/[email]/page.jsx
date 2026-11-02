@@ -2,9 +2,16 @@
 
 import AdminDashboard from "@/components/admin/AdminDashboard";
 import Navbar from "@/components/Navbar";
-import React from "react";
+import { useLogsStore } from "@/features/logs/logsStore";
+import React, { useEffect } from "react";
 
 const AdminDashboardPage = () => {
+  const fetchLogs = useLogsStore((state) => state.fetchLogs);
+
+  useEffect(() => {
+    fetchLogs();
+  }, [fetchLogs]);
+
   return (
     <>
       <Navbar />

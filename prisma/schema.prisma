@@ -28,7 +28,7 @@ receivedNotifications Notification[] @relation("ReceivedNotifications")
   updatedAt DateTime @updatedAt
   bannedUntil DateTime?
   banReason String?
-
+  failedLoginAttempts Int      @default(0)
 
   comments   Comment[]
   bookmark   Bookmark[]
@@ -230,7 +230,7 @@ model SystemLog {
   id          String   @id @default(cuid())
   level       LogLevel
   timestamp   DateTime @default(now())
-  userId       String?  
+  username       String?  
   ipAddress   String?  
   action      String   
   endpoint    String?  
@@ -239,7 +239,7 @@ model SystemLog {
 
   @@index([level])
   @@index([timestamp])
-  @@index([userId])
+  @@index([username])
 }
 
 enum MediaType {

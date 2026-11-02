@@ -1,18 +1,18 @@
 "use client";
 
-import LoadingPage from "@/app/LoadingPage";
+import LoadingPage from "@/components/loadingComponents/LoadingPage";
 import Navbar from "@/components/Navbar";
-import { useMovieStore } from "@/features/movie/movieStore";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import SearchItemComponent from "@/components/SearchItemComponent";
+import { useContentStore } from "@/features/content/contentStore";
 
 const Genre = () => {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
 
-  const genre = useMovieStore((state) => state.genre);
-  const movies = useMovieStore((state) => state.movies);
+  const genre = useContentStore((state) => state.genre);
+  const movies = useContentStore((state) => state.movies);
 
   const params = useParams();
   const genreInput = params.genre?.toString();

@@ -24,7 +24,6 @@ export const useBatchWatched = () => {
 
       const normalizedItems = items
         .map((item) => {
-          console.log("ITEM: ", item);
           const id = item?.id || item?.mediaId || item?.contentId;
           if (!id) return null;
 
@@ -41,7 +40,6 @@ export const useBatchWatched = () => {
 
       try {
         const batchResult = await isWatchedBatch(activeUserId, normalizedItems);
-        console.log("BATCH RESULT: ", batchResult);
 
         setWatchedStatuses({ ...batchResult });
       } catch (err) {

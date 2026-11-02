@@ -12,8 +12,6 @@ export async function GET() {
       },
     });
 
-    console.log("LISTS: ", lists);
-
     return NextResponse.json({ lists }, { status: 200 });
   } catch (err) {
     return NextResponse.json(

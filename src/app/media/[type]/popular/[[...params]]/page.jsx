@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import LoadingPage from "@/app/LoadingPage";
+import LoadingPage from "@/components/loadingComponents/LoadingPage";
 import PaginatedItems from "@/components/PaginatedItems";
 import FilterComponent from "@/components/FilterComponent";
 import ErrorPage from "@/libs/ErrorPage";
@@ -116,7 +116,6 @@ const TypePage = ({ option }) => {
             setPage={setPage}
             mediaType={mediaType}
             categories={categories}
-            trendings={trendings}
             year={year}
             decade={decade}
             rating={rating}

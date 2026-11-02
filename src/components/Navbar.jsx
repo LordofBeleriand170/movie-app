@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import React, { useEffect, useState, Suspense } from "react";
+import React, { useState, Suspense } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Menu, Search, X } from "lucide-react";
 import { useCollectionStore } from "@/features/collection/collectionStore";
-import NotificationModal from "./NotificationModal";
+import NotificationModal from "./notification/NotificationModal";
 import SideMenu from "./SideMenu";
 import UserModal from "./UserModal";
 

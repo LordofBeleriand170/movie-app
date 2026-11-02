@@ -29,7 +29,7 @@ export const useLogsStore = create((set) => ({
         error: false,
       });
 
-      return data.results || [];
+      return data.logs || [];
     } catch (err) {
       if (err.name === "AbortError") return [];
 

@@ -2,9 +2,10 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma";
 
 export async function POST(req) {
+  const body = await req.json();
+  const { id, result, media } = body;
+
   try {
-    const body = await req.json();
-    const { id, result, media } = body;
     const itemId = result?.info?.id || result?.id;
 
     const ipAddress =
@@ -88,7 +89,7 @@ export async function POST(req) {
     await prisma.systemLog.create({
       data: {
         level: "SUCCESS",
-        userId: user.id,
+        username: user.name,
         ipAddress,
         action: actionMessage,
         endpoint: "POST /api/collections/favorite",
@@ -111,10 +112,21 @@ export async function POST(req) {
   } catch (err) {
     console.error(err);
 
+    const user = await prisma.user.findUnique({
+      where: userWhere,
+      include: {
+        favorite: true,
+        bookmark: true,
+        watchlist: true,
+        ratings: true,
+      },
+    });
+
     try {
       await prisma.systemLog.create({
         data: {
           level: "ERROR",
+          username: user.name,
           action: "Internal server error during favorites modification",
           endpoint: "POST /api/collections/favorite",
           metadata: { message: err.message },

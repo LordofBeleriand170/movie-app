@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma";
 
 export async function POST(req) {
-  try {
-    const body = await req.json();
-    const { id, result } = body;
+  const body = await req.json();
+  const { id, result } = body;
 
+  try {
     const ipAddress =
       req.headers.get("x-forwarded-for") || req.ip || "127.0.0.1";
 
@@ -38,7 +38,7 @@ export async function POST(req) {
     if (bookmarkExists) {
       await prisma.bookmark.deleteMany({
         where: {
-          userId: user.id,
+          username: user.name,
           mediaId: itemId,
         },
       });
@@ -84,7 +84,7 @@ export async function POST(req) {
     await prisma.systemLog.create({
       data: {
         level: "SUCCESS",
-        userId: user.id,
+        username: user.name,
         ipAddress,
         action: actionMessage,
         endpoint: "POST /api/collections/bookmark",
@@ -107,10 +107,16 @@ export async function POST(req) {
   } catch (err) {
     console.error(err);
 
+    const user = await prisma.user.findUnique({
+      where: isEmail ? { email: id } : { id },
+      include: { bookmark: true },
+    });
+
     try {
       await prisma.systemLog.create({
         data: {
           level: "ERROR",
+          username: user.name,
           action: "Internal server error during bookmark modification",
           endpoint: "POST /api/collections/bookmark",
           metadata: { message: err.message },

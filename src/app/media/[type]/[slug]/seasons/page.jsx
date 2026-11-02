@@ -1,19 +1,20 @@
 "use client";
 
-import LoadingPage from "@/app/LoadingPage";
+import LoadingPage from "@/components/loadingComponents/LoadingPage";
 import Navbar from "@/components/Navbar";
-import SeasonComponent from "@/components/SeasonComponent";
-import SeasonInfo from "@/components/SeasonInfo";
-import { useTvShowStore } from "@/features/tv/tvStore";
+import SeasonComponent from "@/components/season/SeasonComponent";
+import SeasonInfo from "@/components/season/SeasonInfo";
+import { useAuthStore } from "@/features/auth/authStore";
+import { useContentStore } from "@/features/content/contentStore";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 const SeasonPage = () => {
   const { slug } = useParams();
   const slugParts = slug?.split("-") || [];
 
-  const { fetchInfo } = useTvShowStore();
-  const loading = useTvShowStore((state) => state.loading);
+  const { fetchInfo } = useContentStore((state) => state.fetchInfo);
+  const loading = useContentStore((state) => state.loading);
 
   const id = slugParts[0];
 

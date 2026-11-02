@@ -9,10 +9,19 @@ import React, { useEffect, useState } from "react";
 const SettingsComponent = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const user = useAuthStore((state) => state.user);
+
   const [profileImage, setProfileImage] = useState("");
   const [previewImage, setPreviewImage] = useState(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    if (user) {
+      setName(user.name || "");
+      setEmail(user.email || "");
+      setProfileImage(user.image || "");
+    }
+  }, [user]);
 
   const updateUser = useCollectionStore((state) => state.updateUser);
   const deleteUser = useCollectionStore((state) => state.deleteUser);
@@ -30,7 +39,7 @@ const SettingsComponent = () => {
       const res = await deleteUser(user.id);
 
       if (!res.ok) {
-        throw new Error(data.error || "Failed to delete account");
+        throw new Error("Failed to delete account");
       }
 
       window.location.href = "/";
@@ -43,10 +52,8 @@ const SettingsComponent = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Show instant local preview while uploading
     setPreviewImage(URL.createObjectURL(file));
 
-    // Upload to Supabase Storage bucket ("avatars")
     const fileName = `${user?.id}-${Date.now()}-${file.name}`;
     const { data, error } = await supabase.storage
       .from("avatars")
@@ -58,18 +65,12 @@ const SettingsComponent = () => {
       return;
     }
 
-    // Get the permanent PUBLIC URL from Supabase
     const { data: publicUrlData } = supabase.storage
       .from("avatars")
       .getPublicUrl(data.path);
 
-    // CRITICAL: Save the permanent Supabase URL to your state
     setProfileImage(publicUrlData.publicUrl);
   };
-
-  useEffect(() => {
-    console.log("USER: ", user);
-  }, [user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -87,7 +88,6 @@ const SettingsComponent = () => {
 
   return (
     <div className="w-[90%] mt-10 px-4 md:px-8 mx-auto max-w-6xl text-white">
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Account Settings</h1>
         <p className="text-sm text-neutral-400 mt-1">
@@ -97,7 +97,6 @@ const SettingsComponent = () => {
       </div>
 
       <div className="flex flex-col lg:flex-row gap-8">
-        {/* Sidebar Navigation */}
         <nav className="w-full lg:w-64 flex lg:flex-col gap-2 border-b lg:border-b-0 lg:border-r border-neutral-800 pb-4 lg:pb-0 shrink-0">
           <button
             onClick={() => setActiveTab("profile")}
@@ -131,10 +130,8 @@ const SettingsComponent = () => {
           </button>
         </nav>
 
-        {/* Settings Content Area */}
         <div className="flex-1 max-w-3xl">
           <form onSubmit={handleSubmit}>
-            {/* --- PROFILE TAB --- */}
             {activeTab === "profile" && (
               <div className="space-y-6">
                 <div className="border-b border-neutral-800 pb-4">
@@ -144,12 +141,11 @@ const SettingsComponent = () => {
                   </p>
                 </div>
 
-                {/* Profile Picture */}
                 <div className="flex items-center gap-4">
                   <div className="relative w-20 h-20 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center text-xl font-bold text-neutral-300 overflow-hidden">
-                    {profileImage || user?.image ? (
+                    {previewImage || profileImage || user?.image ? (
                       <Image
-                        src={profileImage || user?.image}
+                        src={previewImage || profileImage || user?.image}
                         fill
                         alt="Avatar Preview"
                         className="object-cover"
@@ -174,7 +170,6 @@ const SettingsComponent = () => {
                   </div>
                 </div>
 
-                {/* Form Fields */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-medium text-neutral-300 mb-1">
@@ -183,7 +178,7 @@ const SettingsComponent = () => {
                     <input
                       type="text"
                       name="username"
-                      value={user?.name}
+                      value={name}
                       onChange={(e) => setName(e.target.value)}
                       className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3.5 py-2 text-sm focus:outline-none focus:border-red-500 text-white"
                     />
@@ -197,7 +192,7 @@ const SettingsComponent = () => {
                   <input
                     type="email"
                     name="email"
-                    value={user?.email}
+                    value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3.5 py-2 text-sm focus:outline-none focus:border-red-500 text-white"
                   />
@@ -205,7 +200,6 @@ const SettingsComponent = () => {
               </div>
             )}
 
-            {/* --- SECURITY TAB --- */}
             {activeTab === "security" && (
               <div className="space-y-6">
                 <div className="border-b border-neutral-800 pb-4">
@@ -240,7 +234,6 @@ const SettingsComponent = () => {
                   </div>
                 </div>
 
-                {/* 2FA Section */}
                 <div className="pt-4 border-t border-neutral-800 flex items-center justify-between">
                   <div>
                     <h3 className="text-sm font-medium">
@@ -259,7 +252,6 @@ const SettingsComponent = () => {
               </div>
             )}
 
-            {/* --- NOTIFICATIONS TAB --- */}
             {activeTab === "notifications" && (
               <div className="space-y-6">
                 <div className="border-b border-neutral-800 pb-4">
@@ -307,7 +299,6 @@ const SettingsComponent = () => {
               </div>
             )}
 
-            {/* Submit Action */}
             <div className="mt-8 flex justify-end gap-3 pt-4 border-t border-neutral-800">
               <button
                 type="button"
@@ -316,7 +307,6 @@ const SettingsComponent = () => {
                 Cancel
               </button>
               <button
-                onSubmit={handleSubmit}
                 type="submit"
                 className="px-5 py-2 bg-red-600 hover:bg-red-500 text-xs font-semibold rounded-lg shadow transition"
               >
@@ -325,7 +315,6 @@ const SettingsComponent = () => {
             </div>
           </form>
 
-          {/* Danger Zone */}
           <div className="mt-12 p-6 border border-red-900/40 rounded-xl bg-red-950/10">
             <h3 className="text-sm font-bold text-red-500">Danger Zone</h3>
             <p className="text-xs text-neutral-400 mt-1">

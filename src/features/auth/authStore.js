@@ -11,6 +11,38 @@ export const useAuthStore = create(
       isLoading: false,
       isCheckingAuth: false,
 
+      register: async (username, email, password) => {
+        set({ isLoading: true, error: null });
+        try {
+          const res = await fetch("/api/auth/register", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ username, email, password }),
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            const errorMsg = data.error || "Registration failed";
+            set({ error: errorMsg, isLoading: false });
+            return { ok: false, error: errorMsg };
+          }
+
+          set({ isLoading: false });
+          return { ok: true, data };
+        } catch (error) {
+          const errorMsg =
+            error.message || "Error occurred during registration";
+          set({
+            error: errorMsg,
+            isLoading: false,
+          });
+          return { ok: false, error: errorMsg };
+        }
+      },
+
       login: async (username, password, callbackUrl) => {
         set({ error: null, user: null, isAuthenticated: false });
         const res = await signIn("credentials", {
@@ -52,7 +84,7 @@ export const useAuthStore = create(
         });
 
         try {
-          const res = await fetch("/api/logout", {
+          const res = await fetch("/api/auth/logout", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
           });
@@ -87,7 +119,7 @@ export const useAuthStore = create(
         });
 
         try {
-          const res = await fetch("/api/verify", {
+          const res = await fetch("/api/auth/verify", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ verificationCode }),
@@ -136,7 +168,7 @@ export const useAuthStore = create(
         });
 
         try {
-          const res = await fetch("/api/getUser", {
+          const res = await fetch("/api/user/getUser", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id }),
@@ -148,7 +180,6 @@ export const useAuthStore = create(
           }
 
           const data = await res.json();
-          console.log("DATAAAAAAAA: ", data);
           set({
             user: {
               ...data.user,

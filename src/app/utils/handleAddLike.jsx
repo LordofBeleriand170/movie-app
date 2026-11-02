@@ -1,7 +1,7 @@
-import { useMovieStore } from "@/features/movie/movieStore";
+import { useContentStore } from "@/features/content/contentStore";
 
 const handleAddLike = async (commentId, isReply, userId) => {
-  const { addLike } = useMovieStore.getState();
+  const { addLike } = useContentStore((state) => state.addLike);
 
   if (!commentId || !userId) return;
 

@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import IconComponent from "./IconComponent";
 import slugify from "@/libs/slugify";
-import TrendingLoading from "@/app/TrendingLoading";
+import TrendingLoading from "@/components/loadingComponents/TrendingLoading";
 import { useBatchWatched } from "@/app/utils/useBatchWatched";
 
 const RecommendedComponent = () => {
@@ -68,7 +68,6 @@ const RecommendedComponent = () => {
         const currentFavorite = useCollectionStore.getState().favorite;
 
         const data = await recommendations(currentWatchlist, currentFavorite);
-        console.log("DATA: ", data);
         setRecommended(data);
       } catch (err) {
         setRecommendedError(true);

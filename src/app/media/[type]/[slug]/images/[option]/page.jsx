@@ -1,8 +1,7 @@
 "use client";
 
-import { Backdrops, Posters } from "@/components/InfoComponent";
 import Navbar from "@/components/Navbar";
-import { useMovieStore } from "@/features/movie/movieStore";
+import { useContentStore } from "@/features/content/contentStore";
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -12,7 +11,7 @@ const Page = () => {
   const type = params?.type?.toString() ?? "movie";
 
   const [media, setMedia] = useState(null);
-  const { fetchInfo } = useMovieStore();
+  const { fetchInfo } = useContentStore();
 
   const [openMedia, setOpenMedia] = useState(false);
   const [openedMedia, setOpenedMedia] = useState(null);

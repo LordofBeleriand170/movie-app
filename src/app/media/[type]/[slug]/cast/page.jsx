@@ -1,8 +1,8 @@
 "use client";
 
-import CastComponent from "@/components/CastComponent";
+import CastComponent from "@/components/contentPage/CastComponent";
 import Navbar from "@/components/Navbar";
-import { useMovieStore } from "@/features/movie/movieStore";
+import { useContentStore } from "@/features/content/contentStore";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -14,7 +14,7 @@ const CastPage = () => {
   const [crew, setCrew] = useState(null);
   const [cast, setCast] = useState(null);
 
-  const { fetchInfo } = useMovieStore();
+  const { fetchInfo } = useContentStore();
 
   useEffect(() => {
     const fetchCrewAndCast = async () => {

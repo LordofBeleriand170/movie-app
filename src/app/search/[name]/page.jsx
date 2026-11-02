@@ -1,10 +1,10 @@
 "use client";
 
 import Navbar from "@/components/Navbar";
-import { useMovieStore } from "@/features/movie/movieStore";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import SearchPageComponent from "@/components/SearchPageComponent";
+import { useContentStore } from "@/features/content/contentStore";
+import SearchPageComponent from "@/components/search/SearchPageComponent";
 
 const SearchResults = () => {
   const params = useParams();
@@ -14,7 +14,7 @@ const SearchResults = () => {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
 
-  const { search, total_pages } = useMovieStore();
+  const { search, total_pages } = useContentStore();
 
   const loadMoreRef = useRef(null);
 

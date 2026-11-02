@@ -6,7 +6,6 @@ export async function POST(req) {
     const body = await req.json();
     const { content, listId } = body;
 
-    // 1. Validation check
     if (!content || !listId || !content?.mediaId) {
       return NextResponse.json(
         { error: "Missing required fields" },

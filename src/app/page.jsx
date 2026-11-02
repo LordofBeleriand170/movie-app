@@ -2,25 +2,16 @@
 
 import Navbar from "@/components/Navbar";
 import Trending from "@/components/Trending";
-import { useAuthStore } from "@/features/auth/authStore";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
-import LoadingPage from "./LoadingPage";
-import "./nprogress.css";
+import { useState } from "react";
 import RecommendedComponent from "@/components/RecommendedComponent";
 import RecentlyVisited from "@/components/RecentlyVisited";
-import { useMovieStore } from "@/features/movie/movieStore";
 
 export default function Home() {
   const { data: session, status } = useSession();
   const [errorComponent, setErrorComponent] = useState(false);
 
-  // Fixed: Check that session.user actually exists when authenticated
   const isUserAuthenticated = status === "authenticated" && !!session?.user;
-
-  if (status === "loading") {
-    return <LoadingPage />;
-  }
 
   return (
     <div className="relative min-h-screen bg-[#070709] text-white overflow-x-hidden">

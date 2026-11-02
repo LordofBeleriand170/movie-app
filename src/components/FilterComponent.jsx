@@ -1,6 +1,6 @@
 "use client";
 
-import { useMovieStore } from "@/features/movie/movieStore";
+import { useContentStore } from "@/features/content/contentStore";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 
@@ -20,7 +20,7 @@ const FilterComponent = ({
   rating,
   isUser,
 }) => {
-  const getCategory = useMovieStore((state) => state.getCategory);
+  const getCategory = useContentStore((state) => state.getCategory);
   const router = useRouter();
   const params = useParams();
 

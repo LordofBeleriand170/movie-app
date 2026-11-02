@@ -4,9 +4,6 @@ import { prisma } from "@/libs/prisma";
 export async function POST(req) {
   const body = await req.json();
   const { userId, text, description } = body;
-  console.log("USERID: ", userId);
-  console.log("TEXT: ", text);
-  console.log("DESCRIPTION: ", description);
 
   try {
     if (!userId || !text || !description) {

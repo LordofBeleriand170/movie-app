@@ -8,7 +8,7 @@ export const useAdminStore = create((set) => ({
   fetchUsers: async () => {
     set({ loading: true, error: false, users: [] });
     try {
-      const res = await fetch("/api/admin/users", {
+      const res = await fetch("/api/admin/fetchUsers", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -16,8 +16,6 @@ export const useAdminStore = create((set) => ({
       if (!res.ok) throw new Error("Failed to get users");
 
       const data = await res.json();
-
-      console.log("DATA ADMIN USERS: ", data);
 
       set({ users: data?.users, loading: false, error: false });
     } catch (err) {

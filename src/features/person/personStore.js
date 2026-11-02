@@ -5,10 +5,10 @@ export const usePersonStore = create((set, get) => ({
   movies: [],
   tvShows: [],
   error: null,
+  loading: null,
 
   fetchPerson: async (id) => {
-    set({ error: null });
-    console.log(id);
+    set({ error: null, loading: true });
     try {
       const res = await fetch("/api/fetchPerson", {
         method: "POST",
@@ -28,10 +28,11 @@ export const usePersonStore = create((set, get) => ({
       set({
         person: data || null,
         error: null,
+        loading: false,
       });
     } catch (error) {
       console.log("Error fetching person:", error);
-      set({ error: error.message || "Unexpected error" });
+      set({ error: error.message || "Unexpected error", loading: false });
     }
   },
 }));

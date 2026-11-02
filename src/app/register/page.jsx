@@ -3,9 +3,10 @@
 import React, { useEffect, useRef, useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { toast } from "react-toastify";
 import PasswordStrength from "@/components/PasswordStrength";
 import { getStrength } from "../utils/passwordStrength";
+import { showToast } from "@/components/ToastComponent";
+import { useAuthStore } from "@/features/auth/authStore";
 
 const RegisterFormContent = () => {
   const [step, setStep] = useState(1);
@@ -17,6 +18,8 @@ const RegisterFormContent = () => {
   });
   const [loading, setLoading] = useState(false);
 
+  const register = useAuthStore((state) => state.register);
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
@@ -26,18 +29,11 @@ const RegisterFormContent = () => {
 
   useEffect(() => {
     if (!hasShownToast.current && error === "account_link_conflict") {
-      toast.error("This email is already used by a credentials account.", {
-        style: {
-          background: "#121212",
-          color: "#ffffff",
-          border: "1px solid #2a2a2a",
-          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
-        },
-        iconTheme: {
-          primary: "#E50914",
-          secondary: "#ffffff",
-        },
-      });
+      showToast(
+        "error",
+        "This email is already used by a credentials account.",
+      );
+
       hasShownToast.current = true;
     }
   }, [error]);
@@ -51,18 +47,8 @@ const RegisterFormContent = () => {
   const handleNextStep = (e) => {
     e.preventDefault();
     if (!formData.username || !formData.email) {
-      toast.error("Please enter both username and email", {
-        style: {
-          background: "#121212",
-          color: "#ffffff",
-          border: "1px solid #2a2a2a",
-          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
-        },
-        iconTheme: {
-          primary: "#E50914",
-          secondary: "#ffffff",
-        },
-      });
+      showToast("error", "Please enter both username and email");
+
       return;
     }
     setStep(2);
@@ -74,96 +60,34 @@ const RegisterFormContent = () => {
     const { username, email, password, confirmPassword } = formData;
 
     if (!username || !email || !password || !confirmPassword) {
-      toast.error("Please fill in all fields", {
-        style: {
-          background: "#121212",
-          color: "#ffffff",
-          border: "1px solid #2a2a2a",
-          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
-        },
-        iconTheme: {
-          primary: "#E50914",
-          secondary: "#ffffff",
-        },
-      });
+      showToast("error", "Please fill in all fields");
+
       return;
     }
 
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match", {
-        style: {
-          background: "#121212",
-          color: "#ffffff",
-          border: "1px solid #2a2a2a",
-          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
-        },
-        iconTheme: {
-          primary: "#E50914",
-          secondary: "#ffffff",
-        },
-      });
+      showToast("error", "Passwords do not match");
+
       return;
     }
 
     if (strength !== 4) {
-      toast.error("Password is not strong enough", {
-        style: {
-          background: "#121212",
-          color: "#ffffff",
-          border: "1px solid #2a2a2a",
-          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
-        },
-        iconTheme: {
-          primary: "#E50914",
-          secondary: "#ffffff",
-        },
-      });
+      showToast("error", "Password is not strong enough");
+
       return;
     }
 
     try {
-      setLoading(true);
+      const result = await register(username, email, password);
 
-      const res = await fetch("/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, email, password }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Registration failed");
-      } else {
-        toast.success("User created successfully", {
-          style: {
-            background: "#121212",
-            color: "#ffffff",
-            border: "1px solid #2a2a2a",
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
-          },
-          iconTheme: {
-            primary: "#22c55e",
-            secondary: "#ffffff",
-          },
-        });
-        router.push("/verify");
+      if (!result.ok) {
+        throw new Error(result.error);
       }
+
+      showToast("success", "User created successfully");
+      router.push("/verify");
     } catch (err) {
-      toast.error(err.message || "Error occurred during registration", {
-        style: {
-          background: "#121212",
-          color: "#ffffff",
-          border: "1px solid #2a2a2a",
-          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
-        },
-        iconTheme: {
-          primary: "#E50914",
-          secondary: "#ffffff",
-        },
-      });
+      showToast("error", err.message || "Error occurred during registration");
     } finally {
       setLoading(false);
     }

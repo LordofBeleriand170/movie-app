@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
 import { useAuthStore } from "@/features/auth/authStore";
+import { showToast } from "@/components/ToastComponent";
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
@@ -28,18 +29,8 @@ const LoginForm = () => {
     const { username, password } = formData;
 
     if (!username || !password) {
-      toast.error("Please fill in all fields", {
-        style: {
-          background: "#121212",
-          color: "#ffffff",
-          border: "1px solid #2a2a2a",
-          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
-        },
-        iconTheme: {
-          primary: "#E50914",
-          secondary: "#ffffff",
-        },
-      });
+      showToast("error", "Please fill in all fields");
+
       return;
     }
 
@@ -48,47 +39,15 @@ const LoginForm = () => {
       await login(username, password, callbackUrl);
 
       if (!user) {
-        toast.error("Failed to load session after login", {
-          style: {
-            background: "#121212",
-            color: "#ffffff",
-            border: "1px solid #2a2a2a",
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
-          },
-          iconTheme: {
-            primary: "#E50914",
-            secondary: "#ffffff",
-          },
-        });
+        showToast("error", "Failed to load session after login");
         return;
       }
 
-      toast.success("Logged in successfully", {
-        style: {
-          background: "#121212",
-          color: "#ffffff",
-          border: "1px solid #2a2a2a",
-          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
-        },
-        iconTheme: {
-          primary: "#22c55e",
-          secondary: "#ffffff",
-        },
-      });
+      showToast("success", "Logged in successfully");
+
       router.refresh();
 
-      toast.error(error, {
-        style: {
-          background: "#121212",
-          color: "#ffffff",
-          border: "1px solid #2a2a2a",
-          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
-        },
-        iconTheme: {
-          primary: "#E50914",
-          secondary: "#ffffff",
-        },
-      });
+      showToast("error", error);
 
       if (
         error === "User not verified" ||
@@ -97,19 +56,7 @@ const LoginForm = () => {
         router.push("/verify");
       }
     } catch (err) {
-      console.log("ERR", err);
-      toast.error(error, {
-        style: {
-          background: "#121212",
-          color: "#ffffff",
-          border: "1px solid #2a2a2a",
-          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
-        },
-        iconTheme: {
-          primary: "#E50914",
-          secondary: "#ffffff",
-        },
-      });
+      showToast("error", err);
     } finally {
       setLoading(false);
     }

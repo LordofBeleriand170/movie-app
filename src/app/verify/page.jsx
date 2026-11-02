@@ -3,8 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/features/auth/authStore";
 import React, { useEffect, useRef, useState } from "react";
-import { toast } from "react-toastify";
 import { X } from "lucide-react";
+import { showToast } from "@/components/ToastComponent";
 
 const VerifyPage = () => {
   const [code, setCode] = useState(["", "", "", "", "", ""]);
@@ -19,25 +19,14 @@ const VerifyPage = () => {
     try {
       const res = await verifyEmail(verificationCode);
       if (res?.user) {
-        toast.success("User verified");
+        showToast("success", "User verified");
         router.push("/login");
       } else {
-        toast.error(res?.error, {
-          style: {
-            background: "#121212",
-            color: "#ffffff",
-            border: "1px solid #2a2a2a",
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
-          },
-          iconTheme: {
-            primary: "#E50914",
-            secondary: "#ffffff",
-          },
-        });
+        showToast("error", res?.error);
       }
     } catch (err) {
       const errorMessage = "Error occurred during registration.";
-      toast.error(errorMessage);
+      showToast("error", errorMessage);
     }
   };
 

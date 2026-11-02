@@ -2,7 +2,6 @@ import Link from "next/link";
 import React from "react";
 
 const ErrorPage = (error) => {
-  console.log(error);
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-full bg-black text-white px-4">
       <h1 className="text-6xl font-bold mb-4">Error occured</h1>

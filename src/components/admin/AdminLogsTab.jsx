@@ -3,66 +3,13 @@
 import { formatDate } from "@/app/utils/formatDate";
 import { useLogsStore } from "@/features/logs/logsStore";
 import { Download, Eye, Filter, Search, Terminal, Trash2 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 const AdminLogsTab = () => {
-  const fetchLogs = useLogsStore((state) => state.fetchLogs);
   const logs = useLogsStore((state) => state.logs);
 
   const [logSearch, setLogSearch] = useState("");
   const [logLevelFilter, setLogLevelFilter] = useState("ALL");
-  const [logsData, setLogsData] = useState([
-    {
-      id: "LOG-9021",
-      timestamp: "Oct 29, 2026 10:02:14",
-      level: "INFO",
-      actor: "User0",
-      action: "Updated user role for marko@example.com to MODERATOR",
-      ip: "192.168.1.45",
-      method: "POST /api/admin/roles",
-      details: "Request executed with HTTP 200. Role elevated successfully.",
-    },
-    {
-      id: "LOG-9020",
-      timestamp: "Oct 29, 2026 09:45:30",
-      level: "SECURITY",
-      actor: "185.220.101.4",
-      action: "Failed login attempt (3 consecutive failures)",
-      ip: "185.220.101.4",
-      method: "POST /api/auth/signin",
-      details: "Rate limit triggered. IP blocked for 15 minutes.",
-    },
-    {
-      id: "LOG-9019",
-      timestamp: "Oct 29, 2026 09:12:05",
-      level: "INFO",
-      actor: "System",
-      action: "Automated database backup completed successfully",
-      ip: "127.0.0.1",
-      method: "CRON /jobs/backup",
-      details: "Database size: 1.2GB. Snapshot uploaded to cloud storage.",
-    },
-    {
-      id: "LOG-9018",
-      timestamp: "Oct 29, 2026 08:30:11",
-      level: "WARNING",
-      actor: "Ana Jovanović",
-      action: "High API query frequency threshold warning",
-      ip: "79.101.24.12",
-      method: "GET /api/catalog/search",
-      details: "Client issued 120 requests/min. Standard quota is 100/min.",
-    },
-    {
-      id: "LOG-9017",
-      timestamp: "Oct 29, 2026 07:15:44",
-      level: "ERROR",
-      actor: "System",
-      action: "TMDB API Integration Timeout",
-      ip: "127.0.0.1",
-      method: "FETCH /api/external/tmdb",
-      details: "HTTP 504 Gateway Timeout when synchronizing movie metadata.",
-    },
-  ]);
 
   const filteredLogs = logs.filter((log) => {
     const matchesSearch =
@@ -74,19 +21,6 @@ const AdminLogsTab = () => {
       logLevelFilter === "ALL" || log.level === logLevelFilter;
     return matchesSearch && matchesLevel;
   });
-
-  useEffect(() => {
-    const handleLogs = async () => {
-      try {
-        await fetchLogs();
-        console.log("LOGS: ", logs);
-      } catch (err) {
-        console.log("ERR: ", err);
-      }
-    };
-
-    handleLogs();
-  }, []);
 
   return (
     <div className="space-y-6">
@@ -102,10 +36,7 @@ const AdminLogsTab = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => setLogsData([])}
-            className="flex items-center gap-2 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-xs font-medium text-zinc-300 transition"
-          >
+          <button className="flex items-center gap-2 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-xs font-medium text-zinc-300 transition">
             <Trash2 className="w-3.5 h-3.5" />
             Clear Logs
           </button>
@@ -116,7 +47,6 @@ const AdminLogsTab = () => {
         </div>
       </div>
 
-      {/* Log Level Overview Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-zinc-900/60 border border-zinc-800 p-4 rounded-xl">
           <p className="text-xs font-medium text-zinc-400 uppercase tracking-wider">
@@ -145,12 +75,11 @@ const AdminLogsTab = () => {
             Warnings
           </p>
           <p className="text-2xl font-bold mt-1 text-amber-400">
-            {logs.filter((l) => l.level === "WARNING").length}
+            {logs.filter((l) => l.level === "WARNING")}
           </p>
         </div>
       </div>
 
-      {/* Logs Search and Severity Filter Bar */}
       <div className="bg-zinc-900/50 border border-zinc-800 p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="relative flex-1 max-w-md">
           <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -179,7 +108,6 @@ const AdminLogsTab = () => {
         </div>
       </div>
 
-      {/* Logs Data Table */}
       <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
@@ -219,7 +147,7 @@ const AdminLogsTab = () => {
                       {formatDate(log.timestamp)}
                     </td>
                     <td className="p-3 text-zinc-200">
-                      <div>{log.actor}</div>
+                      <div>{log.username}</div>
                       <div className="text-[10px] text-zinc-500">{log.ip}</div>
                     </td>
                     <td className="p-3 text-zinc-300 font-sans">

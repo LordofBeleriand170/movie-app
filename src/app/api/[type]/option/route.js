@@ -4,7 +4,6 @@ import getCategoryId from "@/libs/getCategoryId";
 export async function POST(req) {
   const body = await req.json();
   const { filter } = body;
-  console.log("FILTER: ", filter);
 
   const decade = filter?.decade?.substring(0, filter.decade.length - 1);
   const year = filter?.year;

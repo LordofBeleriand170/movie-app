@@ -3,7 +3,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
-import NotificationModal from "./NotificationModal";
+import NotificationModal from "./notification/NotificationModal";
 import UserModal from "./UserModal";
 
 const SideMenu = ({ setOpenMenu }) => {

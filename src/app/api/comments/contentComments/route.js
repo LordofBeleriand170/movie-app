@@ -26,6 +26,10 @@ export async function POST(req) {
       },
     });
 
+    if (!contentComments) {
+      return NextResponse.json({ success: false });
+    }
+
     return NextResponse.json({ success: true, contentComments });
   } catch (err) {
     console.error("Error adding comment:", err);

@@ -1,9 +1,8 @@
 "use client";
 
-import LoadingPage from "@/app/LoadingPage";
+import LoadingPage from "@/components/loadingComponents/LoadingPage";
 import Navbar from "@/components/Navbar";
-import UserPageComponent from "@/components/UserPageComponent";
-import { useAuthStore } from "@/features/auth/authStore";
+import UserPageComponent from "@/components/userPage/UserPageComponent";
 import { useCollectionStore } from "@/features/collection/collectionStore";
 import { useParams } from "next/navigation";
 import React, { useEffect } from "react";

@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma";
 
 export async function POST(req) {
-  try {
-    const body = await req.json();
-    const { id, result, media, rating } = body;
+  const body = await req.json();
+  const { id, result, media, rating } = body;
 
+  try {
     const itemId = result?.info?.id || result?.id;
     const isEmail = id?.includes("@");
 
@@ -62,7 +62,7 @@ export async function POST(req) {
     await prisma.systemLog.create({
       data: {
         level: "SUCCESS",
-        userId: user.id,
+        username: user.name,
         ipAddress,
         action: actionMessage,
         endpoint: "POST /api/collections/rating",
@@ -85,9 +85,19 @@ export async function POST(req) {
     console.error(err);
 
     try {
+      const user = await prisma.user.findUnique({
+        where: isEmail ? { email: id } : { id },
+        include: {
+          favorite: true,
+          watchlist: true,
+          ratings: true,
+        },
+      });
+
       await prisma.systemLog.create({
         data: {
           level: "ERROR",
+          username: user.name,
           action: "Internal server error during rating modification",
           endpoint: "POST /api/collections/rating",
           metadata: { message: err.message },

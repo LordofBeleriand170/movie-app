@@ -4,8 +4,6 @@ import { getToken } from "next-auth/jwt";
 export async function middleware(request) {
   const { pathname } = request.nextUrl;
 
-  console.log("PATHNAME: ", pathname);
-
   const token = await getToken({
     req: request,
     secret: process.env.SECRET,
@@ -13,7 +11,6 @@ export async function middleware(request) {
 
   if (pathname.startsWith("/admin")) {
     if (!token) {
-      // Ako nema tokena, preusmeri na login
       return NextResponse.redirect(new URL("/login", request.url));
     }
 
