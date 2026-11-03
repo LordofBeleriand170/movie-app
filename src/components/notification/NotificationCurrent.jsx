@@ -8,11 +8,13 @@ import { useCommentStore } from "@/features/comment/commentStore";
 
 const NotificationCurrent = ({ selectedNotifications }) => {
   const getCommentInfo = useCommentStore((state) => state.getCommentInfo);
-  const content = useContentStore((state) => state.content);
+  const content = useCommentStore((state) => state.content);
   const deleteNotifications = useContentStore(
     (state) => state.deleteNotifications,
   );
   const router = useRouter();
+
+  console.log("SELECTED: ", selectedNotifications);
 
   useEffect(() => {
     const getComment = async () => {
@@ -27,6 +29,8 @@ const NotificationCurrent = ({ selectedNotifications }) => {
       getComment();
     }
   }, [selectedNotifications]);
+
+  console.log("CONTENT: ", content);
 
   const redirect = () => {
     router.push(

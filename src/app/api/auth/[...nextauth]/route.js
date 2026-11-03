@@ -46,33 +46,39 @@ export const authOptions = {
         if (!user || !user.password) return null;
 
         const isValid = await bcrypt.compare(password, user.password);
+
+        console.log("isvalid: ", isValid);
+
         if (!isValid) return null;
 
-        if (
-          !user.isVerified &&
-          ((user.verificationTokenExpiresAt &&
-            user.verificationTokenExpiresAt < new Date()) ||
-            !user.verificationTokenExpiresAt)
-        ) {
-          const verificationToken = Math.floor(
-            100000 + Math.random() * 900000,
-          ).toString();
-          const verificationTokenExpiresAt = new Date(
-            Date.now() + 24 * 60 * 60 * 1000,
-          );
+        if (!user.isVerified) {
+          const now = new Date();
+          const hasValidToken =
+            user.verificationToken &&
+            user.verificationTokenExpiresAt &&
+            user.verificationTokenExpiresAt > now;
 
-          await prisma.user.update({
-            where: { id: user.id },
-            data: {
-              verificationToken: verificationToken,
-              verificationTokenExpiresAt: verificationTokenExpiresAt,
-            },
-          });
+          if (!hasValidToken) {
+            const verificationToken = Math.floor(
+              100000 + Math.random() * 900000,
+            ).toString();
+            const verificationTokenExpiresAt = new Date(
+              Date.now() + 24 * 60 * 60 * 1000,
+            );
 
-          throw new Error(
-            "Verification code expired and new code has been sent",
-          );
-        } else if (!user.isVerified) {
+            await prisma.user.update({
+              where: { id: user.id },
+              data: {
+                verificationToken: verificationToken,
+                verificationTokenExpiresAt: verificationTokenExpiresAt,
+              },
+            });
+
+            throw new Error(
+              "Verification code expired or missing. A new code has been sent.",
+            );
+          }
+
           throw new Error("User not verified");
         }
 

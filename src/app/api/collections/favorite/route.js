@@ -112,6 +112,8 @@ export async function POST(req) {
   } catch (err) {
     console.error(err);
 
+    const userWhere = isEmail ? { email: id } : id ? { id } : null;
+
     const user = await prisma.user.findUnique({
       where: userWhere,
       include: {

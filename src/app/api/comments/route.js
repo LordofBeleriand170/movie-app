@@ -4,9 +4,10 @@ import { prisma } from "@/libs/prisma";
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { id, username, movieId, text, mediaType, rating, spoiler } = body;
+    const { id, username, image, movieId, text, mediaType, rating, spoiler } =
+      body;
 
-    if (!id || !movieId || !text || !mediaType) {
+    if (!id || !movieId || !text || !mediaType || !image || !username) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
 
@@ -78,6 +79,7 @@ export async function POST(req) {
         data: {
           userId: id,
           username,
+          image: image,
           mediaId: movieId,
           mediaType: media,
           text,

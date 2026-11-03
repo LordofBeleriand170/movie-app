@@ -114,7 +114,7 @@ const UserModal = ({ openSettings, setOpenSettings }) => {
 
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-sm text-white truncate group-hover:text-red-400 transition-colors">
-                    {user?.username || "User"}
+                    {user?.name || "User"}
                   </p>
                   <p className="text-xs text-neutral-400 truncate">
                     {user?.email}

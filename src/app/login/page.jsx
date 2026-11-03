@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { toast } from "react-toastify";
 import { useAuthStore } from "@/features/auth/authStore";
 import { showToast } from "@/components/ToastComponent";
 
@@ -30,7 +29,6 @@ const LoginForm = () => {
 
     if (!username || !password) {
       showToast("error", "Please fill in all fields");
-
       return;
     }
 
@@ -38,44 +36,35 @@ const LoginForm = () => {
       setLoading(true);
       await login(username, password, callbackUrl);
 
+      console.log("HERE1");
+
+      if (error) {
+        throw new Error(error);
+      }
+
       if (!user) {
         showToast("error", "Failed to load session after login");
         return;
       }
 
       showToast("success", "Logged in successfully");
-
       router.refresh();
-
-      showToast("error", error);
-
+    } catch (err) {
+      const errorMessage = err?.message || error || "";
+      console.log("HERE2");
       if (
-        error === "User not verified" ||
-        error === "Verification code expired and new code has been sent"
+        errorMessage.includes("not verified") ||
+        errorMessage.includes("Verification code")
       ) {
         router.push("/verify");
+        return;
       }
-    } catch (err) {
-      showToast("error", err);
+
+      showToast("error", errorMessage);
     } finally {
       setLoading(false);
     }
   };
-
-  /*  <button
-            type="button"
-            onClick={() => signIn("google")}
-            className="w-full mt-2 py-2.5 cursor-pointer bg-white text-zinc-900 font-medium text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-200 transition active:scale-[0.98]"
-          >
-            <Image
-              src="/google-logo.jpg"
-              alt="Google"
-              width={18}
-              height={18}
-              className="object-contain"
-            />
-            Sign in with Google
-          </button>*/
 
   return (
     <main className="min-h-screen w-full flex items-center justify-center bg-[#09090b] text-white px-4">

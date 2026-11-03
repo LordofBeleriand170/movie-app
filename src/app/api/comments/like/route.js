@@ -5,7 +5,6 @@ export async function PATCH(req) {
   try {
     const body = await req.json();
     const { commentId, isReply, id } = body;
-    console.log(commentId, isReply, id);
 
     if (!commentId || !id) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });

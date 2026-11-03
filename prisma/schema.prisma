@@ -146,6 +146,7 @@ model Comment {
   userId    String
   user      User     @relation(fields: [userId], references: [id])
   username  String
+  image     String?
   mediaId   Int
   mediaType MediaType
   text      String
@@ -173,6 +174,7 @@ model Reply {
   userId    String
   user      User     @relation(fields: [userId], references: [id])
   username  String
+  image     String?
   text      String
   likes     Int      @default(0)
   replyLikes ReplyLike[]

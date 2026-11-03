@@ -5,6 +5,8 @@ export async function POST(req) {
   const body = await req.json();
   const { id, result, media, rating } = body;
 
+  console.log("RESULT: ", result);
+
   try {
     const itemId = result?.info?.id || result?.id;
     const isEmail = id?.includes("@");
@@ -30,6 +32,9 @@ export async function POST(req) {
     const userRatingExists = user.ratings.some(
       (r) => r.movieId === itemId && r.mediaType === mediaType,
     );
+
+    console.log("MOVIEID: ", itemId);
+    console.log("USERRATINGEXISTS: ", userRatingExists);
 
     let actionMessage = "";
 
@@ -83,6 +88,8 @@ export async function POST(req) {
     return NextResponse.json({ user: updatedUser }, { status: 200 });
   } catch (err) {
     console.error(err);
+
+    const isEmail = id?.includes("@");
 
     try {
       const user = await prisma.user.findUnique({

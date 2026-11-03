@@ -45,10 +45,11 @@ export const useAuthStore = create(
 
       login: async (username, password, callbackUrl) => {
         set({ error: null, user: null, isAuthenticated: false });
+
         const res = await signIn("credentials", {
+          redirect: false,
           username,
           password,
-          callbackUrl: callbackUrl,
         });
 
         try {
@@ -61,15 +62,19 @@ export const useAuthStore = create(
               user: updatedSession?.user,
               isAuthenticated: true,
             });
+
+            return { success: true };
           } else {
             set({
               error: res?.error || "Login failed",
               isAuthenticated: false,
             });
+
+            throw new Error(res?.error || "Login failed");
           }
         } catch (err) {
           set({
-            error: res?.error || "Login failed",
+            error: res?.error || err.message || "Login failed",
             isAuthenticated: false,
           });
 

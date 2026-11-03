@@ -211,13 +211,6 @@ const AdminOverviewTab = () => {
             <option value="alltime">All time</option>
           </select>
         </div>
-        <button
-          onClick={() => window.location.reload()}
-          className="inline-flex items-center gap-2 rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-xs font-medium text-neutral-300 transition-colors hover:border-neutral-700 hover:bg-neutral-800 hover:text-white"
-        >
-          <RefreshCw className="h-3.5 w-3.5" />
-          Refresh Data
-        </button>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

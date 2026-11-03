@@ -22,6 +22,8 @@ const CommentFormatComponent = ({ comment, type }) => {
   const ban = useCollectionStore((store) => store.ban);
   const addLike = useCommentStore((state) => state.addLike);
 
+  console.log("COMMENT: ", type);
+
   comment = comment?.comment || comment;
 
   const pathname = usePathname();
@@ -264,7 +266,7 @@ const CommentFormatComponent = ({ comment, type }) => {
         <Image
           src={comment?.image ?? "/user-not-found.jpg"}
           alt="comment avatar"
-          className="w-9 h-9 rounded-xl object-cover border border-neutral-700/60 shrink-0"
+          className="w-9 h-9 rounded-full object-cover border border-neutral-700/60 shrink-0"
           width={36}
           height={36}
         />

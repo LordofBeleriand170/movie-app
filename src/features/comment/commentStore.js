@@ -23,6 +23,7 @@ export const useCommentStore = create((set, get) => ({
         body: JSON.stringify({
           id: user.id,
           username: user.username,
+          image: user.image,
           movieId,
           text: commentText,
           mediaType: type,
@@ -59,6 +60,7 @@ export const useCommentStore = create((set, get) => ({
           text: respond,
           id: user.id,
           username: user.username,
+          userImage: user.image,
           rating,
         }),
       });
@@ -136,6 +138,7 @@ export const useCommentStore = create((set, get) => ({
       }
 
       const data = await res.json();
+      console.log("DATA: ", data);
 
       set({
         content: data,

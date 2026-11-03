@@ -34,17 +34,6 @@ const AdminLogsTab = () => {
             Track security alerts, admin actions, and backend system events.
           </p>
         </div>
-
-        <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-xs font-medium text-zinc-300 transition">
-            <Trash2 className="w-3.5 h-3.5" />
-            Clear Logs
-          </button>
-          <button className="flex items-center gap-2 px-3 py-1.5 bg-red-600 hover:bg-red-500 rounded-lg text-xs font-medium text-white shadow-lg transition">
-            <Download className="w-3.5 h-3.5" />
-            Export Logs
-          </button>
-        </div>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

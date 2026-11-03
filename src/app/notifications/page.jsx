@@ -1,5 +1,5 @@
 import Navbar from "@/components/Navbar";
-import NotificationsComponent from "@/components/NotificationsComponent";
+import NotificationsComponent from "@/components/notification/NotificationsComponent";
 import React from "react";
 
 const NotificationsPage = () => {

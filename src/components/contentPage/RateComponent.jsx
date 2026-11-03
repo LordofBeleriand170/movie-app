@@ -29,7 +29,7 @@ const RateComponent = ({ rate, media, newRate, setNewRate }) => {
     try {
       await addRating(
         user?.id ? user?.id : user?.email ? user?.email : session?.user?.email,
-        content?.info,
+        content,
         media,
         rate,
       );

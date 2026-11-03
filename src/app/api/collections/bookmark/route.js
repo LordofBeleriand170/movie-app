@@ -33,12 +33,14 @@ export async function POST(req) {
       (w) => Number(w.mediaId) === Number(itemId) && w.mediaType === mediaType,
     );
 
+    console.log("BOOKMARK EXISTS: ", bookmarkExists);
+
     let actionMessage = "";
 
     if (bookmarkExists) {
       await prisma.bookmark.deleteMany({
         where: {
-          username: user.name,
+          userId: user.id,
           mediaId: itemId,
         },
       });
@@ -106,6 +108,8 @@ export async function POST(req) {
     return NextResponse.json({ user: updatedUser }, { status: 200 });
   } catch (err) {
     console.error(err);
+
+    const isEmail = id?.includes("@");
 
     const user = await prisma.user.findUnique({
       where: isEmail ? { email: id } : { id },

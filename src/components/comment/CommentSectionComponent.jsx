@@ -246,7 +246,11 @@ const CommentSectionComponent = ({
                     comment.rating === currentRating,
                 )
                 .map((comment) => (
-                  <CommentFormatComponent key={comment.id} comment={comment} />
+                  <CommentFormatComponent
+                    key={comment.id}
+                    comment={comment}
+                    type={true}
+                  />
                 ))}
             </div>
           </div>
