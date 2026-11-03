@@ -95,7 +95,7 @@ const CommentSectionComponent = ({
 
   return (
     <div className="flex flex-col m-auto gap-8 pb-20 text-white w-[90%] px-8 sm:px-6 lg:px-8 ">
-      {comments.length >= 3 && (
+      {comments?.length >= 3 && (
         <ReviewHighlights
           movieId={movieId}
           type={type}

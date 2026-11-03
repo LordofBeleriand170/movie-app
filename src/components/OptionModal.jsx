@@ -63,19 +63,11 @@ const OptionModal = ({ media, setIsModalOpen }) => {
   const mediaType = media === "movies" ? "movie" : "tv";
 
   const handleFavorite = async () => {
-    await addFavorite(
-      user?.id ? user?.id : user?.email,
-      content?.info,
-      mediaType,
-    );
+    await addFavorite(user?.id ? user?.id : user?.email, content, mediaType);
   };
 
   const handleBookmark = async () => {
-    await addBookmark(
-      user?.id ? user?.id : user?.email,
-      content?.info,
-      mediaType,
-    );
+    await addBookmark(user?.id ? user?.id : user?.email, content, mediaType);
   };
 
   const handleCreateList = async () => {
@@ -86,10 +78,10 @@ const OptionModal = ({ media, setIsModalOpen }) => {
 
   const handleAddToList = async (listId) => {
     const contentFormat = {
-      mediaId: content?.info?.id,
+      mediaId: content?.id,
       mediaType: mediaType,
-      title: content?.info?.title,
-      poster: content?.info?.poster_path,
+      title: content?.title,
+      poster: content?.poster_path,
     };
 
     await addToList(contentFormat, listId);
@@ -97,28 +89,24 @@ const OptionModal = ({ media, setIsModalOpen }) => {
 
   const result = content
     ? {
-        id: content?.info?.id,
-        name: content?.info?.title || content?.info?.name,
-        poster_path: content?.info?.poster_path,
-        type: content?.info?.release_date ? "movie" : "tv",
-        release_date:
-          content?.info?.release_date || content?.info?.first_air_date,
+        id: content?.id,
+        name: content?.title || content?.name,
+        poster_path: content?.poster_path,
+        type: content?.release_date ? "movie" : "tv",
+        release_date: content?.release_date || content?.first_air_date,
       }
     : null;
 
   const mediaInWatchlist = watchlist.some(
-    (item) =>
-      item.mediaId === content?.info?.id && item.mediaType === mediaType,
+    (item) => item.mediaId === content?.id && item.mediaType === mediaType,
   );
 
   const favoriteInWatchlist = favorite.some(
-    (item) =>
-      item.mediaId === content?.info?.id && item.mediaType === mediaType,
+    (item) => item.mediaId === content?.id && item.mediaType === mediaType,
   );
 
   const bookmarkExists = bookmark.some(
-    (item) =>
-      item.mediaId === content?.info?.id && item.mediaType === mediaType,
+    (item) => item.mediaId === content?.id && item.mediaType === mediaType,
   );
 
   useEffect(() => {

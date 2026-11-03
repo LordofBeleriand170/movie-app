@@ -6,6 +6,7 @@ import { useContentStore } from "@/features/content/contentStore";
 const SeasonInfo = () => {
   const season = useContentStore((state) => state.season);
   const tvShow = useContentStore((state) => state.tvShow);
+  const content = useContentStore((state) => state.content);
   const params = useParams();
 
   const router = useRouter();
@@ -15,7 +16,9 @@ const SeasonInfo = () => {
   const targetedSeasonId = searchParams.has("seasonId-name");
 
   const redirect = () => {
-    router.push(`/media/${params?.type}/${params?.slug}/seasons?seasonId-name`);
+    router.replace(
+      `/media/${params?.type}/${params?.slug}/seasons?seasonId-name=${Date.now()}`,
+    );
   };
 
   useEffect(() => {
@@ -24,21 +27,24 @@ const SeasonInfo = () => {
       const element = document.getElementById(`seasonId-name`);
       if (element) {
         element.scrollIntoView({ behavior: "smooth", block: "center" });
+        router.replace(`/media/${params?.type}/${params?.slug}/seasons`, {
+          scroll: false,
+        });
       }
     }, 300);
 
     return () => {
       clearTimeout(timer);
     };
-  }, [targetedSeasonId]);
+  }, [targetedSeasonId, router, params]);
 
   const name = season?.name || tvShow?.name || "Season";
   const imageUrl = season?.poster_path
     ? `https://image.tmdb.org/t/p/original${season.poster_path}`
     : "/no-poster.webp";
 
-  const backdropUrl = tvShow?.backdrop_path
-    ? `https://image.tmdb.org/t/p/original${tvShow.backdrop_path}`
+  const backdropUrl = content?.backdrop_path
+    ? `https://image.tmdb.org/t/p/original${content.backdrop_path}`
     : null;
 
   return (

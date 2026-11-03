@@ -1,8 +1,8 @@
 import handleAddLike from "./handleAddLike";
 
-const toggleLike = (target, userId, isReply) => {
-  if (!userId || !target) return;
-  const userIdStr = userId.toString();
+const toggleLike = (target, user, isReply) => {
+  if (!user || !target) return;
+  const userIdStr = user?.id?.toString();
   const targetId = target?.id;
 
   if (isReply) {
@@ -21,7 +21,7 @@ const toggleLike = (target, userId, isReply) => {
       : [...likesList, { userId: userIdStr, commentId: targetId }];
   }
 
-  handleAddLike(targetId, isReply, userId);
+  handleAddLike(targetId, isReply, user?.id);
 };
 
 export default toggleLike;

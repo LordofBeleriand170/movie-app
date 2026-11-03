@@ -3,12 +3,9 @@ import { create } from "zustand";
 export const useContentStore = create((set, get) => ({
   results: [],
   movies: [],
-  tvShows: [],
-  tvShow: null,
   season: null,
   category: [],
   content: [],
-  tvShow: null,
   season: null,
   episodes: null,
   movie: null,
@@ -21,6 +18,7 @@ export const useContentStore = create((set, get) => ({
   rating: [],
   notifications: [],
   casts: [],
+  crew: [],
   avg: null,
   voters: null,
   director: [],
@@ -28,51 +26,9 @@ export const useContentStore = create((set, get) => ({
   creator: [],
   video: [],
   cast: [],
+  loadingSeasonInfo: null,
 
-  addLike: async (user, commentId, isReply, mediaId) => {
-    try {
-      const res = await fetch("/api/comments/like", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          commentId,
-          isReply,
-          username: user.username,
-          mediaId,
-        }),
-      });
-
-      if (!res.ok) throw new Error("Failed to add comment");
-
-      const data = await res.json();
-
-      set((state) => ({
-        comments: state.comments.map((c) => {
-          if (!isReply && c._id === data.comment._id) {
-            return {
-              ...c,
-              likes: data.comment.likes,
-            };
-          }
-
-          if (isReply) {
-            return {
-              ...c,
-              replies: c.replies.map((r) =>
-                r._id === data.reply._id
-                  ? { ...r, likes: data.reply.likes }
-                  : r,
-              ),
-            };
-          }
-
-          return c;
-        }),
-      }));
-    } catch (err) {
-      console.error("Add comment error:", err);
-    }
-  },
+  
 
   fetchRating: async (movieId, mediaType) => {
     set({ ratings: [] });
@@ -95,46 +51,6 @@ export const useContentStore = create((set, get) => ({
     } catch (err) {
       console.error("Fetch comments error:", err);
       set({ ratings: [], aiLoading: false, aiSummary: null });
-    }
-  },
-
-  fetchEpisodes: async (tvId, seasonNumber) => {
-    set({ error: null });
-
-    let type = "tv";
-
-    try {
-      const res = await fetch(
-        `https://api.themoviedb.org/3/${type}/${tvId}/season/${seasonNumber}/episodes?api_key=YOUR_API_KEY`,
-      );
-
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(
-          errData.status_message || "Failed to fetch episode data",
-        );
-      }
-
-      const data = await res.json();
-
-      set({
-        season: {
-          id: data.id,
-          name: data.name,
-          overview: data.overview,
-          season_number: data.season_number,
-          episode_count: data.episode_count,
-          episodes: data.episodes,
-          air_date: null,
-          poster_path: null,
-        },
-        error: null,
-      });
-
-      return data.episodes || [];
-    } catch (error) {
-      set({ error: error.message || "Failed to fetch episode data" });
-      return [];
     }
   },
 
@@ -165,7 +81,6 @@ export const useContentStore = create((set, get) => ({
       }
 
       const data = await res.json();
-      console.log("DATA: ", data);
 
       const currentSeason =
         data?.info?.seasons?.find(
@@ -181,6 +96,7 @@ export const useContentStore = create((set, get) => ({
         writer: data?.writer || [],
         creator: data?.creator || [],
         cast: data?.credits?.cast || [],
+        crew: data?.credits?.crew || [],
         avg:
           data?.ratingAvg?._avg?.rating !== false
             ? data?.ratingAvg?._avg?.rating
@@ -197,49 +113,6 @@ export const useContentStore = create((set, get) => ({
       throw error;
     }
   },
-
-  fetchSeason: async (id, season) => {
-    set({ error: null });
-
-    let type = "tv";
-
-    try {
-      const res = await fetch(`/api/${type}/fetchSeason`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id, season }),
-      });
-
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.message || "Failed to fetch season data");
-      }
-
-      const data = await res.json();
-
-      set({
-        season: {
-          id: data.id,
-          name: data.name,
-          overview: data.overview,
-          season_number: data.season_number,
-          episode_count: data.episode_count,
-          episodes: data.episodes,
-          air_date: null,
-          poster_path: null,
-        },
-        error: null,
-      });
-
-      return data || null;
-    } catch (error) {
-      set({ error: error.message || "Failed to fetch season data" });
-      return null;
-    }
-  },
-
   getCategory: async (mediaType, id) => {
     set({ error: null });
     let type = mediaType;
@@ -337,34 +210,6 @@ export const useContentStore = create((set, get) => ({
     }
   },
 
-  fetchAiSummary: async (movieId, mediaType, contentTitle) => {
-    const { comments } = get();
-    if (!comments || comments.length < 3) return;
-
-    set({ aiLoading: true, aiError: null });
-
-    try {
-      const res = await fetch(`/api/analyze-reviews`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ comments, movieId, mediaType, contentTitle }),
-      });
-
-      if (!res.ok) {
-        throw new Error(`AI API failed: ${res.status}`);
-      }
-
-      const data = await res.json();
-      set({ aiSummary: data?.summary, aiLoading: false });
-    } catch (err) {
-      console.error("fetchAiSummary error:", err);
-      set({
-        aiError: err instanceof Error ? err.message : "AI Summary failed",
-        aiLoading: false,
-        aiSummary: null,
-      });
-    }
-  },
 
   recommendations: async (watchlist, favorite) => {
     set({ movies: [], error: null, loading: true });
@@ -552,18 +397,16 @@ export const useContentStore = create((set, get) => ({
       return [];
     }
   },
-  fetchSeason: async (id, season) => {
-    set({ error: null });
-
-    let type = "tv";
+  fetchSeason: async (id, currentSeason) => {
+    set({ error: null, season: null, loadingSeasonInfo: true });
 
     try {
-      const res = await fetch(`/api/${type}/fetchSeason`, {
+      const res = await fetch(`/api/tv/fetchSeason`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ id, season }),
+        body: JSON.stringify({ id, season: currentSeason }),
       });
 
       if (!res.ok) {
@@ -579,55 +422,20 @@ export const useContentStore = create((set, get) => ({
           name: data.name,
           overview: data.overview,
           season_number: data.season_number,
-          episode_count: data.episode_count,
-          episodes: data.episodes,
           poster_path: data.poster_path,
         },
         error: null,
+        episodes: data.episodes,
+        loadingSeasonInfo: false,
       });
 
       return data || null;
     } catch (error) {
-      set({ error: error.message || "Failed to fetch season data" });
-      return null;
-    }
-  },
-
-  fetchEpisodes: async (tvId, seasonNumber) => {
-    set({ error: null });
-
-    let type = "tv";
-
-    try {
-      const res = await fetch(
-        `https://api.themoviedb.org/3/${type}/${tvId}/season/${seasonNumber}/episodes?api_key=YOUR_API_KEY`,
-      );
-
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(
-          errData.status_message || "Failed to fetch episode data",
-        );
-      }
-
-      const data = await res.json();
-
       set({
-        season: {
-          id: data.id,
-          name: data.name,
-          overview: data.overview,
-          season_number: data.season_number,
-          episode_count: data.episode_count,
-          episodes: data.episodes,
-        },
-        error: null,
+        error: error.message || "Failed to fetch season data",
+        loadingSeasonInfo: false,
       });
-
-      return data.episodes || [];
-    } catch (error) {
-      set({ error: error.message || "Failed to fetch episode data" });
-      return [];
+      return null;
     }
   },
 }));

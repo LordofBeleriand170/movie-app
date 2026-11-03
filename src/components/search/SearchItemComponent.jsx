@@ -2,10 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 
 const SearchItemComponent = ({ result }) => {
   let avgVote = result?.ratingAvg?._avg?.rating || result?.vote_average / 2;
+
+  console.log("RESULT: ", result);
 
   const getImageUrl = (posterPath, gender) => {
     if (
@@ -27,13 +28,12 @@ const SearchItemComponent = ({ result }) => {
     return name.toLowerCase().replaceAll(" ", "-");
   };
 
-  const params = useParams();
+  const isMovie = Boolean(result?.release_date);
+  const isTvShow = Boolean(result?.first_air_date);
+  const isPerson = Boolean(result?.known_for_department);
 
-  const isMovie = params?.movie === "movies";
-  const isPerson = params?.movie === "person";
-
-  const href = `${!isPerson ? "/media" : ""}/${
-    isMovie ? "movies" : isPerson ? "person" : "tvshows"
+  const href = `${!isMovie || !isTvShow ? "/media" : ""}/${
+    isMovie ? "movies" : isTvShow ? "tvshows" : "person"
   }/${result.id}-${getResultSlug(result)}`;
 
   return (
@@ -103,7 +103,14 @@ const SearchItemComponent = ({ result }) => {
                 <>
                   <span className="text-zinc-700">•</span>
                   <span>
-                    {result.number_of_seasons} season
+                    {
+                      result?.seasons?.filter(
+                        (season) =>
+                          season?.name?.toLowerCase() !==
+                          ("specials" || "special"),
+                      )?.length
+                    }{" "}
+                    season
                     {result.number_of_seasons > 1 ? "s" : ""}
                   </span>
                 </>

@@ -1,7 +1,7 @@
-import { useContentStore } from "@/features/content/contentStore";
+import { useCommentStore } from "@/features/comment/commentStore";
 
 const handleAddLike = async (commentId, isReply, userId) => {
-  const { addLike } = useContentStore((state) => state.addLike);
+  const addLike = useCommentStore((state) => state.addLike);
 
   if (!commentId || !userId) return;
 

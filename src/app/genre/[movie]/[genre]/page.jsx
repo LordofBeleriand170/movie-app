@@ -4,7 +4,7 @@ import LoadingPage from "@/components/loadingComponents/LoadingPage";
 import Navbar from "@/components/Navbar";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import SearchItemComponent from "@/components/SearchItemComponent";
+import SearchItemComponent from "@/components/search/SearchItemComponent";
 import { useContentStore } from "@/features/content/contentStore";
 
 const Genre = () => {

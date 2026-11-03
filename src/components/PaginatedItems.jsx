@@ -5,6 +5,7 @@ import IconComponent from "./IconComponent";
 import slugify from "@/libs/slugify";
 import { useBatchWatched } from "@/app/utils/useBatchWatched";
 import { useContentStore } from "@/features/content/contentStore";
+import PaginatedItemsSkeleton from "./loadingComponents/PaginatedItemsSkeleton";
 
 const PaginatedItems = ({
   category,
@@ -206,6 +207,9 @@ const PaginatedItems = ({
               No results found matching your criteria.
             </span>
           </div>
+        ) : trendingLoading &&
+          (!trendingResult || trendingResult.length === 0) ? (
+          <PaginatedItemsSkeleton />
         ) : (
           <div className="w-full">
             <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">

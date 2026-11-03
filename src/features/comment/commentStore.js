@@ -68,14 +68,14 @@ export const useCommentStore = create((set, get) => ({
       if (!res.ok) throw new Error("Failed to add comment");
       else {
         const latestReply =
-          data.comment.replies[data.comment.replies.length - 1];
+          data?.comment?.replies[data?.comment?.replies?.length - 1];
 
         set((state) => ({
-          comments: state.comments.map((comment) =>
-            comment._id === commentId
+          comments: state?.comments?.map((comment) =>
+            comment?._id === commentId
               ? {
                   ...comment,
-                  replies: [...(comment.replies || []), latestReply],
+                  replies: [...(comment?.replies || []), latestReply],
                 }
               : comment,
           ),
@@ -98,7 +98,6 @@ export const useCommentStore = create((set, get) => ({
       if (!res.ok) throw new Error("Failed to fetch comments");
 
       const data = await res.json();
-
       const fetchedComments = data.contentComments || [];
 
       let totalScore = 0;
@@ -115,7 +114,7 @@ export const useCommentStore = create((set, get) => ({
       });
     } catch (err) {
       console.error("Fetch comments error:", err);
-      set({ comments: [], aiLoading: false, aiSummary: null });
+      set({ error: err, aiLoading: false, aiSummary: null });
     }
   },
 
@@ -163,6 +162,77 @@ export const useCommentStore = create((set, get) => ({
       return data;
     } catch (err) {
       console.error(`Failed to handle ban:`, err);
+    }
+  },
+  fetchAiSummary: async (movieId, mediaType, contentTitle) => {
+    const { comments } = get();
+    if (!comments || comments.length < 3) return;
+
+    set({ aiLoading: true, aiError: null });
+
+    try {
+      const res = await fetch(`/api/analyze-reviews`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ comments, movieId, mediaType, contentTitle }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`AI API failed: ${res.status}`);
+      }
+
+      const data = await res.json();
+      set({ aiSummary: data?.summary, aiLoading: false });
+    } catch (err) {
+      console.error("fetchAiSummary error:", err);
+      set({
+        aiError: err instanceof Error ? err.message : "AI Summary failed",
+        aiLoading: false,
+        aiSummary: null,
+      });
+    }
+  },
+  addLike: async (commentId, isReply, userId) => {
+    try {
+      const res = await fetch("/api/comments/like", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          commentId,
+          isReply,
+          id: userId,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to add comment");
+
+      const data = await res.json();
+
+      set((state) => ({
+        comments: state.comments.map((c) => {
+          if (!isReply && c._id === data.comment._id) {
+            return {
+              ...c,
+              likes: data.comment.likes,
+            };
+          }
+
+          if (isReply) {
+            return {
+              ...c,
+              replies: c.replies.map((r) =>
+                r._id === data.reply._id
+                  ? { ...r, likes: data.reply.likes }
+                  : r,
+              ),
+            };
+          }
+
+          return c;
+        }),
+      }));
+    } catch (err) {
+      console.error("Add comment error:", err);
     }
   },
 }));

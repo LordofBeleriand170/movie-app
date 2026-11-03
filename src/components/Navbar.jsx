@@ -36,7 +36,6 @@ const NavbarContent = () => {
     { name: "Home", href: "/" },
     { name: "Movies", href: "/media/movies/popular" },
     { name: "TV Shows", href: "/media/tvshows/popular" },
-    { name: "Explore", href: "/media/explore" },
   ];
   return (
     <>

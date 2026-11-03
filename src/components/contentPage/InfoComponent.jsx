@@ -18,7 +18,6 @@ const InfoComponent = ({ option, type }) => {
   const [id, setId] = useState("");
 
   const content = useContentStore((state) => state.content);
-  const loading = useContentStore((state) => state.loading);
   const error = useContentStore((state) => state.error);
   const avg = useContentStore((state) => state.avg);
   const voters = useContentStore((state) => state.voters);
@@ -31,6 +30,8 @@ const InfoComponent = ({ option, type }) => {
   const [currentUser, setCurrentUser] = useState(null);
 
   const fetchInfo = useContentStore((state) => state.fetchInfo);
+
+  const [loading, setLoading] = useState(true);
 
   const params = useParams();
 
@@ -60,20 +61,19 @@ const InfoComponent = ({ option, type }) => {
     const getInfo = async () => {
       const mediaId = option.split("-")[0];
       setId(mediaId);
+      setLoading(true);
 
       try {
         await fetchInfo(mediaId, type, currentUser);
       } catch (err) {
         console.error("Error fetching movie data:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
     getInfo();
   }, [option, currentUser]);
-
-  useEffect(() => {
-    console.log("CONTENT: ", content);
-  }, [content]);
 
   return (
     <>

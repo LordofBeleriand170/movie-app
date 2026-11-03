@@ -12,8 +12,7 @@ const ContentActionsComponent = ({ media, setIsModalOpen }) => {
   const mediaType = media === "movies" ? "movie" : "tv";
 
   const mediaInWatchlist = watchlist.some(
-    (item) =>
-      item.mediaId === content?.info?.id && item.mediaType === mediaType,
+    (item) => item.mediaId === content?.id && item.mediaType === mediaType,
   );
 
   return (

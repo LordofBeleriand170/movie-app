@@ -4,9 +4,11 @@ import React from "react";
 import Link from "next/link";
 import { useContentStore } from "@/features/content/contentStore";
 import ImageFormat from "../ImageFormat";
+import { useParams } from "next/navigation";
 
 const ActorComponent = () => {
   const casts = useContentStore((state) => state.cast);
+  const params = useParams();
 
   return (
     <div className="flex flex-col gap-3 relative py-2 px-8">
@@ -62,9 +64,12 @@ const ActorComponent = () => {
 
           {casts.length > 15 && (
             <div className="flex items-center justify-center min-w-[120px] flex-shrink-0">
-              <button className="text-xs font-bold text-gray-300 hover:text-white bg-[#121824] hover:bg-[#1a2334] border border-gray-800 px-4 py-3 rounded-lg transition-all">
+              <Link
+                href={`/media/${params?.type}/${params?.slug}/cast`}
+                className="text-xs font-bold text-gray-300 hover:text-white bg-[#121824] hover:bg-[#1a2334] border border-gray-800 px-4 py-3 rounded-lg transition-all"
+              >
                 View All
-              </button>
+              </Link>
             </div>
           )}
         </div>

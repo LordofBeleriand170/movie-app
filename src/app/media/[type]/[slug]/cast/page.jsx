@@ -1,6 +1,6 @@
 "use client";
 
-import CastComponent from "@/components/contentPage/CastComponent";
+import CastComponent from "@/components/CastComponent";
 import Navbar from "@/components/Navbar";
 import { useContentStore } from "@/features/content/contentStore";
 import { useParams } from "next/navigation";
@@ -11,17 +11,12 @@ const CastPage = () => {
   const id = params?.slug?.toString().split("-")[0];
   const type = params?.type;
 
-  const [crew, setCrew] = useState(null);
-  const [cast, setCast] = useState(null);
-
   const { fetchInfo } = useContentStore();
 
   useEffect(() => {
     const fetchCrewAndCast = async () => {
       try {
-        const response = await fetchInfo(id, type);
-        setCrew(response.credits.crew);
-        setCast(response.credits.cast);
+        await fetchInfo(id, type);
       } catch (err) {
         console.log(err);
       }
@@ -32,7 +27,7 @@ const CastPage = () => {
   return (
     <>
       <Navbar />
-      <CastComponent crew={crew} cast={cast} />
+      <CastComponent />
     </>
   );
 };

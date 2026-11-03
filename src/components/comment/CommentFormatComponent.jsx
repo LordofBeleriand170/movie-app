@@ -3,7 +3,6 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { formatDate } from "@/app/utils/formatDate";
-import toggleLike from "@/app/utils/toggleLike";
 import {
   Heart,
   CornerDownRight,
@@ -21,6 +20,7 @@ import { useCommentStore } from "@/features/comment/commentStore";
 const CommentFormatComponent = ({ comment, type }) => {
   const deleteComment = useCommentStore((store) => store.deleteComment);
   const ban = useCollectionStore((store) => store.ban);
+  const addLike = useCommentStore((state) => state.addLike);
 
   comment = comment?.comment || comment;
 
@@ -43,12 +43,46 @@ const CommentFormatComponent = ({ comment, type }) => {
   const [isHighlighted, setIsHighlighted] = useState(false);
   let isBanned = new Date(user?.bannedUntil) > new Date();
 
-  const isReply = !type || Boolean(comment?.replyLikes);
+  const isReply = Boolean(comment?.replyLikes);
 
   const hasLiked = isReply
     ? comment?.replyLikes?.some((like) => like?.userId === user?.id)
     : comment?.commentLikes?.some((like) => like?.userId === user?.id);
   const [liked, setLiked] = useState(hasLiked);
+
+  const toggleLike = async (target, userObj, isReplyParam) => {
+    if (!userObj || !target) return;
+    const userIdStr = userObj?.id?.toString();
+    const targetId = target?.id;
+
+    if (isReplyParam) {
+      const likesList = target?.replyLikes || [];
+      const hasLikedTarget = likesList.some(
+        (like) => like.userId === userIdStr,
+      );
+
+      target.replyLikes = hasLikedTarget
+        ? likesList.filter((like) => like.userId !== userIdStr)
+        : [...likesList, { userId: userIdStr, replyId: targetId }];
+    } else {
+      const likesList = target?.commentLikes || [];
+      const hasLikedTarget = likesList.some(
+        (like) => like.userId === userIdStr,
+      );
+
+      target.commentLikes = hasLikedTarget
+        ? likesList.filter((like) => like.userId !== userIdStr)
+        : [...likesList, { userId: userIdStr, commentId: targetId }];
+    }
+
+    console.log("isReply: ", isReply);
+
+    try {
+      await addLike(targetId, isReply, userObj?.id);
+    } catch (err) {
+      console.error("Failed to add like:", err);
+    }
+  };
 
   useEffect(() => {
     if (
@@ -90,9 +124,9 @@ const CommentFormatComponent = ({ comment, type }) => {
     }
   };
 
-  const handleReport = async (id, user) => {
+  const handleReport = async (id, userObj) => {
     try {
-      const res = await report(id, user);
+      const res = await report(id, userObj);
 
       if (res?.notification) {
         showToast("success", "Report has been sent!");
@@ -219,13 +253,13 @@ const CommentFormatComponent = ({ comment, type }) => {
       <div
         id={`commentId-${comment?.id}`}
         className={`
-          flex gap-3.5 items-start p-4 rounded-2xl border transition-all duration-300 my-1.5
-          ${
-            isHighlighted
-              ? "bg-red-500/10 border-red-500/80 shadow-lg shadow-red-500/10 ring-2 ring-red-500/40"
-              : "bg-[#121215] border-neutral-800/80 hover:border-neutral-700/80"
-          }
-        `}
+        flex gap-3.5 items-start p-4 rounded-2xl border transition-all duration-300 my-1.5
+        ${
+          isHighlighted
+            ? "bg-red-500/10 border-red-500/80 shadow-lg shadow-red-500/10 ring-2 ring-red-500/40"
+            : "bg-[#121215] border-neutral-800/80 hover:border-neutral-700/80"
+        }
+      `}
       >
         <Image
           src={comment?.image ?? "/user-not-found.jpg"}
@@ -281,7 +315,7 @@ const CommentFormatComponent = ({ comment, type }) => {
                   }
 
                   setLiked((prev) => !prev);
-                  toggleLike(comment, user?.id, isReply);
+                  toggleLike(comment, user, isReply);
                 }}
                 className={`w-4 h-4 cursor-pointer transition-transform active:scale-125 ${
                   liked
@@ -296,7 +330,7 @@ const CommentFormatComponent = ({ comment, type }) => {
               </span>
             </div>
 
-            {type && (
+            {
               <button
                 onClick={() => {
                   setOpenResponds((prev) =>
@@ -308,7 +342,7 @@ const CommentFormatComponent = ({ comment, type }) => {
                 <CornerDownRight className="w-3.5 h-3.5 text-neutral-500" />
                 <span>{comment?.replies?.length || 0} Replies</span>
               </button>
-            )}
+            }
 
             {user?.role === "ADMIN" && user?.id !== comment?.userId ? (
               <div className="flex items-center gap-3">

@@ -2,16 +2,16 @@
 
 import { useEffect } from "react";
 import { AlertCircle, PlusCircle, MinusCircle, Sparkles } from "lucide-react";
-import { useContentStore } from "@/features/content/contentStore";
+import { useCommentStore } from "@/features/comment/commentStore";
 
 export const ReviewHighlights = ({ movieId, type, contentTitle }) => {
-  const { aiSummary, aiLoading, aiError, comments } = useContentStore();
+  const { aiSummary, aiLoading, aiError, comments } = useCommentStore();
 
   useEffect(() => {
     if (comments && comments.length >= 3 && movieId) {
-      useContentStore.getState().fetchAiSummary(movieId, type, contentTitle);
+      useCommentStore.getState().fetchAiSummary(movieId, type, contentTitle);
     }
-  }, [movieId, type, comments.length]);
+  }, [movieId, type, comments?.length]);
 
   if (aiLoading) {
     return (

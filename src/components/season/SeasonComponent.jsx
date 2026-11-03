@@ -1,40 +1,31 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import ImageFormat from "../ImageFormat";
-import { formatDate } from "@/app/utils/formatDate";
-import { useParams, useRouter } from "next/navigation";
 import { useContentStore } from "@/features/content/contentStore";
+import EpisodeComponent from "../EpisodeComponent";
+import { useEffect, useState } from "react";
 
-const SeasonComponent = ({ id }) => {
-  const [season, setSeason] = useState(null);
-  const router = useRouter();
-  const params = useParams();
-
-  const currentSeason = useContentStore((state) => state.season);
+const SeasonComponent = ({ id, currentSeason }) => {
   const fetchSeason = useContentStore((state) => state.fetchSeason);
-  const tvShow = useContentStore((state) => state.tvShow);
-
-  const tvShowSeason = tvShow?.season?.find(
-    (season) => season?.name === "Season 1" || season?.number === 1,
-  );
-
-  const episodes = currentSeason?.episodes
-    ? currentSeason?.episodes
-    : tvShowSeason?.episodes;
+  const episodes = useContentStore((state) => state.episodes);
+  const season = useContentStore((state) => state.season);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getSeason = async () => {
+    const handleSeason = async () => {
       try {
-        await fetchSeason(id, season);
+        setLoading(true);
+        await fetchSeason(id, currentSeason);
       } catch (err) {
-        console.log(err);
+        console.log("ERR: ", err);
+      } finally {
+        setLoading(false);
       }
     };
-    if (season !== null) {
-      getSeason();
+
+    if (id && currentSeason) {
+      handleSeason();
     }
-  }, [season, id, fetchSeason]);
+  }, [id, currentSeason, fetchSeason]);
 
   return (
     <main className="relative flex flex-col bg-black px-8">
@@ -43,95 +34,26 @@ const SeasonComponent = ({ id }) => {
 
         <div className="flex flex-col gap-10">
           <div className="flex flex-col h-full mt-5 items-center justify-center">
-            <div className="flex w-full overflow-x-auto gap-5 pt-4 scrollbar-thin scrollbar-thumb-neutral-700 scrollbar-track-transparent">
-              {tvShow?.seasons?.map((season, index) => {
-                const imageUrl = `https://image.tmdb.org/t/p/original${season.poster_path}`;
-                const name = season.name;
-                const height = "h-[300px]";
-                const width = "w-[200px]";
-
-                return (
-                  <div
-                    onClick={() => {
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                      setSeason(season.season_number);
-                      router.replace(
-                        `/media/${params?.type}/${params?.slug}/seasons`,
-                        {
-                          scroll: false,
-                        },
-                      );
-                    }}
-                    key={index}
-                    className="cursor-pointer rounded-lg flex flex-col items-center gap-3 flex-shrink-0"
-                  >
-                    <ImageFormat
-                      imageUrl={imageUrl}
-                      name={name}
-                      height={height}
-                      width={width}
-                      style={"rounded-lg"}
-                    />
-                  </div>
-                );
-              })}
-            </div>
+            <div className="flex w-full overflow-x-auto gap-5 pt-4 scrollbar-thin scrollbar-thumb-neutral-700 scrollbar-track-transparent"></div>
           </div>
 
           <div>
             <h2 id="seasonId-name" className="text-3xl">
-              {currentSeason?.name}
+              {season?.name}
             </h2>
-            <span>{currentSeason?.overview}</span>
+            <span>{season?.overview}</span>
           </div>
 
           <div>
             <div className="flex rounded-2xl border border-gray-500 bg-black p-5 flex-col gap-2">
               {episodes && Array.isArray(episodes) ? (
                 episodes.map((episode, index) => {
-                  const imageUrl = episode.still_path
-                    ? `https://image.tmdb.org/t/p/original${episode.still_path}`
-                    : "/no-poster.webp";
-
-                  const name = episode?.still_path;
-
                   return (
-                    <div
+                    <EpisodeComponent
                       key={index}
-                      className="relative pr-3  bg-zinc-900 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden flex gap-6 h-50 min-h-[200px] cursor-pointer"
-                    >
-                      <ImageFormat
-                        imageUrl={imageUrl}
-                        name={name}
-                        width={"w-100"}
-                      />
-
-                      <div className="flex flex-col gap-1 pt-4 pb-1 w-full">
-                        <div className="flex flex-col gap-0.5">
-                          <span className="uppercase text-xs">
-                            episode {index + 1}
-                          </span>
-                          <span className="font-semibold text-xl text-white line-clamp-1">
-                            {episode?.name}
-                          </span>
-                          <div className="flex items-baseline gap-2">
-                            {episode.runtime && (
-                              <span className="text-xs text-white">
-                                {episode.runtime} minutes
-                              </span>
-                            )}{" "}
-                            |{" "}
-                            <span className="text-xs text-white">
-                              {formatDate(episode?.air_date)}
-                            </span>
-                          </div>
-                        </div>
-
-                        <p className="text-xs text-white line-clamp-4">
-                          {episode?.overview}
-                        </p>
-                      </div>
-                    </div>
+                      episode={episode}
+                      index={index}
+                    />
                   );
                 })
               ) : (
