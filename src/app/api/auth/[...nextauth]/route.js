@@ -47,8 +47,6 @@ export const authOptions = {
 
         const isValid = await bcrypt.compare(password, user.password);
 
-        console.log("isvalid: ", isValid);
-
         if (!isValid) return null;
 
         if (!user.isVerified) {

@@ -6,7 +6,6 @@ import CastSkeleton from "./loadingComponents/CastSkeleton";
 
 const CastComponent = () => {
   const cast = useContentStore((state) => state.cast);
-  console.log("CAST: ", cast);
   const crew = useContentStore((state) => state.crew);
   const content = useContentStore((state) => state.content);
 

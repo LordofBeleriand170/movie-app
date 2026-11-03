@@ -5,7 +5,6 @@ export async function POST(req) {
   try {
     const body = await req.json();
     const { email } = body;
-    console.log("EMAIL: ", email);
 
     if (!email) {
       return NextResponse.json({ error: "Email required" }, { status: 400 });
@@ -113,8 +112,6 @@ export async function POST(req) {
       role: user.role,
       createdAt: user.createdAt,
     };
-
-    
 
     return NextResponse.json({ user: formattedUser }, { status: 200 });
   } catch (err) {

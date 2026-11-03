@@ -99,9 +99,6 @@ export async function POST(req) {
       },
     });
 
-    console.log("SMTP_EMAIL:", process.env.SMTP_EMAIL);
-    console.log("SMTP_PASSWORD Length:", process.env.SMTP_PASSWORD?.length);
-
     await transporter.sendMail({
       from: `"Movie app" <${process.env.SMTP_EMAIL}>`,
       to: email,

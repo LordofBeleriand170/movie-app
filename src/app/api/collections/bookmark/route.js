@@ -33,8 +33,6 @@ export async function POST(req) {
       (w) => Number(w.mediaId) === Number(itemId) && w.mediaType === mediaType,
     );
 
-    console.log("BOOKMARK EXISTS: ", bookmarkExists);
-
     let actionMessage = "";
 
     if (bookmarkExists) {

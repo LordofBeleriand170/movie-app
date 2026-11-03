@@ -115,9 +115,6 @@ ${
       let status = null;
       let seasons = [];
       if (filter.mediaType === "movie") {
-        console.log(
-          `https://api.themoviedb.org/3/movie/${item?.id}?append_to_response=credits`,
-        );
         const details = await fetch(
           `https://api.themoviedb.org/3/movie/${item?.id}?append_to_response=credits`,
           options,

@@ -19,7 +19,6 @@ export const useCollectionStore = create((set, get) => ({
 
   fetchUserCollections: async (email) => {
     set({ loading: true });
-    console.log("1. Poziv je krenuo za email:", email);
 
     try {
       const res = await fetch(`/api/user/collection`, {
@@ -28,14 +27,11 @@ export const useCollectionStore = create((set, get) => ({
         body: JSON.stringify({ email }),
       });
 
-      console.log("2. Status odgovora sa servera:", res.status);
-
       if (!res.ok) {
         throw new Error(`Server error: ${res.status}`);
       }
 
       const data = await res.json();
-      console.log("3. Uspešno preuzeti podaci:", data);
 
       set({
         user: data.user,
@@ -51,7 +47,6 @@ export const useCollectionStore = create((set, get) => ({
         image: data.user?.image || null,
         loading: false,
       });
-      console.log("4. Loading uspešno postavljen na false");
     } catch (error) {
       console.error("GREŠKA U CATCH BLOKU:", error);
       set({ loading: false });

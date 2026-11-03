@@ -22,8 +22,6 @@ const CommentFormatComponent = ({ comment, type }) => {
   const ban = useCollectionStore((store) => store.ban);
   const addLike = useCommentStore((state) => state.addLike);
 
-  console.log("COMMENT: ", type);
-
   comment = comment?.comment || comment;
 
   const pathname = usePathname();

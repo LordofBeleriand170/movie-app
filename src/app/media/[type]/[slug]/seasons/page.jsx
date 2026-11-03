@@ -10,7 +10,6 @@ import { useContentStore } from "@/features/content/contentStore";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-// SeasonPage.jsx
 const SeasonPage = () => {
   const { slug } = useParams();
   const slugParts = slug?.split("-") || [];

@@ -6,10 +6,6 @@ export async function POST(req) {
     const body = await req.json();
     const { id, type, user } = body;
 
-    console.log("ID: ", id);
-    console.log("TYPE: ", type);
-    console.log("USER: ", user);
-
     const mediaType = type === "tvshows" ? "tv" : "movie";
 
     const mediaInWatchlist = await prisma?.watchlist?.findFirst({

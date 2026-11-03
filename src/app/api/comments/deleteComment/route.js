@@ -5,7 +5,6 @@ export async function POST(req) {
   try {
     const body = await req.json();
     const { id, isComment } = body;
-    console.log("ID: ", id, isComment);
 
     if (!id) {
       return NextResponse.json({ error: "ID je obavezan" }, { status: 400 });

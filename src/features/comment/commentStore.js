@@ -138,7 +138,6 @@ export const useCommentStore = create((set, get) => ({
       }
 
       const data = await res.json();
-      console.log("DATA: ", data);
 
       set({
         content: data,

@@ -14,8 +14,6 @@ const NotificationCurrent = ({ selectedNotifications }) => {
   );
   const router = useRouter();
 
-  console.log("SELECTED: ", selectedNotifications);
-
   useEffect(() => {
     const getComment = async () => {
       try {
@@ -29,8 +27,6 @@ const NotificationCurrent = ({ selectedNotifications }) => {
       getComment();
     }
   }, [selectedNotifications]);
-
-  console.log("CONTENT: ", content);
 
   const redirect = () => {
     router.push(

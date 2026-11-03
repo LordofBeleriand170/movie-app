@@ -36,8 +36,6 @@ const LoginForm = () => {
       setLoading(true);
       await login(username, password, callbackUrl);
 
-      console.log("HERE1");
-
       if (error) {
         throw new Error(error);
       }
@@ -51,7 +49,6 @@ const LoginForm = () => {
       router.refresh();
     } catch (err) {
       const errorMessage = err?.message || error || "";
-      console.log("HERE2");
       if (
         errorMessage.includes("not verified") ||
         errorMessage.includes("Verification code")

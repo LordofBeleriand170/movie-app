@@ -6,8 +6,6 @@ import Link from "next/link";
 const SearchItemComponent = ({ result }) => {
   let avgVote = result?.ratingAvg?._avg?.rating || result?.vote_average / 2;
 
-  console.log("RESULT: ", result);
-
   const getImageUrl = (posterPath, gender) => {
     if (
       posterPath &&

@@ -91,7 +91,6 @@ export async function POST(req) {
           endpoint: "POST /api/auth/login",
         },
       });
-      console.log("SystemLog created successfully!");
     } catch (logErr) {
       console.error("FAILED TO CREATE SYSTEM LOG:", logErr);
     }
