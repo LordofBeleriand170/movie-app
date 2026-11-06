@@ -91,20 +91,7 @@ const RegisterFormContent = () => {
     } finally {
       setLoading(false);
     }
-  }; /*   <button
-              type="button"
-              onClick={() => signIn("google")}
-              className="w-full mt-1 py-2.5 bg-white text-zinc-900 font-medium text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-200 transition active:scale-[0.98]"
-            >
-              <Image
-                src="/google-logo.jpg"
-                alt="Google"
-                width={18}
-                height={18}
-                className="object-contain"
-              />
-              Register with Google
-            </button>*/
+  };
 
   return (
     <main className="min-h-screen w-full flex items-center justify-center bg-[#09090b] text-white px-4">

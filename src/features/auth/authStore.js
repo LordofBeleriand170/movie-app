@@ -165,6 +165,100 @@ export const useAuthStore = create(
         }
       },
 
+      resendVerificationCode: async (username) => {
+        set({
+          isLoading: true,
+          error: null,
+        });
+
+        try {
+          const res = await fetch("/api/auth/resendVerificationCode", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username }),
+          });
+
+          if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(
+              errorData.message || "Error resending verification code",
+            );
+          }
+
+          const data = await res.json();
+
+          return data;
+        } catch (error) {
+          set({
+            error: error.message || "Error resending verification code",
+            isLoading: false,
+          });
+          throw error;
+        }
+      },
+
+      forgotPassword: async (identifier) => {
+        set({
+          isLoading: true,
+          error: null,
+        });
+
+        try {
+          const res = await fetch("/api/auth/forgotPassword", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ identifier }),
+          });
+
+          if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(
+              errorData.message || "Error sending request for password reset",
+            );
+          }
+
+          const data = await res.json();
+
+          return data;
+        } catch (error) {
+          set({
+            error: error.message || "Error sending request for password reset",
+            isLoading: false,
+          });
+          throw error;
+        }
+      },
+
+      resetPassword: async (identifier, password) => {
+        set({
+          isLoading: true,
+          error: null,
+        });
+
+        try {
+          const res = await fetch("/api/auth/resetPassword", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ identifier, password }),
+          });
+
+          if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.message || "Error resetting password");
+          }
+
+          const data = await res.json();
+
+          return data;
+        } catch (error) {
+          set({
+            error: error.message || "Error resetting password",
+            isLoading: false,
+          });
+          throw error;
+        }
+      },
+
       getUser: async (id) => {
         set({
           isLoading: true,

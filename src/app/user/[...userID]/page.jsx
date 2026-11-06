@@ -11,7 +11,7 @@ const User = () => {
   const params = useParams();
   const { loading, fetchUserCollections } = useCollectionStore();
 
-  const email = decodeURIComponent(params?.userId[0]);
+  const email = decodeURIComponent(params?.userID[0]);
 
   useEffect(() => {
     const handleUserCollection = async () => {

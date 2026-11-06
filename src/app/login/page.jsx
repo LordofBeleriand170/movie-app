@@ -46,6 +46,9 @@ const LoginForm = () => {
       }
 
       showToast("success", "Logged in successfully");
+
+      const destination = callbackUrl ? decodeURIComponent(callbackUrl) : "/";
+      router.push(destination);
       router.refresh();
     } catch (err) {
       const errorMessage = err?.message || error || "";
@@ -53,7 +56,7 @@ const LoginForm = () => {
         errorMessage.includes("not verified") ||
         errorMessage.includes("Verification code")
       ) {
-        router.push("/verify");
+        router.push(`/verify?${username}`);
         return;
       }
 
@@ -120,6 +123,15 @@ const LoginForm = () => {
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
+
+        <p className="mt-6 text-xs text-zinc-400 text-center">
+          <Link
+            href="/forgot-password"
+            className="text-red-500  hover:text-red-400 hover:underline font-medium ml-1 cursor-pointer"
+          >
+            Forgot password?{" "}
+          </Link>
+        </p>
 
         <p className="mt-6 text-xs text-zinc-400 text-center">
           Don't have an account?{" "}

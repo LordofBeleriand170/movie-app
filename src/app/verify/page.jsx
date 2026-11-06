@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/features/auth/authStore";
 import React, { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
@@ -10,7 +10,44 @@ const VerifyPage = () => {
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const inputRefs = useRef([]);
   const router = useRouter();
+  const [resending, setResending] = useState(false);
+  const [countdown, setCountdown] = useState(0);
   const verifyEmail = useAuthStore((state) => state.verifyEmail);
+  const searchParams = useSearchParams();
+
+  const resendVerificationCode = useAuthStore(
+    (state) => state.resendVerificationCode,
+  );
+
+  const username = Array.from(searchParams.keys())[0];
+
+  useEffect(() => {
+    if (countdown <= 0) return;
+    const timer = setInterval(() => {
+      setCountdown((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [countdown]);
+
+  const handleResend = async () => {
+    if (countdown > 0 || resending) return;
+    try {
+      setResending(true);
+
+      const res = await resendVerificationCode(username);
+      if (res?.user) {
+        showToast("success", "Code resent.");
+        setCountdown(60);
+      } else {
+        showToast("error", res?.error);
+      }
+    } catch (err) {
+      const errorMessage = "Error occurred during verification code resend.";
+      showToast("error", errorMessage);
+    } finally {
+      setResending(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
@@ -25,7 +62,7 @@ const VerifyPage = () => {
         showToast("error", res?.error);
       }
     } catch (err) {
-      const errorMessage = "Error occurred during registration.";
+      const errorMessage = "Error occurred during verification.";
       showToast("error", errorMessage);
     }
   };
@@ -110,6 +147,26 @@ const VerifyPage = () => {
           </div>
 
           <div className="flex items-center justify-end gap-4 pt-2">
+            <button
+              type="button"
+              onClick={handleResend}
+              disabled={countdown > 0 || resending}
+              className="text-xs font-medium text-neutral-400 hover:text-white disabled:text-neutral-600 disabled:cursor-not-allowed transition-colors cursor-pointer flex items-center gap-1.5 mr-auto"
+            >
+              {resending ? (
+                <>
+                  <span className="w-3 h-3 border-2 border-neutral-400 border-t-transparent rounded-full animate-spin" />
+                  Sending...
+                </>
+              ) : countdown > 0 ? (
+                `Resend code in ${countdown}s`
+              ) : (
+                <>
+                  Didn't receive a code?{" "}
+                  <span className="text-red-500 hover:underline">Resend</span>
+                </>
+              )}
+            </button>
             <button
               type="button"
               onClick={() => router.back()}

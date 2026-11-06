@@ -5,13 +5,11 @@ import React, { useState, Suspense } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Menu, Search, X } from "lucide-react";
-import { useCollectionStore } from "@/features/collection/collectionStore";
 import NotificationModal from "./notification/NotificationModal";
 import SideMenu from "./SideMenu";
 import UserModal from "./UserModal";
 
 const NavbarContent = () => {
-  const user = useCollectionStore((state) => state.user);
   const [searchValue, setSearchValue] = useState("");
   const [openMenu, setOpenMenu] = useState(false);
   const [openSettings, setOpenSettings] = useState(false);
